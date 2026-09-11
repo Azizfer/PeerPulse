@@ -73,8 +73,8 @@ export function StudyInfoForm() {
       className="space-y-6"
     >
       {/* Study Goal */}
-      <div className="px-4">
-        <Label className="text-base font-medium text-ink mb-3 block">What's your main study goal?</Label>
+      <div>
+        <Label className="mb-2.5 block text-[14.5px] font-semibold text-ink">What's your main study goal?</Label>
         <Textarea
           placeholder="e.g., Pass my exams, Master programming, Improve my grades..."
           value={formData.studyGoal}
@@ -84,8 +84,8 @@ export function StudyInfoForm() {
       </div>
 
       {/* Subjects */}
-      <div className="px-4">
-        <Label className="text-base font-medium text-ink mb-3 block">What subjects are you studying?</Label>
+      <div>
+        <Label className="mb-2.5 block text-[14.5px] font-semibold text-ink">What subjects are you studying?</Label>
 
         {/* Add custom subject */}
         <div className="flex gap-2 mb-4">
@@ -112,7 +112,7 @@ export function StudyInfoForm() {
 
         {/* Popular subjects */}
         <div className="mb-4">
-          <p className="text-sm text-ink-soft mb-2">Or select from popular subjects:</p>
+          <p className="mb-2.5 text-[13.5px] text-ink-mute">Or select from popular subjects:</p>
           <div className="flex flex-wrap gap-2">
             {popularSubjects.map((subject) => (
               <button
@@ -120,7 +120,7 @@ export function StudyInfoForm() {
                 type="button"
                 onClick={() => addSubject(subject)}
                 disabled={formData.subjects.includes(subject)}
-                className="px-3 py-1 text-xs border border-line-strong rounded-full hover:border-blue-400 hover:text-pulse-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="rounded-full border border-line-strong px-3.5 py-2 text-[13px] font-medium transition-colors hover:border-pulse hover:text-pulse-dark disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {subject}
               </button>
@@ -131,12 +131,12 @@ export function StudyInfoForm() {
         {/* Selected subjects */}
         {formData.subjects.length > 0 && (
           <div>
-            <p className="text-sm text-ink-soft mb-2">Selected subjects:</p>
+            <p className="mb-2.5 text-[13.5px] text-ink-mute">Selected subjects:</p>
             <div className="flex flex-wrap gap-2">
               {formData.subjects.map((subject) => (
                 <Badge key={subject} variant="secondary" className="flex items-center gap-1">
                   {subject}
-                  <button type="button" onClick={() => removeSubject(subject)} className="ml-1 hover:text-red-600">
+                  <button type="button" onClick={() => removeSubject(subject)} className="ml-1 hover:text-rose-deep">
                     <X className="w-3 h-3" />
                   </button>
                 </Badge>
@@ -147,12 +147,12 @@ export function StudyInfoForm() {
       </div>
 
       {/* Navigation */}
-      <div className="flex justify-end items-center px-4 py-3">
+      <div className="flex items-center justify-end pt-1">
         <Button
           type="button"
           onClick={handleSubmit}
           disabled={!isFormValid}
-          className="bg-ink hover:bg-[#1a1612] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full sm:w-auto"
         >
           Next Step →
         </Button>
@@ -160,8 +160,8 @@ export function StudyInfoForm() {
 
       {/* Form validation feedback */}
       {!isFormValid && (
-        <div className="px-4">
-          <p className="text-sm text-ink-mute text-center">
+        <div>
+          <p className="text-center text-[13px] text-ink-mute">
             Please fill in your study goal and select at least one subject
           </p>
         </div>

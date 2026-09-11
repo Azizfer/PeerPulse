@@ -63,8 +63,8 @@ export function AcademicInfoFormSimple() {
       className="space-y-6"
     >
       {/* University */}
-      <div className="px-4">
-        <Label className="text-base font-medium text-ink mb-3 block">University / Institution</Label>
+      <div>
+        <Label className="mb-2.5 block text-[14.5px] font-semibold text-ink">University / Institution</Label>
         <Input
           placeholder="e.g., Stanford University, MIT..."
           value={formData.university}
@@ -74,8 +74,8 @@ export function AcademicInfoFormSimple() {
       </div>
 
       {/* Major */}
-      <div className="px-4">
-        <Label className="text-base font-medium text-ink mb-3 block">Major / Field of Study</Label>
+      <div>
+        <Label className="mb-2.5 block text-[14.5px] font-semibold text-ink">Major / Field of Study</Label>
         <Input
           placeholder="e.g., Computer Science, Biology..."
           value={formData.major}
@@ -85,15 +85,15 @@ export function AcademicInfoFormSimple() {
       </div>
 
       {/* Academic Year */}
-      <div className="px-4">
-        <Label className="text-base font-medium text-ink mb-3 block">Current Academic Year</Label>
+      <div>
+        <Label className="mb-2.5 block text-[14.5px] font-semibold text-ink">Current Academic Year</Label>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {academicYears.map((year) => (
             <label
               key={year.value}
-              className={`relative flex h-12 cursor-pointer items-center justify-center rounded-xl border px-4 text-sm font-medium transition-all ${
+              className={`relative flex h-12 cursor-pointer items-center justify-center rounded-2xl border px-4 font-display text-[14px] font-semibold transition-all ${
                 formData.academicYear === year.value
-                  ? "border-blue-600 border-2 bg-blue-50 text-blue-700"
+                  ? "border-2 border-pulse bg-pulse-soft text-pulse-dark"
                   : "border-line-strong text-ink-soft hover:border-ink-faint"
               }`}
             >
@@ -112,12 +112,12 @@ export function AcademicInfoFormSimple() {
       </div>
 
       {/* Navigation */}
-      <div className="flex justify-end items-center px-4 py-3">
+      <div className="flex items-center justify-end pt-1">
         <Button
           type="button"
           onClick={handleComplete}
           disabled={!isFormValid || isCompleting}
-          className="bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed min-w-[140px]"
+          className="w-full sm:w-auto"
         >
           {isCompleting ? "Finishing..." : "Complete Setup"}
         </Button>
@@ -125,8 +125,8 @@ export function AcademicInfoFormSimple() {
 
       {/* Form validation feedback */}
       {!isFormValid && (
-        <div className="px-4">
-          <p className="text-sm text-ink-mute text-center">
+        <div>
+          <p className="text-center text-[13px] text-ink-mute">
             Please fill in all fields to continue
           </p>
         </div>
