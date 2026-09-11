@@ -1,11 +1,16 @@
 import Link from "next/link"
+import { Globe, ShieldCheck, Video } from "lucide-react"
 import Logo from "./Logo"
 import { Reveal } from "./reveal"
-import { Avatar } from "./avatar"
+
+const TRUST = [
+  { icon: Video, label: "Camera optional" },
+  { icon: ShieldCheck, label: "University verified" },
+  { icon: Globe, label: "Free plan, forever" },
+]
 
 /**
- * Split-screen shell shared by /login and /signup.
- * Left: the form. Right: a quiet bit of proof that this is worth signing up for.
+ * Centred single-column shell shared by /login and /signup.
  */
 export default function AuthLayout({
   title,
@@ -19,89 +24,60 @@ export default function AuthLayout({
   footer?: React.ReactNode
 }) {
   return (
-    <div className="grid min-h-screen lg:grid-cols-[1fr_0.95fr]">
-      {/* ---------------- Left: form ---------------- */}
-      <div className="flex flex-col bg-paper">
-        <div className="container-page flex items-center justify-between py-6">
-          <Logo />
-          <Link
-            href="/"
-            className="font-display text-sm font-semibold text-ink-mute transition-colors hover:text-ink"
-          >
-            Back to site
-          </Link>
-        </div>
-
-        <div className="flex flex-1 items-center justify-center px-5 pb-16 pt-4 sm:px-8">
-          <div className="w-full max-w-[420px]">
-            <Reveal>
-              <h1 className="font-display text-[32px] font-extrabold leading-[1.1] tracking-[-0.03em] text-ink">
-                {title}
-              </h1>
-              <p className="mt-2.5 text-[15px] leading-relaxed text-ink-soft">{subtitle}</p>
-            </Reveal>
-
-            <Reveal delay={0.06}>
-              <div className="mt-8">{children}</div>
-            </Reveal>
-
-            {footer && (
-              <Reveal delay={0.12}>
-                <div className="mt-8 border-t border-line pt-6 text-center text-[14.5px] text-ink-soft">
-                  {footer}
-                </div>
-              </Reveal>
-            )}
-          </div>
-        </div>
+    <div className="relative flex min-h-screen flex-col overflow-hidden bg-paper">
+      {/* soft backdrop */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="dot-grid absolute inset-x-0 top-0 h-[420px] opacity-35 [mask-image:linear-gradient(to_bottom,black,transparent)]" />
+        <div className="glow-soft -left-24 top-10 h-[380px] w-[380px] bg-pulse/18" />
+        <div className="glow-soft -right-20 top-0 h-[340px] w-[340px] bg-lilac-deep/14" />
       </div>
 
-      {/* ---------------- Right: proof ---------------- */}
-      <aside className="relative hidden overflow-hidden bg-ink lg:block">
-        <div className="pointer-events-none absolute -left-20 top-1/4 h-80 w-80 rounded-full bg-pulse/25 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-20 -right-16 h-80 w-80 rounded-full bg-lilac-deep/30 blur-3xl" />
+      {/* header */}
+      <header className="relative z-10 flex items-center justify-between px-6 py-6 sm:px-10">
+        <Logo />
+        <Link
+          href="/"
+          className="font-display text-sm font-semibold text-ink-mute transition-colors hover:text-ink"
+        >
+          Back to site
+        </Link>
+      </header>
 
-        <div className="relative flex h-full flex-col justify-between p-12">
-          <div className="flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.14em] text-white/50">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-pulse-ring rounded-full bg-pulse" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-pulse" />
-            </span>
-            Live now · 248 students in focus rooms
-          </div>
+      {/* card */}
+      <main className="relative z-10 flex flex-1 items-center justify-center px-5 pb-16 pt-4 sm:px-8">
+        <div className="w-full max-w-[440px]">
+          <Reveal>
+            <div className="rounded-[32px] border border-line bg-surface p-8 shadow-card sm:p-10">
+              <h1 className="font-display text-[32px] font-extrabold leading-[1.08] tracking-[-0.035em] text-ink">
+                {title}
+              </h1>
+              <p className="mt-3 text-[15px] leading-relaxed text-ink-soft">{subtitle}</p>
 
-          <div>
-            <blockquote className="max-w-md font-display text-[26px] font-bold leading-[1.25] tracking-[-0.025em] text-white">
-              “Twenty-five minutes next to someone who is also working did more for my grades
-              than a whole semester of studying alone.”
-            </blockquote>
-            <div className="mt-6 flex items-center gap-3">
-              <Avatar name="Sana Benali" size="sm" />
-              <div>
-                <p className="text-sm font-semibold text-white">Sana Benali</p>
-                <p className="text-[13px] text-white/55">Statistics, Year 2</p>
-              </div>
+              <div className="mt-8">{children}</div>
             </div>
-          </div>
+          </Reveal>
 
-          <ul className="space-y-3">
-            {[
-              "Matched by subject in about 30 seconds",
-              "Camera and mic stay under your control",
-              "Community answers, saved to your course",
-            ].map((line) => (
-              <li key={line} className="flex items-center gap-3 text-[14.5px] text-white/70">
-                <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-white/12">
-                  <svg viewBox="0 0 24 24" className="h-3 w-3 text-pulse" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 6 9 17l-5-5" />
-                  </svg>
-                </span>
-                {line}
-              </li>
-            ))}
-          </ul>
+          <Reveal delay={0.08}>
+            <div className="mt-7 space-y-7">
+              {footer && (
+                <p className="text-center text-[14.5px] text-ink-soft">{footer}</p>
+              )}
+
+              <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+                {TRUST.map((item) => (
+                  <li
+                    key={item.label}
+                    className="flex items-center gap-2 text-[13px] font-medium text-ink-mute"
+                  >
+                    <item.icon className="h-3.5 w-3.5 text-pulse" />
+                    {item.label}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Reveal>
         </div>
-      </aside>
+      </main>
     </div>
   )
 }

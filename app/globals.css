@@ -17,21 +17,24 @@
     ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Instrument Serif", ui-serif, Georgia, "Times New Roman", serif;
 
-  --text-display: clamp(2.6rem, 6vw, 4.6rem);
-  --text-display--line-height: 1.02;
-  --text-display--letter-spacing: -0.035em;
+  --text-display: clamp(2.9rem, 7vw, 5.25rem);
+  --text-display--line-height: 0.99;
+  --text-display--letter-spacing: -0.042em;
+  --text-display--font-weight: 800;
 
-  --text-h2: clamp(2rem, 3.8vw, 3.1rem);
-  --text-h2--line-height: 1.08;
-  --text-h2--letter-spacing: -0.03em;
+  --text-h2: clamp(2.1rem, 4.4vw, 3.5rem);
+  --text-h2--line-height: 1.04;
+  --text-h2--letter-spacing: -0.038em;
+  --text-h2--font-weight: 800;
 
-  --text-h3: clamp(1.4rem, 2.2vw, 1.9rem);
-  --text-h3--line-height: 1.15;
-  --text-h3--letter-spacing: -0.022em;
+  --text-h3: clamp(1.5rem, 2.4vw, 2.05rem);
+  --text-h3--line-height: 1.12;
+  --text-h3--letter-spacing: -0.028em;
+  --text-h3--font-weight: 800;
 
-  --text-lead: clamp(1.0625rem, 1.4vw, 1.25rem);
-  --text-lead--line-height: 1.6;
-  --text-lead--letter-spacing: -0.011em;
+  --text-lead: clamp(1.0625rem, 1.5vw, 1.3125rem);
+  --text-lead--line-height: 1.55;
+  --text-lead--letter-spacing: -0.015em;
 
   /* ---------- Surfaces & ink ---------- */
   --color-paper: #fbfaf7;

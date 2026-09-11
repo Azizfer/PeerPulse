@@ -126,30 +126,27 @@ export function LandingPage() {
         <div className="container-page relative grid items-center gap-14 py-16 lg:grid-cols-[1.05fr_1fr] lg:gap-10 lg:py-24">
           <div>
             <Reveal>
-              <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3.5 py-1.5 text-[13px] font-semibold text-ink-soft shadow-soft">
+              <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3.5 py-1.5 text-[12.5px] font-semibold uppercase tracking-[0.1em] text-ink-soft shadow-soft">
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-pulse-ring rounded-full bg-pulse" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-pulse" />
                 </span>
-                Live focus rooms, matched by subject
+                Body doubling for students
               </span>
             </Reveal>
 
             <Reveal delay={0.06}>
-              <h1 className="mt-6 text-display font-extrabold text-ink">
-                Study with someone who&apos;s in{" "}
-                <span className="font-serif font-normal italic tracking-normal text-pulse-dark">
-                  the same class
-                </span>{" "}
-                as you.
+              <h1 className="mt-7 text-display font-extrabold text-ink">
+                <span className="block">Stop studying alone.</span>
+                <span className="block">Get matched by subject.</span>
+                <span className="block text-pulse-dark">Go pass your exams.</span>
               </h1>
             </Reveal>
 
             <Reveal delay={0.12}>
-              <p className="mt-6 max-w-xl text-lead text-ink-soft">
-                PeerPulse pairs you with students taking your exact subjects, drops you into a
-                quiet 25-minute focus room, and keeps every resource your community shares in
-                one calm place.
+              <p className="mt-7 max-w-lg text-lead text-ink-soft">
+                Join a 25-minute focus room with someone in the same class. Camera optional.
+                Timer running. That&apos;s the whole trick — and it works.
               </p>
             </Reveal>
 
@@ -157,7 +154,7 @@ export function LandingPage() {
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Button asChild size="lg" className="group">
                   <Link href="/signup">
-                    Start studying free
+                    Get started — it’s free
                     <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
                   </Link>
                 </Button>
@@ -193,7 +190,7 @@ export function LandingPage() {
           {STATS.map((stat, i) => (
             <Reveal key={stat.label} delay={i * 0.06}>
               <div>
-                <p className="font-display text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
+                <p className="font-display text-[34px] font-extrabold leading-none tracking-[-0.04em] text-ink sm:text-[42px]">
                   {stat.value}
                 </p>
                 <p className="mt-1 text-[13.5px] leading-snug text-ink-mute">{stat.label}</p>
@@ -228,8 +225,13 @@ export function LandingPage() {
           <Reveal>
             <SectionHeading
               eyebrow="What you get"
-              title="Everything a study session needs, nothing it doesn't"
-              description="No feeds to scroll, no streaks to perform for. Just the four things that make studying with someone else work."
+              title={
+                <>
+                  <span className="block">Everything a session needs.</span>
+                  <span className="block text-ink-mute">Nothing it doesn&apos;t.</span>
+                </>
+              }
+              description="No feeds to scroll, no streaks to perform for. Just the four things that make studying next to someone else work."
             />
           </Reveal>
 
@@ -261,7 +263,12 @@ export function LandingPage() {
           <Reveal>
             <SectionHeading
               eyebrow="How it works"
-              title="From signing up to studying in about two minutes"
+              title={
+                <>
+                  <span className="block">Set it up once.</span>
+                  <span className="block text-ink-mute">Be studying in two minutes.</span>
+                </>
+              }
             />
           </Reveal>
 
@@ -355,7 +362,7 @@ export function LandingPage() {
             <SectionHeading
               align="left"
               eyebrow="Focus rooms"
-              title="Body doubling, without the awkward bit"
+              title="Body doubling, minus the awkward bit"
               description="Working next to someone who is also working is the oldest productivity trick there is. PeerPulse just removes the scheduling, the small talk and the coffee shop."
             />
             <ul className="mt-8 space-y-4">
@@ -422,7 +429,7 @@ export function LandingPage() {
             <SectionHeading
               align="left"
               eyebrow="Pulse AI"
-              title="An assistant that knows what you're studying"
+              title="An assistant that knows what you&apos;re studying"
               description="Pulse reads your subjects, your goals and what your community already shared — then makes a plan, quizzes you, or finds the person who already solved the problem you're stuck on."
             />
             <ul className="mt-8 space-y-4">
@@ -452,7 +459,12 @@ export function LandingPage() {
           <Reveal>
             <SectionHeading
               eyebrow="From our members"
-              title="“I came for the focus. I stayed for the people.”"
+              title={
+                <>
+                  <span className="block">&ldquo;I came for the focus.</span>
+                  <span className="block text-ink-mute">I stayed for the people.&rdquo;</span>
+                </>
+              }
             />
           </Reveal>
 
