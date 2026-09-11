@@ -105,12 +105,12 @@ export default function NotificationDropdown() {
       <Button 
           variant="ghost" 
           size="sm" 
-          className="relative h-8 w-8 p-0"
+          className="relative h-9 w-9 p-0"
           onClick={() => setIsOpen(!isOpen)}
         >
           <Bell className="w-4 h-4 text-ink-soft" strokeWidth={1.5} />
           {unreadCount > 0 && (
-            <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
+            <div className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-deep px-1 ring-2 ring-paper">
               <span className="text-[10px] text-white font-bold leading-none">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
@@ -126,15 +126,15 @@ export default function NotificationDropdown() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full mt-2 w-96 bg-surface rounded-lg shadow-xl border border-line-strong z-50 max-h-80 overflow-y-auto font-[Lexend,_'Noto_Sans',_sans-serif]"
+            className="absolute right-0 top-full z-50 mt-2 max-h-80 w-96 overflow-y-auto rounded-2xl border border-line bg-surface shadow-card"
           >
             {/* Header */}
             <div className="px-4 py-2 border-b border-line">
-              <h1 className="text-left text-xl font-semibold tracking-[-0.015em] text-ink">
+              <h1 className="font-display text-[17px] font-bold tracking-[-0.02em] text-ink">
                 Notifications
               </h1>
               {unreadCount > 0 && (
-                <p className="text-sm text-[#637888] mt-1">
+                <p className="text-sm text-ink-mute mt-1">
                   {unreadCount} new notification{unreadCount !== 1 ? 's' : ''}
                 </p>
               )}
@@ -156,7 +156,7 @@ export default function NotificationDropdown() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.05 }}
                       className={`flex min-h-[56px] items-center gap-3 px-4 py-1.5 hover:bg-surface-sunken transition-colors relative group ${
-                        !notification.read ? 'bg-blue-50/30 border-l-4 border-l-blue-500' : 'bg-surface border-l-4 border-l-transparent'
+                        !notification.read ? 'border-l-[3px] border-l-pulse bg-pulse-soft/40' : 'border-l-[3px] border-l-transparent bg-surface'
                       }`}
                     >
                       {/* Avatar or Bell Icon */}
@@ -185,11 +185,11 @@ export default function NotificationDropdown() {
                       {/* Content */}
                       <div className="flex flex-col justify-center flex-1 min-w-0">
                         <p className={`text-sm font-medium leading-tight ${
-                          notification.read ? 'text-[#637888]' : 'text-ink'
+                          notification.read ? 'text-ink-mute' : 'text-ink'
                         }`}>
                           {notification.title}
                         </p>
-                        <p className="text-xs font-normal leading-snug text-[#637888]">
+                        <p className="text-xs font-normal leading-snug text-ink-mute">
                           {notification.subtitle}
                         </p>
                       </div>
