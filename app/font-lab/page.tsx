@@ -6,7 +6,9 @@ import "@fontsource-variable/outfit"
 import "@fontsource-variable/manrope"
 import "@fontsource-variable/nunito"
 import "@fontsource-variable/plus-jakarta-sans"
+
 import Link from "next/link"
+
 const CANDIDATES = [
   { name: "Poppins", stack: "Poppins, sans-serif", note: "Default right now — rounded, geometric, friendly" },
   { name: "Figtree", stack: "Figtree, sans-serif", note: "Geometric-humanist, a bit more editorial" },
@@ -15,9 +17,11 @@ const CANDIDATES = [
   { name: "Nunito", stack: "Nunito, sans-serif", note: "Rounded terminals, softest of the six" },
   { name: "Plus Jakarta Sans", stack: '"Plus Jakarta Sans Variable", sans-serif', note: "What the site used before" },
 ]
+
 export const metadata = {
   title: "Wordmark font lab · PeerPulse",
 }
+
 export default function FontLab() {
   return (
     <main className="min-h-screen bg-paper px-5 py-12 sm:px-8">
@@ -40,6 +44,7 @@ export default function FontLab() {
           in another tab, compare the wordmark, and tell me the name. It&apos;s a one-line
           change after that.
         </p>
+
         <div className="mt-10 space-y-6">
           {CANDIDATES.map((f, i) => (
             <div
@@ -54,6 +59,7 @@ export default function FontLab() {
                   <span className="ml-3 text-[13px] text-ink-mute">{f.note}</span>
                 </div>
               </div>
+
               {/* Light background */}
               <div className="px-6 py-7">
                 <div className="flex flex-wrap items-end gap-x-10 gap-y-6">
@@ -74,6 +80,7 @@ export default function FontLab() {
                   Fight procrastination. Get your work done.
                 </p>
               </div>
+
               {/* Dark background — the footer wordmark */}
               <div className="bg-ink px-6 py-7">
                 <div className="flex flex-wrap items-end gap-x-10 gap-y-6">
@@ -97,6 +104,7 @@ export default function FontLab() {
             </div>
           ))}
         </div>
+
         <div className="mt-10 rounded-3xl border border-line bg-surface p-6">
           <h2 className="font-display text-[17px] font-bold text-ink">
             Want it lowercase instead?
@@ -121,6 +129,7 @@ export default function FontLab() {
             PeerPulse to all-lowercase too.
           </p>
         </div>
+
         <Link
           href="/"
           className="mt-10 inline-flex text-[14px] font-medium text-pulse-dark hover:underline"

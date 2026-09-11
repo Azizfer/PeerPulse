@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRight, Activity, CalendarPlus, Clock, Flame, TrendingUp, Video } from "lucide-react"
+import { ArrowRight, CalendarPlus, Clock, Flame, Sparkles, TrendingUp, Video } from "lucide-react"
 import Header from "@/components/Header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -82,35 +82,32 @@ export default function DashboardPage() {
           </div>
         </Reveal>
 
-        {/* ---------------- Stats — bare row, matches the landing page's stats treatment
-             instead of three separate white bordered/shadowed cards ---------------- */}
-        <Reveal delay={0.04}>
-          <div className="mt-10 rounded-3xl bg-paper-warm px-6 py-7 sm:px-9">
-            <div className="grid grid-cols-3 gap-6">
-              {STATS.map((stat) => (
-                <div key={stat.label} className="flex items-start gap-3">
-                  <span className="mt-1 text-ink-soft">
+        {/* ---------------- Stats ---------------- */}
+        <RevealGroup className="mt-10 grid gap-4 sm:grid-cols-3">
+          {STATS.map((stat) => (
+            <RevealItem key={stat.label}>
+              <div className="rounded-3xl border border-line bg-surface p-6 shadow-soft">
+                <div className="flex items-start justify-between">
+                  <p className="text-[13.5px] font-medium text-ink-mute">{stat.label}</p>
+                  <span className="grid h-8 w-8 place-items-center rounded-xl bg-surface-sunken text-ink-soft">
                     <stat.icon className="h-4 w-4" />
                   </span>
-                  <div className="min-w-0">
-                    <p className="font-display text-[26px] font-extrabold leading-none tracking-tight text-ink sm:text-[30px]">
-                      {stat.value}
-                    </p>
-                    <p className="mt-1.5 text-[13px] font-medium text-ink-soft">{stat.label}</p>
-                    <p className="text-[12px] text-ink-faint">{stat.hint}</p>
-                  </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        </Reveal>
+                <p className="mt-3 font-display text-[32px] font-extrabold leading-none tracking-tight text-ink">
+                  {stat.value}
+                </p>
+                <p className="mt-2 text-[12.5px] text-ink-mute">{stat.hint}</p>
+              </div>
+            </RevealItem>
+          ))}
+        </RevealGroup>
 
         {/* ---------------- Pulse suggestion ---------------- */}
         <Reveal delay={0.08}>
           <div className="mt-4 flex flex-col gap-4 rounded-3xl border border-pulse/25 bg-pulse-soft/60 p-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-3.5">
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-surface text-pulse-dark shadow-soft">
-                <Activity className="h-5 w-5" />
+                <Sparkles className="h-5 w-5" />
               </span>
               <div>
                 <p className="font-display text-[15px] font-bold text-pulse-dark">
@@ -134,11 +131,9 @@ export default function DashboardPage() {
         </Reveal>
 
         {/* ---------------- Main grid ---------------- */}
-        <div className="mt-10 grid gap-10 lg:grid-cols-[1.6fr_1fr] lg:gap-8">
+        <div className="mt-6 grid gap-6 lg:grid-cols-[1.6fr_1fr]">
           {/* -------- Left -------- */}
-          <div className="space-y-10">
-            {/* Primary panel — the one thing you're most likely to act on, so it keeps
-                the boxed treatment for visual weight. */}
+          <div className="space-y-6">
             <Reveal>
               <section className="rounded-3xl border border-line bg-surface p-6 shadow-soft sm:p-7">
                 <div className="flex items-center justify-between">
@@ -181,11 +176,8 @@ export default function DashboardPage() {
               </section>
             </Reveal>
 
-            {/* Secondary content — de-boxed. It's glanceable history, not something you act
-                on, so it doesn't need its own white bordered/shadowed card. Same bare
-                "heading, rule, list" language as the landing page's steps/features. */}
             <Reveal delay={0.06}>
-              <section>
+              <section className="rounded-3xl border border-line bg-surface p-6 shadow-soft sm:p-7">
                 <div className="flex items-center justify-between">
                   <h2 className="font-display text-lg font-bold tracking-[-0.02em] text-ink">
                     Recent sessions
@@ -195,11 +187,10 @@ export default function DashboardPage() {
                     +18% this week
                   </span>
                 </div>
-                <div className="mt-3 h-px w-full bg-line-strong" />
 
-                <div className="mt-2 divide-y divide-line">
+                <div className="mt-5 divide-y divide-line">
                   {RECENT.map((session) => (
-                    <div key={session.id} className="flex items-center gap-4 py-3.5">
+                    <div key={session.id} className="flex items-center gap-4 py-3.5 first:pt-0 last:pb-0">
                       <Avatar name={session.partner} size="sm" />
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-[14.5px] font-semibold text-ink">
@@ -219,9 +210,7 @@ export default function DashboardPage() {
           </div>
 
           {/* -------- Right -------- */}
-          <div className="space-y-10">
-            {/* Second primary panel — a real navigation widget (status dots, links out to
-                /explore), earns the boxed treatment same as Upcoming sessions. */}
+          <div className="space-y-6">
             <Reveal delay={0.1}>
               <section className="rounded-3xl border border-line bg-surface p-6 shadow-soft">
                 <div className="flex items-center justify-between">
@@ -260,15 +249,12 @@ export default function DashboardPage() {
               </section>
             </Reveal>
 
-            {/* De-boxed, same reasoning as Recent sessions — a checklist doesn't need a
-                colored container to read clearly. */}
             <Reveal delay={0.14}>
-              <section>
+              <section className="rounded-3xl border border-line bg-surface-sunken p-6">
                 <h2 className="font-display text-lg font-bold tracking-[-0.02em] text-ink">
                   This week&apos;s goals
                 </h2>
-                <div className="mt-3 h-px w-full bg-line-strong" />
-                <ul className="mt-5 space-y-3">
+                <ul className="mt-4 space-y-3">
                   {[
                     { text: "Finish problem set 7", done: true },
                     { text: "Review integration by parts", done: true },

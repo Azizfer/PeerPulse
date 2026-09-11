@@ -9,6 +9,10 @@ import "./globals.css"
 // font CDN at build or run time.
 import "@fontsource-variable/inter"
 import "@fontsource-variable/plus-jakarta-sans"
+// Brand wordmark face (see app/globals.css -> --font-brand)
+import "@fontsource/poppins/600.css"
+import "@fontsource/poppins/700.css"
+import "@fontsource/poppins/800.css"
 import "@fontsource/instrument-serif/400.css"
 import "@fontsource/instrument-serif/400-italic.css"
 

@@ -1,6 +1,7 @@
 import Link from "next/link"
 import Logo from "./Logo"
 import { Button } from "./ui/button"
+
 const COLUMNS = [
   {
     title: "Platform",
@@ -41,6 +42,7 @@ const COLUMNS = [
     ],
   },
 ]
+
 export default function Footer() {
   return (
     <footer className="bg-ink text-white">
@@ -54,6 +56,7 @@ export default function Footer() {
               next to someone doing the same.
             </p>
           </div>
+
           <Button
             asChild
             size="default"
@@ -62,6 +65,7 @@ export default function Footer() {
             <Link href="/signup">Get started — it&apos;s free</Link>
           </Button>
         </div>
+
         {/* ---------------- Columns ---------------- */}
         <div className="mt-9 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {COLUMNS.map((col) => (
@@ -84,6 +88,7 @@ export default function Footer() {
             </div>
           ))}
         </div>
+
         {/* ---------------- Bottom ---------------- */}
         <div className="mt-9 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-5 sm:flex-row">
           <p className="text-[12.5px] text-white/55">Made in PeerPulse</p>
@@ -95,4 +100,3 @@ export default function Footer() {
     </footer>
   )
 }
-

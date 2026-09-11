@@ -1,16 +1,16 @@
-﻿"use client"
+"use client"
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { type ReactNode, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { ChevronDown, Menu, X } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { useAuth } from "./auth-provider"
 import Logo from "./Logo"
-import MessagesDropdown from "./messages-dropdown"
-import NotificationDropdown from "./notification-dropdown"
-import UserDropdown from "./UserDropdown"
 import { Button } from "./ui/button"
+import { useAuth } from "./auth-provider"
+import NotificationDropdown from "./notification-dropdown"
+import MessagesDropdown from "./messages-dropdown"
+import UserDropdown from "./UserDropdown"
 
 const LOGGED_OUT_LINKS = [
   { href: "/#features", label: "Features" },
@@ -63,10 +63,10 @@ export default function Header() {
           : "border-transparent bg-paper",
       )}
     >
-       {/* Bumped from 72px to 80px to comfortably fit the larger logo + buttons below */}
-       <div className="flex h-20 w-full items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
-        <Logo size="lg" />
+      <div className="flex h-[72px] w-full items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
+        <Logo />
 
+        {/* ---------- Desktop nav ---------- */}
         <nav className="hidden items-center gap-1 lg:flex">
           {isLoggedIn ? (
             <>
@@ -113,6 +113,7 @@ export default function Header() {
           )}
         </nav>
 
+        {/* ---------- Right side ---------- */}
         <div className="flex items-center gap-2">
           {isLoggedIn ? (
             <div className="flex items-center gap-1.5">
@@ -121,11 +122,11 @@ export default function Header() {
               <UserDropdown />
             </div>
           ) : (
-            <div className="hidden items-center gap-2.5 sm:flex">
-              <Button asChild variant="ghost" size="default">
+            <div className="hidden items-center gap-2 sm:flex">
+              <Button asChild variant="ghost" size="sm">
                 <Link href="/login">Log in</Link>
               </Button>
-              <Button asChild size="default">
+              <Button asChild size="sm">
                 <Link href="/signup">Start free</Link>
               </Button>
             </div>
@@ -142,6 +143,7 @@ export default function Header() {
         </div>
       </div>
 
+      {/* ---------- Mobile panel ---------- */}
       {mobileOpen && (
         <div className="border-t border-line bg-paper lg:hidden">
           <div className="flex flex-col gap-1 px-4 py-4 sm:px-6 lg:px-8">
@@ -183,7 +185,7 @@ function NavLink({
 }: {
   href: string
   active?: boolean
-  children: ReactNode
+  children: React.ReactNode
 }) {
   return (
     <Link
@@ -209,10 +211,14 @@ function Dropdown({
   open: boolean
   onOpen: () => void
   onClose: () => void
-  children: ReactNode
+  children: React.ReactNode
 }) {
   return (
-    <div className="relative" onMouseEnter={onOpen} onMouseLeave={onClose}>
+    <div
+      className="relative"
+      onMouseEnter={onOpen}
+      onMouseLeave={onClose}
+    >
       <button
         type="button"
         onClick={() => (open ? onClose() : onOpen())}
@@ -242,7 +248,7 @@ function DropdownItem({
 }: {
   href: string
   hint?: string
-  children: ReactNode
+  children: React.ReactNode
 }) {
   return (
     <Link
