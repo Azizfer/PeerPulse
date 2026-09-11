@@ -63,8 +63,9 @@ export default function Header() {
           : "border-transparent bg-paper",
       )}
     >
-      <div className="flex h-[72px] w-full items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
-        <Logo />
+      {/* 80px bar so the larger wordmark and the buttons below it both breathe */}
+      <div className="flex h-20 w-full items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
+        <Logo size="lg" />
 
         {/* ---------- Desktop nav ---------- */}
         <nav className="hidden items-center gap-1 lg:flex">
@@ -122,11 +123,11 @@ export default function Header() {
               <UserDropdown />
             </div>
           ) : (
-            <div className="hidden items-center gap-2 sm:flex">
-              <Button asChild variant="ghost" size="sm">
+            <div className="hidden items-center gap-2.5 sm:flex">
+              <Button asChild variant="ghost" size="default">
                 <Link href="/login">Log in</Link>
               </Button>
-              <Button asChild size="sm">
+              <Button asChild size="default">
                 <Link href="/signup">Start free</Link>
               </Button>
             </div>
