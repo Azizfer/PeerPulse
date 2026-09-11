@@ -1,64 +1,89 @@
 import Link from "next/link"
 import Logo from "./Logo"
+import { Button } from "./ui/button"
 
 const COLUMNS = [
   {
-    title: "Study",
+    title: "Platform",
     links: [
       { href: "/study", label: "Focus sessions" },
       { href: "/schedule", label: "Scheduling" },
+      { href: "/community", label: "Community feed" },
       { href: "/explore", label: "Find peers" },
-      { href: "/features", label: "All features" },
+      { href: "/messages", label: "Messages" },
     ],
   },
   {
     title: "Community",
     links: [
-      { href: "/community", label: "Feed" },
-      { href: "/messages", label: "Messages" },
-      { href: "/how-it-works", label: "How it works" },
+      { href: "/explore", label: "Browse communities" },
+      { href: "/how-it-works", label: "How sessions run" },
+      { href: "/features", label: "All features" },
       { href: "/pricing", label: "Pricing" },
+      { href: "/contact", label: "Contact us" },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { href: "/how-it-works", label: "Getting started" },
+      { href: "/features", label: "Study methods" },
+      { href: "/pricing", label: "Student discount" },
+      { href: "/contact", label: "Help centre" },
     ],
   },
   {
     title: "Company",
     links: [
+      { href: "mailto:hello@peerpulse.app", label: "hello@peerpulse.app" },
       { href: "/contact", label: "Contact" },
-      { href: "/privacy", label: "Privacy" },
-      { href: "/terms", label: "Terms" },
+      { href: "/privacy", label: "Privacy Policy" },
+      { href: "/terms", label: "Terms and Conditions" },
     ],
   },
 ]
 
 export default function Footer() {
   return (
-    <footer className="border-t border-line bg-paper-warm">
-      <div className="container-page py-14 sm:py-16">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
-          <div className="max-w-xs">
-            <Logo />
-            <p className="mt-4 text-sm leading-relaxed text-ink-mute">
-              A calm place to study with people who are working through the same material —
-              plus the community and resources that keep you going.
+    <footer className="relative overflow-hidden bg-ink text-white">
+      <div className="pointer-events-none absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-pulse/20 blur-3xl" />
+      <div className="pointer-events-none absolute -right-16 -top-24 h-72 w-72 rounded-full bg-lilac-deep/20 blur-3xl" />
+
+      <div className="container-page relative py-16 sm:py-20">
+        {/* ---------------- Top ---------------- */}
+        <div className="flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <Logo size="xl" tone="light" />
+            <p className="mt-5 max-w-sm text-[15px] leading-relaxed text-white/55">
+              Focus rooms matched by subject. Show up, say what you&apos;ll do, then do it
+              next to someone doing the same.
             </p>
-            <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-surface px-3 py-1.5 text-xs font-semibold text-ink-soft shadow-soft">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-pulse-ring rounded-full bg-pulse" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-pulse" />
-              </span>
-              Built for students, by students
-            </div>
           </div>
 
+          <Button
+            asChild
+            size="lg"
+            className="shrink-0 bg-white text-ink hover:bg-white/90"
+          >
+            <Link href="/signup">Get started — it&apos;s free</Link>
+          </Button>
+        </div>
+
+        <div className="mt-14 h-px w-full bg-white/10" />
+
+        {/* ---------------- Columns ---------------- */}
+        <div className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {COLUMNS.map((col) => (
             <div key={col.title}>
-              <h3 className="eyebrow mb-4">{col.title}</h3>
-              <ul className="space-y-2.5">
+              <h3 className="text-[11.5px] font-bold uppercase tracking-[0.16em] text-white/40">
+                {col.title}
+              </h3>
+              <ul className="mt-5 space-y-3">
                 {col.links.map((link) => (
                   <li key={link.href + link.label}>
                     <Link
                       href={link.href}
-                      className="text-[15px] text-ink-soft transition-colors hover:text-ink"
+                      className="text-[14.5px] text-white/70 transition-colors hover:text-white"
                     >
                       {link.label}
                     </Link>
@@ -69,12 +94,11 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-line pt-6 sm:flex-row">
-          <p className="text-sm text-ink-mute">
+        {/* ---------------- Bottom ---------------- */}
+        <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 sm:flex-row">
+          <p className="text-[13.5px] text-white/45">Made in PeerPulse</p>
+          <p className="text-[13.5px] text-white/45">
             © {new Date().getFullYear()} PeerPulse. All rights reserved.
-          </p>
-          <p className="text-sm text-ink-mute">
-            Made for late nights, group projects and exam week.
           </p>
         </div>
       </div>
