@@ -1,273 +1,305 @@
 "use client"
 
-import Header from "@/components/Header"
 import Link from "next/link"
-import { PageTransition } from "@/components/page-transition"
-import { ArrowRight, TrendingUp } from "lucide-react"
-import { SparklesIcon, BookOpenIcon, UsersIcon, CalendarIcon, ClockIcon } from "@/components/custom-icons"
-import { motion } from "framer-motion"
+import { ArrowRight, CalendarPlus, Clock, Flame, Sparkles, TrendingUp, Video } from "lucide-react"
+import Header from "@/components/Header"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Avatar } from "@/components/avatar"
+import { Reveal, RevealGroup, RevealItem } from "@/components/reveal"
+
+const UPCOMING = [
+  {
+    id: 1,
+    partner: "Alex Chen",
+    subject: "Calculus II",
+    topic: "Integration by parts",
+    time: "Today · 3:00 PM",
+    duration: "50 min",
+  },
+  {
+    id: 2,
+    partner: "Emma Wilson",
+    subject: "Biology",
+    topic: "Cell respiration",
+    time: "Tomorrow · 10:00 AM",
+    duration: "25 min",
+  },
+]
+
+const RECENT = [
+  { id: 1, partner: "Noah Brown", subject: "Physics problems", duration: "1h 15m", when: "2 hours ago" },
+  { id: 2, partner: "Sophie Taylor", subject: "Chemistry review", duration: "45m", when: "Yesterday" },
+  { id: 3, partner: "Liam Davis", subject: "Math practice", duration: "1h", when: "2 days ago" },
+]
+
+const PARTNERS = [
+  { name: "Alex Chen", sessions: 12, status: "online" as const },
+  { name: "Emma Wilson", sessions: 8, status: "online" as const },
+  { name: "Noah Brown", sessions: 6, status: "offline" as const },
+  { name: "Sana Benali", sessions: 4, status: "online" as const },
+]
+
+const STATS = [
+  { label: "Study time", value: "8.5h", hint: "+2h vs last week", icon: Clock },
+  { label: "Sessions", value: "6", hint: "4 focus · 2 group", icon: Video },
+  { label: "Day streak", value: "4", hint: "Best: 12 days", icon: Flame },
+]
 
 export default function DashboardPage() {
-  const upcomingSessions = [
-    { id: 1, partner: "Alex Chen", subject: "Calculus II", time: "Today, 3:00 PM", avatar: "AC" },
-    { id: 2, partner: "Emma Wilson", subject: "Biology", time: "Tomorrow, 10:00 AM", avatar: "EW" },
-  ]
-
-  const recentSessions = [
-    { id: 1, partner: "Noah Brown", subject: "Physics Problems", duration: "1h 15m", date: "2 hours ago", avatar: "NB" },
-    { id: 2, partner: "Sophie Taylor", subject: "Chemistry Review", duration: "45m", date: "Yesterday", avatar: "ST" },
-    { id: 3, partner: "Liam Davis", subject: "Math Practice", duration: "1h", date: "2 days ago", avatar: "LD" },
-  ]
-
-  const studyPartners = [
-    { name: "Alex Chen", sessions: 12, avatar: "AC", status: "online" },
-    { name: "Emma Wilson", sessions: 8, avatar: "EW", status: "online" },
-    { name: "Noah Brown", sessions: 6, avatar: "NB", status: "offline" },
-  ]
-
-  const weeklyStats = {
-    totalHours: 8.5,
-    sessionsCompleted: 6,
-    streak: 4,
-  }
-
   return (
-    <PageTransition>
-      <div className="min-h-screen bg-white">
-        <Header />
+    <div className="min-h-screen bg-paper">
+      <Header />
 
-        <main className="max-w-[1400px] mx-auto px-6 py-12">
-          {/* Header */}
-          <div className="mb-12">
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-4xl md:text-5xl font-bold text-[#0A0A0A] mb-2" 
-              style={{ fontWeight: 700, letterSpacing: '-0.01em' }}
-            >
-              Welcome back, Sarah
-            </motion.h1>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-lg text-gray-700" 
-              style={{ fontWeight: 400 }}
-            >
-              Ready to make today productive?
-            </motion.p>
+      <main className="container-page py-10 sm:py-14">
+        {/* ---------------- Greeting ---------------- */}
+        <Reveal>
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="eyebrow">Thursday, 11 September</p>
+              <h1 className="mt-2 font-display text-[34px] font-extrabold leading-tight tracking-[-0.03em] text-ink sm:text-[40px]">
+                Welcome back, Sarah
+              </h1>
+              <p className="mt-2 text-[15px] text-ink-soft">
+                Three people in your subjects are in a focus room right now.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <Button asChild size="lg">
+                <Link href="/study">
+                  <Video className="h-4 w-4" />
+                  Start a focus session
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="secondary">
+                <Link href="/schedule">
+                  <CalendarPlus className="h-4 w-4" />
+                  Schedule
+                </Link>
+              </Button>
+            </div>
           </div>
+        </Reveal>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column - Main Content */}
-            <div className="lg:col-span-2 space-y-8">
-              {/* Quick Actions */}
-              <motion.div 
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="grid grid-cols-2 gap-6"
-              >
-                <Link href="/study" className="group">
-                  <div className="relative h-48 bg-gradient-to-br from-blue-500 to-purple-600 rounded-[32px] p-8 overflow-hidden flex flex-col justify-between hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
-                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-10 rounded-full -ml-12 -mb-12"></div>
-                    <div className="relative">
-                      <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
-                        <BookOpenIcon className="w-6 h-6 text-white" />
-                      </div>
-                      <h2 className="text-2xl font-bold text-white" style={{ fontWeight: 700 }}>Start Studying</h2>
-                      <p className="text-white/80 text-sm mt-2">Find a study partner now</p>
-                    </div>
-                    <ArrowRight className="w-6 h-6 text-white opacity-70 group-hover:opacity-100 group-hover:translate-x-2 transition-all self-end" />
-                  </div>
-                </Link>
-
-                <Link href="/schedule" className="group">
-                  <div className="relative h-48 bg-gradient-to-br from-orange-400 to-pink-500 rounded-[32px] p-8 overflow-hidden flex flex-col justify-between hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
-                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-10 rounded-full -ml-12 -mb-12"></div>
-                    <div className="relative">
-                      <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
-                        <CalendarIcon className="w-6 h-6 text-white" />
-                      </div>
-                      <h2 className="text-2xl font-bold text-white" style={{ fontWeight: 700 }}>Schedule</h2>
-                      <p className="text-white/80 text-sm mt-2">View your upcoming sessions</p>
-                    </div>
-                    <ArrowRight className="w-6 h-6 text-white opacity-70 group-hover:opacity-100 group-hover:translate-x-2 transition-all self-end" />
-                  </div>
-                </Link>
-              </motion.div>
-
-              {/* Weekly Stats */}
-              <motion.div 
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-[32px] p-8 border border-gray-200 hover:shadow-xl transition-all duration-300"
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-2xl font-bold text-[#0A0A0A]" style={{ fontWeight: 700 }}>This Week</h3>
-                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                    <TrendingUp className="w-5 h-5 text-green-600" />
-                  </div>
+        {/* ---------------- Stats ---------------- */}
+        <RevealGroup className="mt-10 grid gap-4 sm:grid-cols-3">
+          {STATS.map((stat) => (
+            <RevealItem key={stat.label}>
+              <div className="rounded-3xl border border-line bg-surface p-6 shadow-soft">
+                <div className="flex items-start justify-between">
+                  <p className="text-[13.5px] font-medium text-ink-mute">{stat.label}</p>
+                  <span className="grid h-8 w-8 place-items-center rounded-xl bg-surface-sunken text-ink-soft">
+                    <stat.icon className="h-4 w-4" />
+                  </span>
                 </div>
-                <div className="grid grid-cols-3 gap-6">
-                  <div>
-                    <div className="text-4xl font-bold text-[#0A0A0A] mb-2" style={{ fontWeight: 700 }}>{weeklyStats.totalHours}h</div>
-                    <div className="text-sm text-gray-600" style={{ fontWeight: 500 }}>Study time</div>
-                  </div>
-                  <div>
-                    <div className="text-4xl font-bold text-[#0A0A0A] mb-2" style={{ fontWeight: 700 }}>{weeklyStats.sessionsCompleted}</div>
-                    <div className="text-sm text-gray-600" style={{ fontWeight: 500 }}>Sessions</div>
-                  </div>
-                  <div>
-                    <div className="text-4xl font-bold text-[#0A0A0A] mb-2" style={{ fontWeight: 700 }}>{weeklyStats.streak}</div>
-                    <div className="text-sm text-gray-600" style={{ fontWeight: 500 }}>Day streak 🔥</div>
-                  </div>
-                </div>
-              </motion.div>
+                <p className="mt-3 font-display text-[32px] font-extrabold leading-none tracking-tight text-ink">
+                  {stat.value}
+                </p>
+                <p className="mt-2 text-[12.5px] text-ink-mute">{stat.hint}</p>
+              </div>
+            </RevealItem>
+          ))}
+        </RevealGroup>
 
-              {/* Upcoming Sessions */}
-              <motion.div 
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                className="bg-white rounded-[32px] p-8 border border-gray-200 hover:shadow-xl transition-all duration-300"
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-2xl font-bold text-[#0A0A0A]" style={{ fontWeight: 700 }}>Upcoming Sessions</h3>
-                  <Link href="/schedule" className="text-sm text-[#0A0A0A] hover:text-gray-600 font-medium transition-colors" style={{ fontWeight: 500 }}>
-                    View all &gt;
+        {/* ---------------- Pulse suggestion ---------------- */}
+        <Reveal delay={0.08}>
+          <div className="mt-4 flex flex-col gap-4 rounded-3xl border border-pulse/25 bg-pulse-soft/60 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3.5">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-surface text-pulse-dark shadow-soft">
+                <Sparkles className="h-5 w-5" />
+              </span>
+              <div>
+                <p className="font-display text-[15px] font-bold text-pulse-dark">
+                  You struggle most with series convergence
+                </p>
+                <p className="mt-1 text-[14px] leading-relaxed text-pulse-dark/80">
+                  Pulse built a 30-minute plan and found two peers working on the same topic
+                  today. Want the room booked for 3 PM?
+                </p>
+              </div>
+            </div>
+            <div className="flex shrink-0 gap-2">
+              <Button size="sm" variant="accent">
+                Book it
+              </Button>
+              <Button asChild size="sm" variant="ghost" className="text-pulse-dark hover:bg-pulse/10">
+                <Link href="/study">Not now</Link>
+              </Button>
+            </div>
+          </div>
+        </Reveal>
+
+        {/* ---------------- Main grid ---------------- */}
+        <div className="mt-6 grid gap-6 lg:grid-cols-[1.6fr_1fr]">
+          {/* -------- Left -------- */}
+          <div className="space-y-6">
+            <Reveal>
+              <section className="rounded-3xl border border-line bg-surface p-6 shadow-soft sm:p-7">
+                <div className="flex items-center justify-between">
+                  <h2 className="font-display text-lg font-bold tracking-[-0.02em] text-ink">
+                    Upcoming sessions
+                  </h2>
+                  <Link
+                    href="/schedule"
+                    className="text-[13.5px] font-semibold text-ink-mute transition-colors hover:text-ink"
+                  >
+                    View all
                   </Link>
                 </div>
-                {upcomingSessions.length > 0 ? (
-                  <div className="space-y-4">
-                    {upcomingSessions.map(session => (
-                      <div key={session.id} className="flex items-center gap-4 p-5 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 cursor-pointer">
-                        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-bold flex-shrink-0 text-lg" style={{ fontWeight: 700 }}>
-                          {session.avatar}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-bold text-[#0A0A0A] text-lg" style={{ fontWeight: 700 }}>{session.partner}</div>
-                          <div className="text-sm text-gray-700 mt-0.5" style={{ fontWeight: 500 }}>{session.subject}</div>
-                        </div>
-                        <div className="text-sm text-gray-700 flex items-center gap-2 font-medium" style={{ fontWeight: 500 }}>
-                          <ClockIcon className="w-4 h-4" />
-                          {session.time}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <CalendarIcon className="w-8 h-8 text-gray-400" />
-                    </div>
-                    <p className="text-gray-600 mb-6" style={{ fontSize: '16px' }}>No upcoming sessions</p>
-                    <Button asChild className="relative bg-[#0A0A0A] text-white rounded-xl px-6 py-3 font-semibold overflow-hidden group" style={{ fontWeight: 600 }}>
-                      <Link href="/schedule" className="inline-flex items-center justify-center">
-                        <span className="absolute inset-0 bg-white rounded-xl transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
-                        <span className="relative z-10 group-hover:text-[#0A0A0A] transition-colors duration-300">Schedule a Session</span>
-                      </Link>
-                    </Button>
-                  </div>
-                )}
-              </motion.div>
 
-              {/* Recent Activity */}
-              <motion.div 
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.5 }}
-                className="bg-white rounded-[32px] p-8 border border-gray-200 hover:shadow-xl transition-all duration-300"
-              >
-                <h3 className="text-2xl font-bold text-[#0A0A0A] mb-6" style={{ fontWeight: 700 }}>Recent Sessions</h3>
-                <div className="space-y-3">
-                  {recentSessions.map(session => (
-                    <div key={session.id} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-blue-500 text-white flex items-center justify-center font-bold text-sm flex-shrink-0" style={{ fontWeight: 700 }}>
-                        {session.avatar}
+                <div className="mt-5 space-y-3">
+                  {UPCOMING.map((session) => (
+                    <div
+                      key={session.id}
+                      className="group flex items-center gap-4 rounded-2xl border border-line bg-surface p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-line-strong hover:shadow-soft"
+                    >
+                      <Avatar name={session.partner} size="md" />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-display text-[15px] font-bold text-ink">
+                          {session.partner}
+                        </p>
+                        <p className="truncate text-[13.5px] text-ink-mute">
+                          {session.subject} · {session.topic}
+                        </p>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-bold text-[#0A0A0A]" style={{ fontWeight: 600 }}>{session.partner}</div>
-                        <div className="text-sm text-gray-600" style={{ fontWeight: 400 }}>{session.subject}</div>
+                      <div className="hidden text-right sm:block">
+                        <p className="text-[13.5px] font-semibold text-ink">{session.time}</p>
+                        <p className="text-[12.5px] text-ink-mute">{session.duration}</p>
+                      </div>
+                      <Button asChild size="sm" variant="secondary">
+                        <Link href="/study">Join</Link>
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </Reveal>
+
+            <Reveal delay={0.06}>
+              <section className="rounded-3xl border border-line bg-surface p-6 shadow-soft sm:p-7">
+                <div className="flex items-center justify-between">
+                  <h2 className="font-display text-lg font-bold tracking-[-0.02em] text-ink">
+                    Recent sessions
+                  </h2>
+                  <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-pulse-dark">
+                    <TrendingUp className="h-3.5 w-3.5" />
+                    +18% this week
+                  </span>
+                </div>
+
+                <div className="mt-5 divide-y divide-line">
+                  {RECENT.map((session) => (
+                    <div key={session.id} className="flex items-center gap-4 py-3.5 first:pt-0 last:pb-0">
+                      <Avatar name={session.partner} size="sm" />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[14.5px] font-semibold text-ink">
+                          {session.partner}
+                        </p>
+                        <p className="truncate text-[13px] text-ink-mute">{session.subject}</p>
                       </div>
                       <div className="text-right">
-                        <div className="text-sm font-semibold text-[#0A0A0A]" style={{ fontWeight: 600 }}>{session.duration}</div>
-                        <div className="text-xs text-gray-500">{session.date}</div>
+                        <p className="text-[13.5px] font-semibold text-ink">{session.duration}</p>
+                        <p className="text-[12.5px] text-ink-mute">{session.when}</p>
                       </div>
                     </div>
                   ))}
                 </div>
-              </motion.div>
-            </div>
-
-            {/* Right Column - Sidebar */}
-            <div className="space-y-8">
-              {/* Study Partners */}
-              <motion.div 
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.6 }}
-                className="bg-white rounded-[32px] p-6 border border-gray-200 hover:shadow-xl transition-all duration-300"
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold text-[#0A0A0A]" style={{ fontWeight: 700 }}>Study Partners</h3>
-                  <Link href="/community" className="text-sm text-[#0A0A0A] hover:text-gray-600 font-medium transition-colors" style={{ fontWeight: 500 }}>
-                    See all &gt;
-                  </Link>
-                </div>
-                <div className="space-y-4">
-                  {studyPartners.map((partner, index) => (
-                    <div key={index} className="flex items-center gap-3 p-3 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer">
-                      <div className="relative">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white flex items-center justify-center font-bold" style={{ fontWeight: 700 }}>
-                          {partner.avatar}
-                        </div>
-                        <div className={`absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white ${partner.status === "online" ? "bg-green-500" : "bg-gray-400"}`} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-bold text-[#0A0A0A]" style={{ fontWeight: 600 }}>{partner.name}</div>
-                        <div className="text-sm text-gray-600" style={{ fontWeight: 400 }}>{partner.sessions} sessions</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-
-              {/* Quick Links */}
-              <motion.div 
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.7 }}
-                className="bg-gradient-to-br from-orange-50 to-pink-50 rounded-[32px] p-6 border border-gray-200 hover:shadow-xl transition-all duration-300"
-              >
-                <h3 className="text-xl font-bold text-[#0A0A0A] mb-4" style={{ fontWeight: 700 }}>Quick Links</h3>
-                <div className="space-y-2">
-                  <Link href="/explore" className="flex items-center gap-3 p-4 rounded-2xl hover:bg-white/50 transition-all duration-300 group">
-                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
-                      <SparklesIcon className="w-5 h-5 text-orange-500" />
-                    </div>
-                    <span className="text-[#0A0A0A] font-semibold flex-1" style={{ fontWeight: 600 }}>Explore Groups</span>
-                    <ArrowRight className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-                  </Link>
-                  <Link href="/community" className="flex items-center gap-3 p-4 rounded-2xl hover:bg-white/50 transition-all duration-300 group">
-                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
-                      <UsersIcon className="w-5 h-5 text-pink-500" />
-                    </div>
-                    <span className="text-[#0A0A0A] font-semibold flex-1" style={{ fontWeight: 600 }}>My Community</span>
-                    <ArrowRight className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-                  </Link>
-                </div>
-              </motion.div>
-            </div>
+              </section>
+            </Reveal>
           </div>
-        </main>
-      </div>
-    </PageTransition>
+
+          {/* -------- Right -------- */}
+          <div className="space-y-6">
+            <Reveal delay={0.1}>
+              <section className="rounded-3xl border border-line bg-surface p-6 shadow-soft">
+                <div className="flex items-center justify-between">
+                  <h2 className="font-display text-lg font-bold tracking-[-0.02em] text-ink">
+                    Study partners
+                  </h2>
+                  <Link
+                    href="/explore"
+                    className="text-[13.5px] font-semibold text-ink-mute transition-colors hover:text-ink"
+                  >
+                    Find more
+                  </Link>
+                </div>
+
+                <div className="mt-5 space-y-1">
+                  {PARTNERS.map((partner) => (
+                    <div
+                      key={partner.name}
+                      className="flex items-center gap-3 rounded-2xl px-2 py-2.5 transition-colors hover:bg-surface-sunken"
+                    >
+                      <Avatar name={partner.name} size="sm" status={partner.status} />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[14.5px] font-semibold text-ink">
+                          {partner.name}
+                        </p>
+                        <p className="text-[12.5px] text-ink-mute">{partner.sessions} sessions</p>
+                      </div>
+                      {partner.status === "online" && (
+                        <Badge variant="accent" className="hidden sm:inline-flex">
+                          Available
+                        </Badge>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </Reveal>
+
+            <Reveal delay={0.14}>
+              <section className="rounded-3xl border border-line bg-surface-sunken p-6">
+                <h2 className="font-display text-lg font-bold tracking-[-0.02em] text-ink">
+                  This week&apos;s goals
+                </h2>
+                <ul className="mt-4 space-y-3">
+                  {[
+                    { text: "Finish problem set 7", done: true },
+                    { text: "Review integration by parts", done: true },
+                    { text: "Two past-paper sections", done: false },
+                    { text: "Book a room with Alex", done: false },
+                  ].map((goal) => (
+                    <li key={goal.text} className="flex items-center gap-3">
+                      <span
+                        className={
+                          goal.done
+                            ? "grid h-5 w-5 shrink-0 place-items-center rounded-[7px] bg-ink text-white"
+                            : "h-5 w-5 shrink-0 rounded-[7px] border border-line-strong bg-surface"
+                        }
+                      >
+                        {goal.done && (
+                          <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M20 6 9 17l-5-5" />
+                          </svg>
+                        )}
+                      </span>
+                      <span
+                        className={
+                          goal.done
+                            ? "text-[14px] text-ink-mute line-through"
+                            : "text-[14px] font-medium text-ink"
+                        }
+                      >
+                        {goal.text}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+
+                <Link
+                  href="/community"
+                  className="mt-6 inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-ink transition-colors hover:text-ink-soft"
+                >
+                  Open community feed
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </section>
+            </Reveal>
+          </div>
+        </div>
+      </main>
+    </div>
   )
 }
-

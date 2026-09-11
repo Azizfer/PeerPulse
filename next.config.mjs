@@ -6,6 +6,8 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // Allow the Arena sandbox preview host to talk to the dev server
+  allowedDevOrigins: ["*.e2b.app", "*.arena.ai", "*.arena.ai:443"],
   images: {
     domains: ['blob.v0.dev'],
     remotePatterns: [

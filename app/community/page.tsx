@@ -1,127 +1,37 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import Header from "@/components/Header"
-import { PageTransition } from "@/components/page-transition"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Users, Search, TrendingUp, BookOpen, MessageSquare, ThumbsUp, MessageCircle, Send, Plus, Filter, Settings, Lock, Clock, Heart, Lightbulb, Award, ImageIcon, FileText, X, Smile, Globe, ZoomIn, ZoomOut, Download } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
-import { CustomSelect } from "@/components/ui/custom-select"
+import { useState } from "react"
 import Link from "next/link"
+import {
+  Award,
+  FileText,
+  Heart,
+  ImageIcon,
+  Lightbulb,
+  MessageCircle,
+  Plus,
+  Send,
+  ThumbsUp,
+  TrendingUp,
+  Users,
+  X,
+} from "lucide-react"
 import { AnimatePresence, motion } from "framer-motion"
-import { Document, Page, pdfjs } from 'react-pdf'
+import Header from "@/components/Header"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Avatar } from "@/components/avatar"
+import { Reveal } from "@/components/reveal"
+import { CustomSelect } from "@/components/ui/custom-select"
+import { useToast } from "@/hooks/use-toast"
 import { ImageCarousel } from "@/components/community/ImageCarousel"
-import { PDFPreview } from "@/components/community/PDFPreview"
-import { PDFViewerModal } from "@/components/community/PDFViewerModal"
+import { PDFPreview, PDFViewerModal } from "@/components/community/pdf-lazy"
 
-// Set up PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`
-
-const communities = [
-  {
-    id: 1,
-    name: "Advanced Calculus Study Group",
-    description:
-      "Deep dive into calculus concepts with fellow math enthusiasts. We cover derivatives, integrals, and real-world applications.",
-    members: 24,
-    subject: "Mathematics",
-    level: "Advanced",
-    meetingTime: "Tuesdays 7 PM",
-    creator: "Dr. Sarah Chen",
-    isPremium: true,
-    isPublic: true,
-    membershipStatus: null as 'member' | 'pending' | null,
-  },
-  {
-    id: 2,
-    name: "Biology Pre-Med Students",
-    description: "Study group for pre-med students focusing on biology fundamentals, anatomy, and MCAT preparation.",
-    members: 18,
-    subject: "Biology",
-    level: "Intermediate",
-    meetingTime: "Thursdays 6 PM",
-    creator: "Alex Rodriguez",
-    isPremium: true,
-    isPublic: false,
-    membershipStatus: null,
-  },
-  {
-    id: 3,
-    name: "Computer Science Algorithms",
-    description:
-      "Master data structures and algorithms together. Perfect for coding interviews and competitive programming.",
-    members: 31,
-    subject: "Computer Science",
-    level: "Intermediate",
-    meetingTime: "Saturdays 3 PM",
-    creator: "Mike Johnson",
-    isPremium: true,
-    isPublic: true,
-    membershipStatus: null,
-  },
-  {
-    id: 4,
-    name: "Spanish Conversation Circle",
-    description: "Practice Spanish conversation skills in a supportive environment. All levels welcome!",
-    members: 15,
-    subject: "Languages",
-    level: "All Levels",
-    meetingTime: "Wednesdays 5 PM",
-    creator: "Maria Garcia",
-    isPremium: true,
-    isPublic: true,
-    membershipStatus: null,
-  },
-  {
-    id: 5,
-    name: "Physics Problem Solving",
-    description:
-      "Tackle challenging physics problems together. Focus on mechanics, thermodynamics, and electromagnetism.",
-    members: 22,
-    subject: "Physics",
-    level: "Advanced",
-    meetingTime: "Mondays 8 PM",
-    creator: "Prof. David Kim",
-    isPremium: true,
-    isPublic: false,
-    membershipStatus: null,
-  },
-  {
-    id: 6,
-    name: "Creative Writing Workshop",
-    description: "Share your writing, get feedback, and improve your craft with fellow writers and literature lovers.",
-    members: 12,
-    subject: "Literature",
-    level: "All Levels",
-    meetingTime: "Fridays 4 PM",
-    creator: "Emma Thompson",
-    isPremium: true,
-    isPublic: true,
-    membershipStatus: null,
-  },
-]
-
-// Mock data for premium users' communities
 const myCommunitiesData = [
-  {
-    id: 1,
-    name: "Advanced Calculus Study Group",
-    subject: "Mathematics",
-    members: 24,
-    unreadPosts: 5,
-  },
-  {
-    id: 2,
-    name: "Computer Science Algorithms",
-    subject: "Computer Science",
-    members: 31,
-    unreadPosts: 12,
-  },
+  { id: 1, name: "Advanced Calculus Study Group", subject: "Mathematics", members: 24, unreadPosts: 5 },
+  { id: 2, name: "Computer Science Algorithms", subject: "Computer Science", members: 31, unreadPosts: 12 },
 ]
 
-// Mock posts for premium users
 const communityPostsData = [
   {
     id: 1,
@@ -129,7 +39,8 @@ const communityPostsData = [
     communityName: "Advanced Calculus Study Group",
     author: "Sarah Chen",
     authorAvatar: "SC",
-    content: "Hey everyone! I found this great resource for understanding derivatives. Who wants to do a group study session this weekend?",
+    content:
+      "Hey everyone! I found this great resource for understanding derivatives. Who wants to do a group study session this weekend? #MidtermPrep",
     timestamp: "2 hours ago",
     likes: 12,
     comments: [
@@ -145,7 +56,8 @@ const communityPostsData = [
     communityName: "Computer Science Algorithms",
     author: "Mike Johnson",
     authorAvatar: "MJ",
-    content: "Just finished implementing a binary search tree! Happy to help anyone struggling with tree structures.",
+    content:
+      "Just finished implementing a binary search tree! Happy to help anyone struggling with tree structures. #StudyTips",
     timestamp: "5 hours ago",
     likes: 18,
     comments: [
@@ -158,31 +70,37 @@ const communityPostsData = [
 
 export default function CommunityPage() {
   const { toast } = useToast()
-  
+
   const [posts, setPosts] = useState(communityPostsData)
   const [newPost, setNewPost] = useState("")
   const [selectedCommunity, setSelectedCommunity] = useState<number | null>(null)
-  const [selectedTab, setSelectedTab] = useState<"feed" | "all">("feed")
   const [feedFilter, setFeedFilter] = useState<number | "all">("all")
   const [commentInputs, setCommentInputs] = useState<{ [key: number]: string }>({})
   const [showComments, setShowComments] = useState<{ [key: number]: boolean }>({})
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
   const [showReactionPicker, setShowReactionPicker] = useState<number | null>(null)
   const [postReactions, setPostReactions] = useState<{ [key: number]: string }>({})
-  const [pdfModal, setPdfModal] = useState<{ isOpen: boolean; pdfUrl: string; pdfName: string; page: number; numPages: number } | null>(null)
-  
-  // Suggested communities state
+  const [pdfModal, setPdfModal] = useState<{
+    isOpen: boolean
+    pdfUrl: string
+    pdfName: string
+    page: number
+    numPages: number
+  } | null>(null)
+
   const [suggestedCommunities, setSuggestedCommunities] = useState([
-    { id: 1, name: "Physics Study Hub", members: 156, subject: "Physics", icon: "⚛️", isPublic: false, membershipStatus: null as 'member' | 'pending' | null },
-    { id: 2, name: "Spanish Learners", members: 89, subject: "Languages", icon: "🗣️", isPublic: true, membershipStatus: null as 'member' | 'pending' | null },
-    { id: 3, name: "Data Science 101", members: 234, subject: "Computer Science", icon: "📊", isPublic: true, membershipStatus: null as 'member' | 'pending' | null },
+    { id: 1, name: "Physics Study Hub", members: 156, subject: "Physics", icon: "⚛️", isPublic: false, membershipStatus: null as "member" | "pending" | null },
+    { id: 2, name: "Spanish Learners", members: 89, subject: "Languages", icon: "🗣️", isPublic: true, membershipStatus: null as "member" | "pending" | null },
+    { id: 3, name: "Data Science 101", members: 234, subject: "Computer Science", icon: "📊", isPublic: true, membershipStatus: null as "member" | "pending" | null },
   ])
-  
-  // Confirmation dialog state
+
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
-  const [confirmAction, setConfirmAction] = useState<{ communityId: number; action: 'cancel' | 'leave'; name: string } | null>(null)
-  
-  // Create community state
+  const [confirmAction, setConfirmAction] = useState<{
+    communityId: number
+    action: "cancel" | "leave"
+    name: string
+  } | null>(null)
+
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [newCommunityName, setNewCommunityName] = useState("")
   const [newCommunityDescription, setNewCommunityDescription] = useState("")
@@ -190,8 +108,7 @@ export default function CommunityPage() {
   const [isPublicCommunity, setIsPublicCommunity] = useState(true)
   const [communityPhoto, setCommunityPhoto] = useState<File | null>(null)
   const [communityPhotoPreview, setCommunityPhotoPreview] = useState<string>("")
-  
-  // Trending topics state
+
   const [trendingTopics, setTrendingTopics] = useState([
     { tag: "#MidtermPrep", posts: 45 },
     { tag: "#StudyTips", posts: 32 },
@@ -199,34 +116,30 @@ export default function CommunityPage() {
     { tag: "#ExamSeason", posts: 24 },
     { tag: "#MathHelp", posts: 19 },
   ])
-  
-  // Reaction types
+
   const reactions = [
-    { id: 'like', icon: ThumbsUp, label: 'Like', color: 'text-blue-600' },
-    { id: 'insightful', icon: Lightbulb, label: 'Insightful', color: 'text-yellow-600' },
-    { id: 'supportive', icon: Heart, label: 'Supportive', color: 'text-pink-600' },
-    { id: 'helpful', icon: Award, label: 'Helpful', color: 'text-green-600' },
+    { id: "like", icon: ThumbsUp, label: "Like", color: "text-pulse-dark" },
+    { id: "insightful", icon: Lightbulb, label: "Insightful", color: "text-lemon-deep" },
+    { id: "supportive", icon: Heart, label: "Supportive", color: "text-rose-deep" },
+    { id: "helpful", icon: Award, label: "Helpful", color: "text-pulse" },
   ]
 
   const handleJoinSuggestedCommunity = (communityId: number) => {
-    setSuggestedCommunities(prev => prev.map(c => {
-      if (c.id === communityId) {
-        if (c.isPublic) {
-          return { ...c, membershipStatus: 'member' }
-        } else {
-          return { ...c, membershipStatus: 'pending' }
-        }
-      }
-      return c
-    }))
+    setSuggestedCommunities((prev) =>
+      prev.map((c) =>
+        c.id === communityId
+          ? { ...c, membershipStatus: c.isPublic ? "member" : "pending" }
+          : c,
+      ),
+    )
   }
 
-  const handleSuggestedButtonClick = (community: typeof suggestedCommunities[0]) => {
-    if (community.membershipStatus === 'pending') {
-      setConfirmAction({ communityId: community.id, action: 'cancel', name: community.name })
+  const handleSuggestedButtonClick = (community: (typeof suggestedCommunities)[0]) => {
+    if (community.membershipStatus === "pending") {
+      setConfirmAction({ communityId: community.id, action: "cancel", name: community.name })
       setShowConfirmDialog(true)
-    } else if (community.membershipStatus === 'member') {
-      setConfirmAction({ communityId: community.id, action: 'leave', name: community.name })
+    } else if (community.membershipStatus === "member") {
+      setConfirmAction({ communityId: community.id, action: "leave", name: community.name })
       setShowConfirmDialog(true)
     } else {
       handleJoinSuggestedCommunity(community.id)
@@ -235,13 +148,9 @@ export default function CommunityPage() {
 
   const handleConfirm = () => {
     if (!confirmAction) return
-
-    if (confirmAction.action === 'cancel' || confirmAction.action === 'leave') {
-      setSuggestedCommunities(prev => prev.map(c => 
-        c.id === confirmAction.communityId ? { ...c, membershipStatus: null } : c
-      ))
-    }
-
+    setSuggestedCommunities((prev) =>
+      prev.map((c) => (c.id === confirmAction.communityId ? { ...c, membershipStatus: null } : c)),
+    )
     setShowConfirmDialog(false)
     setConfirmAction(null)
   }
@@ -251,9 +160,7 @@ export default function CommunityPage() {
     if (file) {
       setCommunityPhoto(file)
       const reader = new FileReader()
-      reader.onloadend = () => {
-        setCommunityPhotoPreview(reader.result as string)
-      }
+      reader.onloadend = () => setCommunityPhotoPreview(reader.result as string)
       reader.readAsDataURL(file)
     }
   }
@@ -261,12 +168,10 @@ export default function CommunityPage() {
   const handleCreateCommunity = () => {
     if (newCommunityName && newCommunityDescription && newCommunitySubject) {
       toast({
-        title: "Community Created! 🎉",
-        description: `${newCommunityName} has been created successfully`,
-        variant: "success"
+        title: "Community created",
+        description: `${newCommunityName} is live.`,
+        variant: "success",
       })
-      
-      // Reset form
       setNewCommunityName("")
       setNewCommunityDescription("")
       setNewCommunitySubject("")
@@ -276,9 +181,8 @@ export default function CommunityPage() {
       setShowCreateModal(false)
     }
   }
-  
+
   const handleReaction = (postId: number, reactionType: string) => {
-    // Toggle reaction - if same reaction is clicked, remove it
     if (postReactions[postId] === reactionType) {
       const updatedReactions = { ...postReactions }
       delete updatedReactions[postId]
@@ -288,780 +192,794 @@ export default function CommunityPage() {
     }
     setShowReactionPicker(null)
   }
-  
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setUploadedFiles([...uploadedFiles, ...Array.from(e.target.files)])
-    }
+    if (e.target.files) setUploadedFiles([...uploadedFiles, ...Array.from(e.target.files)])
   }
-  
+
   const removeFile = (index: number) => {
     setUploadedFiles(uploadedFiles.filter((_, i) => i !== index))
   }
-  
+
   const extractHashtags = (text: string): string[] => {
     const hashtagRegex = /#[\w]+/g
     const hashtags = text.match(hashtagRegex) || []
-    return hashtags.map(tag => tag.toLowerCase())
+    return hashtags.map((tag) => tag.toLowerCase())
   }
 
   const renderContentWithHashtags = (content: string) => {
     const hashtagRegex = /#[\w]+/g
-    const parts = []
+    const parts: React.ReactNode[] = []
     let lastIndex = 0
-    let match
+    let match: RegExpExecArray | null
 
     while ((match = hashtagRegex.exec(content)) !== null) {
-      // Add text before hashtag
-      if (match.index > lastIndex) {
-        parts.push(content.substring(lastIndex, match.index))
-      }
-      // Add hashtag in blue
+      if (match.index > lastIndex) parts.push(content.substring(lastIndex, match.index))
       parts.push(
-        <span key={match.index} className="text-blue-600 font-medium">
+        <span key={match.index} className="font-medium text-pulse-dark">
           {match[0]}
-        </span>
+        </span>,
       )
       lastIndex = match.index + match[0].length
     }
-    
-    // Add remaining text
-    if (lastIndex < content.length) {
-      parts.push(content.substring(lastIndex))
-    }
-    
+    if (lastIndex < content.length) parts.push(content.substring(lastIndex))
     return parts
   }
 
   const updateTrendingTopics = (hashtags: string[]) => {
     if (hashtags.length === 0) return
-
-    setTrendingTopics(prev => {
+    setTrendingTopics((prev) => {
       const updatedTopics = [...prev]
-      
-      hashtags.forEach(hashtag => {
-        const existingIndex = updatedTopics.findIndex(topic => topic.tag.toLowerCase() === hashtag)
-        
+      hashtags.forEach((hashtag) => {
+        const existingIndex = updatedTopics.findIndex((topic) => topic.tag.toLowerCase() === hashtag)
         if (existingIndex >= 0) {
-          // Increment existing hashtag
           updatedTopics[existingIndex] = {
             ...updatedTopics[existingIndex],
-            posts: updatedTopics[existingIndex].posts + 1
+            posts: updatedTopics[existingIndex].posts + 1,
           }
         } else {
-          // Add new hashtag
-          updatedTopics.push({
-            tag: hashtag,
-            posts: 1
-          })
+          updatedTopics.push({ tag: hashtag, posts: 1 })
         }
       })
-      
-      // Sort by post count (descending) and take top 5
       return updatedTopics.sort((a, b) => b.posts - a.posts).slice(0, 5)
     })
   }
 
   const handleCreatePost = () => {
     if (newPost.trim() && selectedCommunity) {
-      const community = myCommunitiesData.find(c => c.id === selectedCommunity)
-      
-      // Extract hashtags from the post
+      const community = myCommunitiesData.find((c) => c.id === selectedCommunity)
       const hashtags = extractHashtags(newPost)
-      
-      // Convert files to URLs for display
-      const fileUrls = uploadedFiles.map(file => ({
+      const fileUrls = uploadedFiles.map((file) => ({
         name: file.name,
         type: file.type,
-        url: URL.createObjectURL(file)
+        url: URL.createObjectURL(file),
       }))
-      
-      // Create new post object
-      const newPostObject = {
-        id: posts.length + 1,
-        communityId: selectedCommunity,
-        communityName: community?.name || "",
-        author: "You",
-        authorAvatar: "YU",
-        content: newPost.trim(),
-        timestamp: "Just now",
-        likes: 0,
-        comments: [],
-        isLiked: false,
-        files: fileUrls,
-      }
-      
-      // Add new post to the beginning of the posts array
-      setPosts([newPostObject, ...posts])
-      
-      // Update trending topics with extracted hashtags
+
+      setPosts([
+        {
+          id: posts.length + 1,
+          communityId: selectedCommunity,
+          communityName: community?.name || "",
+          author: "You",
+          authorAvatar: "YU",
+          content: newPost.trim(),
+          timestamp: "Just now",
+          likes: 0,
+          comments: [],
+          isLiked: false,
+          files: fileUrls,
+        },
+        ...posts,
+      ])
+
       updateTrendingTopics(hashtags)
-      
-      // Clear the form
       setNewPost("")
       setSelectedCommunity(null)
       setUploadedFiles([])
     }
   }
-  
-  const handleLeaveCommunity = (communityId: number, communityName: string) => {
-    if (confirm(`Are you sure you want to leave "${communityName}"?`)) {
-      toast({
-        title: "Left Community",
-        description: `You've left ${communityName}`,
-      })
-    }
-  }
-  
+
   const handleAddComment = (postId: number) => {
     const commentText = commentInputs[postId]?.trim()
     if (commentText) {
-      setPosts(posts.map(post => {
-        if (post.id === postId) {
-          return {
-            ...post,
-            comments: [
-              ...post.comments,
-              {
-                id: post.comments.length + 1,
-                author: "You",
-                authorAvatar: "AJ",
-                content: commentText,
-                timestamp: "Just now"
+      setPosts(
+        posts.map((post) =>
+          post.id === postId
+            ? {
+                ...post,
+                comments: [
+                  ...post.comments,
+                  {
+                    id: post.comments.length + 1,
+                    author: "You",
+                    authorAvatar: "AJ",
+                    content: commentText,
+                    timestamp: "Just now",
+                  },
+                ],
               }
-            ]
-          }
-        }
-        return post
-      }))
+            : post,
+        ),
+      )
       setCommentInputs({ ...commentInputs, [postId]: "" })
-      // No toast needed - seeing the comment appear is confirmation enough
     }
   }
-  
-  const toggleComments = (postId: number) => {
-    setShowComments({ ...showComments, [postId]: !showComments[postId] })
-  }
-  
-  const filteredPosts = feedFilter === "all" 
-    ? posts 
-    : posts.filter(post => post.communityId === feedFilter)
 
-  // Feed View
+  const filteredPosts = feedFilter === "all" ? posts : posts.filter((p) => p.communityId === feedFilter)
+
   return (
-    <PageTransition>
-      <div className="min-h-screen bg-white">
-        <Header />
+    <div className="min-h-screen bg-paper">
+      <Header />
 
-        <main className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-xl font-bold text-gray-900">Feed</h1>
-            <Button 
-              onClick={() => setShowCreateModal(true)}
-              size="sm"
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-            >
-              <Plus className="w-4 h-4 mr-1.5" />
-              Create Community
+      <main className="container-page py-10 sm:py-14">
+        <Reveal>
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="eyebrow">Community</p>
+              <h1 className="mt-2 font-display text-[34px] font-extrabold leading-tight tracking-[-0.03em] text-ink sm:text-[40px]">
+                Feed
+              </h1>
+              <p className="mt-2 text-[15px] text-ink-soft">
+                Questions, wins and resources from the subjects you&apos;re actually taking.
+              </p>
+            </div>
+            <Button onClick={() => setShowCreateModal(true)}>
+              <Plus className="h-4 w-4" />
+              Create community
             </Button>
           </div>
+        </Reveal>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-            {/* Main Content - Feed */}
-            <div className="lg:col-span-8 space-y-3">
-                  {/* Create Post Card */}
-                  <Card className="bg-[#fdfcfa] border-2 border-gray-300">
-                    <CardContent className="p-3">
-                      <div className="flex gap-3">
-                        <div className="w-9 h-9 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                          <span className="text-xs font-semibold text-white">AJ</span>
-                        </div>
-                        <div className="flex-1">
-                          <textarea
-                            value={newPost}
-                            onChange={(e) => setNewPost(e.target.value)}
-                            placeholder="Share something with your communities..."
-                            className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500 bg-[#fdfcfa] hover:border-gray-400 transition-all duration-200 resize-none"
-                            rows={2}
-                          />
-                          {/* File Previews */}
-                          {uploadedFiles.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mt-3">
-                              {uploadedFiles.map((file, index) => (
-                                <div key={index} className="relative bg-gray-100 rounded-lg p-2 pr-8">
-                                  <div className="flex items-center gap-2">
-                                    {file.type.startsWith('image/') ? <ImageIcon className="w-4 h-4" /> : <FileText className="w-4 h-4" />}
-                                    <span className="text-xs">{file.name.slice(0, 20)}</span>
-                                  </div>
-                                  <button onClick={() => removeFile(index)} className="absolute top-1 right-1 text-gray-500 hover:text-red-600">
-                                    <X className="w-3 h-3" />
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                          
-                          <div className="flex items-start justify-between mt-2 gap-2">
-                            <div className="flex items-center gap-2 flex-1">
-                              {/* Image Upload */}
-                              <label className="cursor-pointer text-gray-500 hover:text-blue-600 transition-colors">
-                                <input type="file" accept="image/*" multiple onChange={handleFileUpload} className="hidden" />
-                                <ImageIcon className="w-4 h-4" />
-                              </label>
-                              {/* PDF Upload */}
-                              <label className="cursor-pointer text-gray-500 hover:text-blue-600 transition-colors">
-                                <input type="file" accept=".pdf,.doc,.docx" multiple onChange={handleFileUpload} className="hidden" />
-                                <FileText className="w-4 h-4" />
-                              </label>
-                              <CustomSelect
-                                value={selectedCommunity?.toString() || ""}
-                                onChange={(value) => setSelectedCommunity(value ? Number(value) : null)}
-                                placeholder="Select community..."
-                                options={myCommunitiesData.map(community => ({
-                                  value: community.id.toString(),
-                                  label: community.name
-                                }))}
-                                className="max-w-xs"
-                              />
-                            </div>
-                            <Button 
-                              onClick={handleCreatePost} 
-                              disabled={!newPost.trim() || !selectedCommunity}
-                              className="h-7 px-3 text-xs"
+        <div className="mt-10 grid gap-6 lg:grid-cols-12">
+          {/* ===================== Feed ===================== */}
+          <div className="space-y-5 lg:col-span-8">
+            {/* ---------- Composer ---------- */}
+            <Reveal>
+              <div className="rounded-3xl border border-line bg-surface p-5 shadow-soft sm:p-6">
+                <div className="flex gap-4">
+                  <Avatar name="Alex Johnson" size="md" />
+                  <div className="min-w-0 flex-1">
+                    <textarea
+                      value={newPost}
+                      onChange={(e) => setNewPost(e.target.value)}
+                      placeholder="Ask a question, or share something that finally clicked…"
+                      rows={3}
+                      className="w-full resize-none rounded-2xl border border-line-strong bg-surface px-4 py-3 text-[15px] leading-relaxed text-ink transition-all duration-200 placeholder:text-ink-faint hover:border-ink-faint focus:border-pulse focus:outline-none focus:ring-4 focus:ring-pulse/10"
+                    />
+
+                    {uploadedFiles.length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {uploadedFiles.map((file, index) => (
+                          <span
+                            key={index}
+                            className="relative inline-flex items-center gap-2 rounded-xl bg-surface-sunken py-2 pl-3 pr-8 text-[13px] text-ink-soft"
+                          >
+                            {file.type.startsWith("image/") ? (
+                              <ImageIcon className="h-4 w-4" />
+                            ) : (
+                              <FileText className="h-4 w-4" />
+                            )}
+                            <span className="max-w-[160px] truncate">{file.name}</span>
+                            <button
+                              type="button"
+                              onClick={() => removeFile(index)}
+                              aria-label={`Remove ${file.name}`}
+                              className="absolute right-2 top-1/2 -translate-y-1/2 text-ink-mute transition-colors hover:text-rose-deep"
                             >
-                              <Send className="w-3 h-3 mr-1" />
-                              Post
+                              <X className="h-3.5 w-3.5" />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <label
+                          className="grid h-10 w-10 cursor-pointer place-items-center rounded-full text-ink-mute transition-colors hover:bg-surface-sunken hover:text-ink"
+                          title="Add images"
+                        >
+                          <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handleFileUpload}
+                            className="hidden"
+                          />
+                          <ImageIcon className="h-5 w-5" />
+                        </label>
+                        <label
+                          className="grid h-10 w-10 cursor-pointer place-items-center rounded-full text-ink-mute transition-colors hover:bg-surface-sunken hover:text-ink"
+                          title="Add documents"
+                        >
+                          <input
+                            type="file"
+                            accept=".pdf,.doc,.docx"
+                            multiple
+                            onChange={handleFileUpload}
+                            className="hidden"
+                          />
+                          <FileText className="h-5 w-5" />
+                        </label>
+
+                        <div className="w-[220px]">
+                          <CustomSelect
+                            value={selectedCommunity?.toString() || ""}
+                            onChange={(value) => setSelectedCommunity(value ? Number(value) : null)}
+                            placeholder="Post to…"
+                            options={myCommunitiesData.map((community) => ({
+                              value: community.id.toString(),
+                              label: community.name,
+                            }))}
+                          />
+                        </div>
+                      </div>
+
+                      <Button
+                        onClick={handleCreatePost}
+                        disabled={!newPost.trim() || !selectedCommunity}
+                      >
+                        <Send className="h-4 w-4" />
+                        Post
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Reveal>
+
+            {/* ---------- Filters ---------- */}
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              <button
+                type="button"
+                onClick={() => setFeedFilter("all")}
+                className={`whitespace-nowrap rounded-full px-4 py-2 font-display text-[13px] font-semibold transition-colors ${
+                  feedFilter === "all"
+                    ? "bg-ink text-white"
+                    : "border border-line bg-surface text-ink-soft hover:border-ink-faint hover:text-ink"
+                }`}
+              >
+                All
+              </button>
+              {myCommunitiesData.map((community) => (
+                <button
+                  key={community.id}
+                  type="button"
+                  onClick={() => setFeedFilter(community.id)}
+                  className={`flex items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 font-display text-[13px] font-semibold transition-colors ${
+                    feedFilter === community.id
+                      ? "bg-ink text-white"
+                      : "border border-line bg-surface text-ink-soft hover:border-ink-faint hover:text-ink"
+                  }`}
+                >
+                  {community.name}
+                  {community.unreadPosts > 0 && (
+                    <span
+                      className={`rounded-full px-1.5 py-0.5 text-[11px] font-bold ${
+                        feedFilter === community.id ? "bg-white/20 text-white" : "bg-rose text-rose-deep"
+                      }`}
+                    >
+                      {community.unreadPosts}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* ---------- Posts ---------- */}
+            {filteredPosts.map((post) => (
+              <article
+                key={post.id}
+                className="rounded-3xl border border-line bg-surface p-6 shadow-soft transition-all duration-300 hover:border-line-strong hover:shadow-card"
+              >
+                <div className="flex items-start gap-3.5">
+                  <Avatar name={post.author} size="md" />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <span className="font-display text-[15px] font-bold text-ink">
+                        {post.author}
+                      </span>
+                      <span className="text-ink-faint">·</span>
+                      <span className="text-[13px] text-ink-mute">{post.timestamp}</span>
+                    </div>
+                    <Badge variant="lilac" className="mt-1.5">
+                      {post.communityName}
+                    </Badge>
+                  </div>
+                </div>
+
+                <p className="mt-4 whitespace-pre-line text-[15px] leading-relaxed text-ink-soft">
+                  {renderContentWithHashtags(post.content)}
+                </p>
+
+                {post.files && post.files.length > 0 && (
+                  <div className="mt-4 space-y-3">
+                    {(() => {
+                      const images = post.files.filter((f) => f.type.startsWith("image/"))
+                      const pdfs = post.files.filter((f) => f.type === "application/pdf")
+                      return (
+                        <>
+                          {images.length > 0 && <ImageCarousel images={images} postId={post.id} />}
+                          {pdfs.map((pdf, pdfIndex) => (
+                            <PDFPreview
+                              key={pdfIndex}
+                              pdf={pdf}
+                              postId={post.id}
+                              pdfIndex={pdfIndex}
+                              onPageClick={(page, numPages) =>
+                                setPdfModal({
+                                  isOpen: true,
+                                  pdfUrl: pdf.url,
+                                  pdfName: pdf.name,
+                                  page,
+                                  numPages,
+                                })
+                              }
+                            />
+                          ))}
+                        </>
+                      )
+                    })()}
+                  </div>
+                )}
+
+                {/* ---------- Actions ---------- */}
+                <div className="mt-5 flex items-center gap-1 border-t border-line pt-4">
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowReactionPicker(showReactionPicker === post.id ? null : post.id)
+                      }
+                      className="flex items-center gap-2 rounded-full px-3 py-2 text-[13.5px] font-medium text-ink-soft transition-colors hover:bg-surface-sunken hover:text-ink"
+                    >
+                      {(() => {
+                        const reaction = reactions.find((r) => r.id === postReactions[post.id])
+                        const Icon = reaction?.icon || ThumbsUp
+                        return <Icon className={`h-4 w-4 ${reaction?.color || ""}`} />
+                      })()}
+                      <span>{post.likes}</span>
+                    </button>
+
+                    {showReactionPicker === post.id && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="absolute bottom-full left-0 z-10 mb-2 flex gap-1 rounded-2xl border border-line bg-surface p-2 shadow-card"
+                      >
+                        {reactions.map((reaction) => {
+                          const Icon = reaction.icon
+                          return (
+                            <button
+                              key={reaction.id}
+                              type="button"
+                              onClick={() => handleReaction(post.id, reaction.id)}
+                              title={reaction.label}
+                              className="grid h-9 w-9 place-items-center rounded-xl transition-colors hover:bg-surface-sunken"
+                            >
+                              <Icon className={`h-5 w-5 ${reaction.color}`} />
+                            </button>
+                          )
+                        })}
+                      </motion.div>
+                    )}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowComments({ ...showComments, [post.id]: !showComments[post.id] })
+                    }
+                    className="flex items-center gap-2 rounded-full px-3 py-2 text-[13.5px] font-medium text-ink-soft transition-colors hover:bg-surface-sunken hover:text-ink"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    <span>{post.comments?.length || 0}</span>
+                  </button>
+                </div>
+
+                {/* ---------- Comments ---------- */}
+                <AnimatePresence>
+                  {showComments[post.id] && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.25, ease: "easeInOut" }}
+                      className="overflow-hidden"
+                    >
+                      <div className="mt-4 space-y-4 border-t border-line pt-4">
+                        {post.comments.map((comment) => (
+                          <div key={comment.id} className="flex gap-3">
+                            <Avatar name={comment.author} size="sm" />
+                            <div className="flex-1 rounded-2xl bg-surface-sunken px-4 py-3">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="text-[13.5px] font-semibold text-ink">
+                                  {comment.author}
+                                </span>
+                                <span className="text-[12.5px] text-ink-mute">
+                                  {comment.timestamp}
+                                </span>
+                              </div>
+                              <p className="mt-1 text-[14px] leading-relaxed text-ink-soft">
+                                {comment.content}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+
+                        <div className="flex gap-3">
+                          <Avatar name="Alex Johnson" size="sm" />
+                          <div className="flex flex-1 gap-2">
+                            <input
+                              type="text"
+                              placeholder="Write a comment…"
+                              value={commentInputs[post.id] || ""}
+                              onChange={(e) =>
+                                setCommentInputs({ ...commentInputs, [post.id]: e.target.value })
+                              }
+                              onKeyDown={(e) => e.key === "Enter" && handleAddComment(post.id)}
+                              className="h-10 flex-1 rounded-full border border-line-strong bg-surface px-4 text-[14px] text-ink transition-all duration-200 placeholder:text-ink-faint hover:border-ink-faint focus:border-pulse focus:outline-none focus:ring-4 focus:ring-pulse/10"
+                            />
+                            <Button
+                              size="icon-sm"
+                              onClick={() => handleAddComment(post.id)}
+                              disabled={!commentInputs[post.id]?.trim()}
+                              aria-label="Send comment"
+                            >
+                              <Send className="h-4 w-4" />
                             </Button>
                           </div>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Communities Tabs - Reddit Style */}
-                  <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                    <button
-                      onClick={() => setFeedFilter("all")}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
-                        feedFilter === "all"
-                          ? "bg-[#0A0A0A] text-white"
-                          : "bg-white border border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50"
-                      }`}
-                    >
-                      All
-                    </button>
-                    {myCommunitiesData.map(community => (
-                      <button
-                        key={community.id}
-                        onClick={() => setFeedFilter(community.id)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
-                          feedFilter === community.id
-                            ? "bg-blue-600 text-white"
-                            : "bg-[#fdfcfa] border-2 border-gray-300 text-gray-700 hover:border-gray-400"
-                        }`}
-                      >
-                        {community.name}
-                        {community.unreadPosts > 0 && (
-                          <span className="ml-2 px-1.5 py-0.5 bg-red-500 text-white text-xs rounded-full">
-                            {community.unreadPosts}
-                          </span>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Posts Feed */}
-                  {filteredPosts.map((post) => (
-                    <Card key={post.id} className="bg-[#fdfcfa] border-2 border-gray-300 hover:border-gray-400 hover:shadow-lg transition-all duration-200">
-                      <CardContent className="p-4">
-                        {/* Post Header */}
-                        <div className="flex items-start gap-2 mb-3">
-                          <div className="w-9 h-9 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
-                            <span className="text-xs font-semibold text-white">{post.authorAvatar}</span>
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="text-sm font-semibold text-gray-900">{post.author}</span>
-                              <span className="text-gray-400">•</span>
-                              <span className="text-sm text-gray-500">{post.timestamp}</span>
-                            </div>
-                            <Badge variant="secondary" className="text-xs">
-                              {post.communityName}
-                            </Badge>
-                          </div>
-                        </div>
-
-                        {/* Post Content */}
-                        <p className="text-sm text-gray-700 mb-3 whitespace-pre-line">{renderContentWithHashtags(post.content)}</p>
-
-                        {/* Attached Files */}
-                        {post.files && post.files.length > 0 && (
-                          <div className="mb-3 space-y-3">
-                            {(() => {
-                              // Group files by type
-                              const images = post.files.filter(f => f.type.startsWith('image/'))
-                              const pdfs = post.files.filter(f => f.type === 'application/pdf')
-                              
-                              return (
-                                <>
-                                  {/* Image Carousel */}
-                                  {images.length > 0 && (
-                                    <ImageCarousel images={images} postId={post.id} />
-                                  )}
-                                  
-                                  {/* PDF Previews */}
-                                  {pdfs.map((pdf, pdfIndex) => (
-                                    <PDFPreview
-                                      key={pdfIndex}
-                                      pdf={pdf}
-                                      postId={post.id}
-                                      pdfIndex={pdfIndex}
-                                      onPageClick={(page, numPages) => 
-                                        setPdfModal({ isOpen: true, pdfUrl: pdf.url, pdfName: pdf.name, page, numPages })
-                                      }
-                                    />
-                                  ))}
-                                </>
-                              )
-                            })()}
-                          </div>
-                        )}
-
-                        {/* Post Actions */}
-                        <div className="flex items-center gap-4 pt-2 border-t border-gray-100">
-                          {/* Reaction Button with Picker */}
-                          <div className="relative">
-                            <button
-                              onClick={() => setShowReactionPicker(showReactionPicker === post.id ? null : post.id)}
-                              className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
-                            >
-                              {(() => {
-                                const reactionType = postReactions[post.id]
-                                const reaction = reactions.find(r => r.id === reactionType)
-                                const Icon = reaction?.icon || ThumbsUp
-                                return <Icon className={`w-4 h-4 ${reaction?.color || ''}`} />
-                              })()}
-                              <span>{post.likes}</span>
-                            </button>
-                            {showReactionPicker === post.id && (
-                              <motion.div 
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="absolute bottom-full left-0 mb-2 bg-white border-2 border-gray-300 rounded-xl shadow-lg p-2 flex gap-2 z-10"
-                              >
-                                {reactions.map((reaction) => {
-                                  const Icon = reaction.icon
-                                  return (
-                                    <button
-                                      key={reaction.id}
-                                      onClick={() => handleReaction(post.id, reaction.id)}
-                                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors group"
-                                      title={reaction.label}
-                                    >
-                                      <Icon className={`w-5 h-5 ${reaction.color} group-hover:scale-110 transition-transform`} />
-                                    </button>
-                                  )
-                                })}
-                              </motion.div>
-                            )}
-                          </div>
-                          <button
-                            onClick={() => setShowComments({ ...showComments, [post.id]: !showComments[post.id] })}
-                            className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
-                          >
-                            <MessageCircle className="w-4 h-4" />
-                            <span>{post.comments?.length || 0}</span>
-                          </button>
-                        </div>
-
-                        {/* Comments Section */}
-                        <AnimatePresence>
-                        {showComments[post.id] && (
-                          <motion.div 
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.3, ease: "easeInOut" }}
-                            className="mt-3 pt-3 border-t border-gray-100 space-y-2 overflow-hidden"
-                          >
-                            {/* Existing Comments */}
-                            {post.comments.map((comment) => (
-                              <div key={comment.id} className="flex gap-2">
-                                <div className="w-7 h-7 bg-gradient-to-br from-gray-300 to-gray-400 rounded-full flex items-center justify-center flex-shrink-0">
-                                  <span className="text-xs font-semibold text-white">{comment.authorAvatar}</span>
-                                </div>
-                                <div className="flex-1">
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-xs font-semibold text-gray-900">{comment.author}</span>
-                                    <span className="text-xs text-gray-500">{comment.timestamp}</span>
-                                  </div>
-                                  <p className="text-xs text-gray-700 mt-0.5">{comment.content}</p>
-                                </div>
-                              </div>
-                            ))}
-
-                            {/* Add Comment Input */}
-                            <div className="flex gap-2 mt-3">
-                              <div className="w-7 h-7 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                <span className="text-xs font-semibold text-white">AJ</span>
-                              </div>
-                              <div className="flex-1 flex gap-2">
-                                <input
-                                  type="text"
-                                  placeholder="Write a comment..."
-                                  value={commentInputs[post.id] || ""}
-                                  onChange={(e) => setCommentInputs({ ...commentInputs, [post.id]: e.target.value })}
-                                  onKeyPress={(e) => e.key === "Enter" && handleAddComment(post.id)}
-                                  className="flex-1 px-2 py-1.5 border-2 border-gray-300 rounded-lg text-xs focus:outline-none focus:border-blue-500 bg-[#fdfcfa] hover:border-gray-400 transition-all duration-200"
-                                />
-                                <Button
-                                  size="sm"
-                                  onClick={() => handleAddComment(post.id)}
-                                  disabled={!commentInputs[post.id]?.trim()}
-                                >
-                                  <Send className="w-4 h-4" />
-                                </Button>
-                              </div>
-                            </div>
-                          </motion.div>
-                        )}
-                        </AnimatePresence>
-                      </CardContent>
-                    </Card>
-                  ))}
-            </div>
-
-            {/* Right Sidebar */}
-            <div className="lg:col-span-4 space-y-3">
-              {/* Suggested Communities */}
-              <Card className="bg-[#fdfcfa] border-2 border-gray-300">
-                <CardContent className="p-4">
-                  <h3 className="text-sm font-bold text-gray-900 mb-3">Suggested Communities</h3>
-                  <div className="space-y-3">
-                    {suggestedCommunities.map((community) => (
-                      <div key={community.id} className="flex items-start gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors">
-                        <div className="text-2xl">{community.icon}</div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-xs font-semibold text-gray-900 truncate">{community.name}</h4>
-                          <p className="text-xs text-gray-500">{community.members} members</p>
-                        </div>
-                        <Button 
-                          size="sm" 
-                          onClick={() => handleSuggestedButtonClick(community)}
-                          className={`h-6 px-2 text-xs ${
-                            community.membershipStatus === 'member'
-                              ? 'bg-emerald-500 hover:bg-emerald-600'
-                              : community.membershipStatus === 'pending'
-                              ? 'bg-amber-500 hover:bg-amber-600'
-                              : 'bg-blue-600 hover:bg-blue-700'
-                          } text-white`}
-                        >
-                          {community.membershipStatus === 'member' ? 'Joined' : 
-                           community.membershipStatus === 'pending' ? 'Pending' : 
-                           community.isPublic ? 'Join' : 'Request'}
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                  <Link href="/explore">
-                    <Button variant="ghost" className="w-full mt-3 h-7 text-xs text-blue-600 hover:text-blue-700">
-                      See all communities
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-
-              {/* Trending Topics */}
-              <Card className="bg-[#fdfcfa] border-2 border-gray-300">
-                <CardContent className="p-4">
-                  <h3 className="text-sm font-bold text-gray-900 mb-3">Trending Topics</h3>
-                  <div className="space-y-2">
-                    {trendingTopics.map((topic, index) => (
-                      <button
-                        key={index}
-                        className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-blue-50 transition-colors text-left"
-                      >
-                        <span className="text-xs font-medium text-blue-600">{topic.tag}</span>
-                        <span className="text-xs text-gray-500">{topic.posts} posts</span>
-                      </button>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Community Stats */}
-              <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200">
-                <CardContent className="p-4">
-                  <h3 className="text-sm font-bold text-gray-900 mb-3">Today's Activity</h3>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-600">Active Members</span>
-                      <span className="text-sm font-bold text-gray-900">247</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-600">New Posts</span>
-                      <span className="text-sm font-bold text-gray-900">63</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-600">Study Sessions</span>
-                      <span className="text-sm font-bold text-gray-900">12</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Top Contributors */}
-              <Card className="bg-[#fdfcfa] border-2 border-gray-300">
-                <CardContent className="p-4">
-                  <h3 className="text-sm font-bold text-gray-900 mb-3">⭐ Top Contributors</h3>
-                  <div className="space-y-2">
-                    {[
-                      { name: "Sarah Chen", points: 1250, avatar: "SC", badge: "🥇" },
-                      { name: "Mike Johnson", points: 980, avatar: "MJ", badge: "🥈" },
-                      { name: "Emma Davis", points: 845, avatar: "ED", badge: "🥉" },
-                    ].map((user, index) => (
-                      <div key={index} className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors">
-                        <span className="text-lg">{user.badge}</span>
-                        <div className="w-7 h-7 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
-                          <span className="text-xs font-semibold text-white">{user.avatar}</span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-semibold text-gray-900 truncate">{user.name}</p>
-                          <p className="text-xs text-gray-500">{user.points} points</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </article>
+            ))}
           </div>
-        </main>
 
-        {/* Confirmation Dialog */}
-        <AnimatePresence>
-          {showConfirmDialog && confirmAction && (
-            <>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/50 z-50"
-                onClick={() => setShowConfirmDialog(false)}
-              />
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm bg-white rounded-2xl shadow-2xl z-50 p-6"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <h2 className="text-lg font-bold text-gray-900">
-                    {confirmAction.action === 'cancel' ? 'Cancel Request?' : 'Leave Community?'}
-                  </h2>
-                  <button
-                    onClick={() => setShowConfirmDialog(false)}
-                    className="p-1 hover:bg-gray-100 rounded-lg transition-colors -mt-1 -mr-2"
+          {/* ===================== Sidebar ===================== */}
+          <aside className="space-y-5 lg:col-span-4">
+            {/* ---------- My communities ---------- */}
+            <Reveal delay={0.06}>
+              <section className="rounded-3xl border border-line bg-surface p-6 shadow-soft">
+                <div className="flex items-center justify-between">
+                  <h2 className="font-display text-[16px] font-bold text-ink">Your communities</h2>
+                  <Link
+                    href="/explore"
+                    className="text-[13px] font-semibold text-ink-mute transition-colors hover:text-ink"
                   >
-                    <X className="w-4 h-4" />
-                  </button>
+                    Explore
+                  </Link>
                 </div>
+                <div className="mt-4 space-y-1">
+                  {myCommunitiesData.map((community) => (
+                    <div
+                      key={community.id}
+                      className="flex items-center gap-3 rounded-2xl px-2 py-2.5 transition-colors hover:bg-surface-sunken"
+                    >
+                      <Avatar name={community.name} size="sm" />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[14px] font-semibold text-ink">
+                          {community.name}
+                        </p>
+                        <p className="text-[12.5px] text-ink-mute">{community.members} members</p>
+                      </div>
+                      {community.unreadPosts > 0 && (
+                        <Badge variant="accent">{community.unreadPosts}</Badge>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </Reveal>
 
-                <p className="text-sm text-gray-600 mb-5">
-                  {confirmAction.action === 'cancel' 
-                    ? `Are you sure you want to cancel your request to join "${confirmAction.name}"?`
-                    : `Are you sure you want to leave "${confirmAction.name}"?`
-                  }
+            {/* ---------- Suggested ---------- */}
+            <Reveal delay={0.1}>
+              <section className="rounded-3xl border border-line bg-surface p-6 shadow-soft">
+                <h2 className="font-display text-[16px] font-bold text-ink">Suggested for you</h2>
+                <div className="mt-4 space-y-2">
+                  {suggestedCommunities.map((community) => (
+                    <div
+                      key={community.id}
+                      className="flex items-center gap-3 rounded-2xl p-2 transition-colors hover:bg-surface-sunken"
+                    >
+                      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-surface-sunken text-lg">
+                        {community.icon}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[14px] font-semibold text-ink">
+                          {community.name}
+                        </p>
+                        <p className="text-[12.5px] text-ink-mute">{community.members} members</p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant={
+                          community.membershipStatus === "member"
+                            ? "accent"
+                            : community.membershipStatus === "pending"
+                              ? "secondary"
+                              : "default"
+                        }
+                        onClick={() => handleSuggestedButtonClick(community)}
+                      >
+                        {community.membershipStatus === "member"
+                          ? "Joined"
+                          : community.membershipStatus === "pending"
+                            ? "Pending"
+                            : community.isPublic
+                              ? "Join"
+                              : "Request"}
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+                <Button asChild variant="ghost" size="sm" className="mt-3 w-full">
+                  <Link href="/explore">See all communities</Link>
+                </Button>
+              </section>
+            </Reveal>
+
+            {/* ---------- Trending ---------- */}
+            <Reveal delay={0.14}>
+              <section className="rounded-3xl border border-line bg-surface p-6 shadow-soft">
+                <h2 className="flex items-center gap-2 font-display text-[16px] font-bold text-ink">
+                  <TrendingUp className="h-4 w-4 text-pulse" />
+                  Trending topics
+                </h2>
+                <div className="mt-4 space-y-1">
+                  {trendingTopics.map((topic, index) => (
+                    <button
+                      key={topic.tag}
+                      type="button"
+                      className="flex w-full items-center justify-between rounded-2xl px-2 py-2.5 text-left transition-colors hover:bg-surface-sunken"
+                    >
+                      <span className="flex items-center gap-3">
+                        <span className="w-4 text-[13px] font-bold text-ink-faint">{index + 1}</span>
+                        <span className="text-[14px] font-medium text-ink">{topic.tag}</span>
+                      </span>
+                      <span className="text-[12.5px] text-ink-mute">{topic.posts}</span>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            </Reveal>
+
+            {/* ---------- Pulse ---------- */}
+            <Reveal delay={0.18}>
+              <section className="rounded-3xl border border-pulse/25 bg-pulse-soft/60 p-6">
+                <h2 className="font-display text-[16px] font-bold text-pulse-dark">
+                  Stuck on something?
+                </h2>
+                <p className="mt-2 text-[14px] leading-relaxed text-pulse-dark/80">
+                  Pulse can search every resource your communities have shared and answer with
+                  the sources it used.
                 </p>
+                <Users className="mt-4 h-5 w-5 text-pulse-dark/50" />
+              </section>
+            </Reveal>
+          </aside>
+        </div>
+      </main>
 
-                <div className="flex gap-2">
-                  <Button
-                    onClick={() => setShowConfirmDialog(false)}
-                    variant="outline"
-                    size="sm"
-                    className="flex-1"
-                  >
-                    No, Keep It
-                  </Button>
-                  <Button
-                    onClick={handleConfirm}
-                    size="sm"
-                    className="flex-1 bg-gray-700 hover:bg-gray-800"
-                  >
-                    Yes, {confirmAction.action === 'cancel' ? 'Cancel' : 'Leave'}
-                  </Button>
+      {/* ===================== Create community modal ===================== */}
+      <AnimatePresence>
+        {showCreateModal && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-ink/40 backdrop-blur-sm"
+              onClick={() => setShowCreateModal(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 10 }}
+              transition={{ duration: 0.2 }}
+              className="fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-[28px] border border-line bg-surface p-7 shadow-lift"
+            >
+              <div className="flex items-start justify-between">
+                <div>
+                  <h2 className="font-display text-xl font-bold tracking-[-0.02em] text-ink">
+                    Create a community
+                  </h2>
+                  <p className="mt-1 text-[14px] text-ink-mute">
+                    One subject, one room. Keep the name obvious.
+                  </p>
                 </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
+                  aria-label="Close"
+                  className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-ink-mute transition-colors hover:bg-surface-sunken hover:text-ink"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
 
-        {/* Create Community Modal */}
-        <AnimatePresence>
-          {showCreateModal && (
-            <>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/50 z-50"
-                onClick={() => setShowCreateModal(false)}
-              />
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-2xl shadow-2xl z-50 p-6"
-              >
-                <div className="flex items-center justify-between mb-5">
-                  <h2 className="text-xl font-bold text-gray-900">Create Community</h2>
+              <div className="mt-6 space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="community-name" className="text-[14px] font-medium text-ink">
+                    Name
+                  </label>
+                  <input
+                    id="community-name"
+                    value={newCommunityName}
+                    onChange={(e) => setNewCommunityName(e.target.value)}
+                    placeholder="Advanced Calculus Study Group"
+                    className="h-12 w-full rounded-xl border border-line-strong bg-surface px-4 text-[15px] text-ink transition-all duration-200 placeholder:text-ink-faint hover:border-ink-faint focus:border-pulse focus:outline-none focus:ring-4 focus:ring-pulse/10"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="community-subject" className="text-[14px] font-medium text-ink">
+                    Subject
+                  </label>
+                  <input
+                    id="community-subject"
+                    value={newCommunitySubject}
+                    onChange={(e) => setNewCommunitySubject(e.target.value)}
+                    placeholder="Mathematics"
+                    className="h-12 w-full rounded-xl border border-line-strong bg-surface px-4 text-[15px] text-ink transition-all duration-200 placeholder:text-ink-faint hover:border-ink-faint focus:border-pulse focus:outline-none focus:ring-4 focus:ring-pulse/10"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="community-desc" className="text-[14px] font-medium text-ink">
+                    Description
+                  </label>
+                  <textarea
+                    id="community-desc"
+                    value={newCommunityDescription}
+                    onChange={(e) => setNewCommunityDescription(e.target.value)}
+                    placeholder="What happens here, and who is it for?"
+                    rows={3}
+                    className="w-full resize-none rounded-xl border border-line-strong bg-surface px-4 py-3 text-[15px] leading-relaxed text-ink transition-all duration-200 placeholder:text-ink-faint hover:border-ink-faint focus:border-pulse focus:outline-none focus:ring-4 focus:ring-pulse/10"
+                  />
+                </div>
+
+                <div className="flex items-center gap-4 rounded-2xl border border-line bg-surface p-3">
+                  <div className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-2xl bg-surface-sunken">
+                    {communityPhotoPreview ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={communityPhotoPreview} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      <ImageIcon className="h-5 w-5 text-ink-faint" />
+                    )}
+                  </div>
+                  <div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleCommunityPhotoUpload}
+                      className="hidden"
+                      id="community-photo"
+                    />
+                    <label htmlFor="community-photo" className="cursor-pointer">
+                      <Button type="button" variant="secondary" size="sm" asChild>
+                        <span>Upload cover</span>
+                      </Button>
+                    </label>
+                    <p className="mt-1.5 text-[12.5px] text-ink-mute">Optional</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5">
                   <button
-                    onClick={() => setShowCreateModal(false)}
-                    className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+                    type="button"
+                    onClick={() => setIsPublicCommunity(true)}
+                    className={`flex-1 rounded-2xl border px-4 py-3 text-left transition-colors ${
+                      isPublicCommunity
+                        ? "border-ink bg-surface"
+                        : "border-line bg-surface hover:border-line-strong"
+                    }`}
                   >
-                    <X className="w-5 h-5" />
+                    <span className="block font-display text-[14px] font-bold text-ink">Open</span>
+                    <span className="block text-[12.5px] text-ink-mute">Anyone can join</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsPublicCommunity(false)}
+                    className={`flex-1 rounded-2xl border px-4 py-3 text-left transition-colors ${
+                      !isPublicCommunity
+                        ? "border-ink bg-surface"
+                        : "border-line bg-surface hover:border-line-strong"
+                    }`}
+                  >
+                    <span className="block font-display text-[14px] font-bold text-ink">
+                      By request
+                    </span>
+                    <span className="block text-[12.5px] text-ink-mute">You approve members</span>
                   </button>
                 </div>
+              </div>
 
-                <div className="space-y-4">
-                  {/* Photo Upload */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">
-                      Community Photo
-                    </label>
-                    <div className="flex items-center gap-4">
-                      <div className="w-20 h-20 rounded-xl border-2 border-gray-300 flex items-center justify-center bg-gray-50 overflow-hidden">
-                        {communityPhotoPreview ? (
-                          <img src={communityPhotoPreview} alt="Preview" className="w-full h-full object-cover" />
-                        ) : (
-                          <ImageIcon className="w-8 h-8 text-gray-400" />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleCommunityPhotoUpload}
-                          className="hidden"
-                          id="community-photo"
-                        />
-                        <label htmlFor="community-photo">
-                          <Button type="button" variant="outline" size="sm" className="cursor-pointer" asChild>
-                            <span>Upload Photo</span>
-                          </Button>
-                        </label>
-                        <p className="text-xs text-gray-500 mt-1">JPG, PNG or GIF (max. 5MB)</p>
-                      </div>
-                    </div>
-                  </div>
+              <div className="mt-7 flex gap-2">
+                <Button
+                  variant="secondary"
+                  className="flex-1"
+                  onClick={() => setShowCreateModal(false)}
+                >
+                  Cancel
+                </Button>
+                <Button className="flex-1" onClick={handleCreateCommunity}>
+                  Create community
+                </Button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">
-                      Community Name
-                    </label>
-                    <input
-                      type="text"
-                      value={newCommunityName}
-                      onChange={(e) => setNewCommunityName(e.target.value)}
-                      placeholder="e.g., Advanced Calculus Study Group"
-                      className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">
-                      Subject
-                    </label>
-                    <input
-                      type="text"
-                      value={newCommunitySubject}
-                      onChange={(e) => setNewCommunitySubject(e.target.value)}
-                      placeholder="e.g., Mathematics"
-                      className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">
-                      Description
-                    </label>
-                    <textarea
-                      value={newCommunityDescription}
-                      onChange={(e) => setNewCommunityDescription(e.target.value)}
-                      placeholder="Describe what your community is about..."
-                      className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 text-sm resize-none"
-                      rows={3}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">
-                      Privacy
-                    </label>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => setIsPublicCommunity(true)}
-                        className={`flex-1 px-3 py-2 rounded-lg border-2 text-sm transition-all ${
-                          isPublicCommunity
-                            ? 'border-blue-600 bg-blue-50 text-blue-700 font-medium'
-                            : 'border-gray-300 text-gray-700 hover:border-gray-400'
-                        }`}
-                      >
-                        <Globe className="w-4 h-4 inline mr-1" />
-                        Public
-                      </button>
-                      <button
-                        onClick={() => setIsPublicCommunity(false)}
-                        className={`flex-1 px-3 py-2 rounded-lg border-2 text-sm transition-all ${
-                          !isPublicCommunity
-                            ? 'border-blue-600 bg-blue-50 text-blue-700 font-medium'
-                            : 'border-gray-300 text-gray-700 hover:border-gray-400'
-                        }`}
-                      >
-                        <Lock className="w-4 h-4 inline mr-1" />
-                        Private
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2 pt-3">
-                    <Button
-                      onClick={() => setShowCreateModal(false)}
-                      variant="outline"
-                      size="sm"
-                      className="flex-1"
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={handleCreateCommunity}
-                      size="sm"
-                      className="flex-1 bg-blue-600 hover:bg-blue-700"
-                      disabled={!newCommunityName || !newCommunityDescription || !newCommunitySubject}
-                    >
-                      Create Community
-                    </Button>
-                  </div>
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
-
-        {/* PDF Zoom Modal */}
-        <AnimatePresence>
-          {pdfModal?.isOpen && (
-            <PDFViewerModal
-              isOpen={pdfModal.isOpen}
-              pdfUrl={pdfModal.pdfUrl}
-              pdfName={pdfModal.pdfName}
-              initialPage={pdfModal.page}
-              numPages={pdfModal.numPages}
-              onClose={() => setPdfModal(null)}
+      {/* ===================== Leave / cancel dialog ===================== */}
+      <AnimatePresence>
+        {showConfirmDialog && confirmAction && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-ink/40 backdrop-blur-sm"
+              onClick={() => setShowConfirmDialog(false)}
             />
-          )}
-        </AnimatePresence>
-      </div>
-    </PageTransition>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 8 }}
+              transition={{ duration: 0.18 }}
+              className="fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-[28px] border border-line bg-surface p-6 shadow-lift"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <h2 className="font-display text-lg font-bold tracking-[-0.02em] text-ink">
+                  {confirmAction.action === "cancel" ? "Cancel request?" : "Leave community?"}
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmDialog(false)}
+                  aria-label="Close"
+                  className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-ink-mute transition-colors hover:bg-surface-sunken hover:text-ink"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <p className="mt-3 text-[14.5px] leading-relaxed text-ink-soft">
+                {confirmAction.action === "cancel"
+                  ? `Are you sure you want to cancel your request to join “${confirmAction.name}”?`
+                  : `Are you sure you want to leave “${confirmAction.name}”?`}
+              </p>
+
+              <div className="mt-6 flex gap-2">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="flex-1"
+                  onClick={() => setShowConfirmDialog(false)}
+                >
+                  Keep it
+                </Button>
+                <Button size="sm" className="flex-1" onClick={handleConfirm}>
+                  Yes, {confirmAction.action === "cancel" ? "cancel" : "leave"}
+                </Button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {pdfModal && (
+        <PDFViewerModal
+          isOpen={pdfModal.isOpen}
+          pdfUrl={pdfModal.pdfUrl}
+          pdfName={pdfModal.pdfName}
+          initialPage={pdfModal.page}
+          numPages={pdfModal.numPages}
+          onClose={() => setPdfModal(null)}
+        />
+      )}
+    </div>
   )
 }

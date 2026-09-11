@@ -71,10 +71,10 @@ export function TimeInput({ value, onChange, className = "" }: TimeInputProps) {
         onChange={handleHourChange}
         placeholder="12"
         maxLength={2}
-        className="w-16 h-full rounded-xl border-2 border-gray-300 bg-white px-3 text-center text-base font-medium text-gray-900 focus:outline-none focus:border-gray-500 transition-all duration-200 hover:border-gray-400"
+        className="h-full w-16 rounded-xl border border-line-strong bg-surface px-3 text-center text-[15px] font-medium text-ink transition-all duration-200 placeholder:text-ink-faint hover:border-ink-faint focus:border-pulse focus:outline-none focus:ring-4 focus:ring-pulse/10"
       />
       
-      <span className="flex items-center text-xl font-semibold text-gray-400">:</span>
+      <span className="flex items-center text-xl font-semibold text-ink-faint">:</span>
       
       {/* Minute Input */}
       <input
@@ -83,18 +83,18 @@ export function TimeInput({ value, onChange, className = "" }: TimeInputProps) {
         onChange={handleMinuteChange}
         placeholder="00"
         maxLength={2}
-        className="w-16 h-full rounded-xl border-2 border-gray-300 bg-white px-3 text-center text-base font-medium text-gray-900 focus:outline-none focus:border-gray-500 transition-all duration-200 hover:border-gray-400"
+        className="h-full w-16 rounded-xl border border-line-strong bg-surface px-3 text-center text-[15px] font-medium text-ink transition-all duration-200 placeholder:text-ink-faint hover:border-ink-faint focus:border-pulse focus:outline-none focus:ring-4 focus:ring-pulse/10"
       />
       
       {/* AM/PM Toggle */}
-      <div className="flex rounded-xl border-2 border-gray-300 overflow-hidden h-full">
+      <div className="flex h-full overflow-hidden rounded-xl border border-line-strong bg-surface">
         <button
           type="button"
           onClick={() => setPeriod("AM")}
           className={`px-4 text-sm font-semibold transition-colors ${
             period === "AM"
-              ? "bg-[#2a2622] text-white"
-              : "bg-white text-gray-600 hover:bg-gray-50"
+              ? "bg-ink text-white"
+              : "bg-surface text-ink-soft hover:bg-surface-sunken"
           }`}
         >
           AM
@@ -104,8 +104,8 @@ export function TimeInput({ value, onChange, className = "" }: TimeInputProps) {
           onClick={() => setPeriod("PM")}
           className={`px-4 text-sm font-semibold transition-colors ${
             period === "PM"
-              ? "bg-[#2a2622] text-white"
-              : "bg-white text-gray-600 hover:bg-gray-50"
+              ? "bg-ink text-white"
+              : "bg-surface text-ink-soft hover:bg-surface-sunken"
           }`}
         >
           PM

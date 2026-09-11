@@ -1,72 +1,84 @@
-import Header from "@/components/Header"
+import type { Metadata } from "next"
+import LegalPage, { type LegalSection } from "@/components/LegalPage"
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: "What PeerPulse collects, what it doesn't, and what happens to your data.",
+}
+
+const SECTIONS: LegalSection[] = [
+  {
+    heading: "What we collect",
+    body: (
+      <>
+        <p className="mb-3">Information you give us directly:</p>
+        <ul className="space-y-1.5">
+          {[
+            "Name and university email address",
+            "Profile details — university, programme, subjects, study preferences",
+            "Session data — goals, duration, who you studied with",
+            "Anything you post in a community",
+          ].map((item) => (
+            <li key={item} className="flex gap-2.5">
+              <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-ink-faint" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </>
+    ),
+  },
+  {
+    heading: "How we use it",
+    body: (
+      <>
+        <p className="mb-3">We use what we collect to:</p>
+        <ul className="space-y-1.5">
+          {[
+            "Match you with people studying the same subjects",
+            "Run and improve the service",
+            "Send you the notifications you asked for (session reminders, replies)",
+            "Understand which features are actually used",
+          ].map((item) => (
+            <li key={item} className="flex gap-2.5">
+              <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-ink-faint" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-3">We don't sell your data, and we don't run third-party ad trackers.</p>
+      </>
+    ),
+  },
+  {
+    heading: "Video and audio",
+    body: "Media in a focus room is peer-to-peer or relayed through our media servers, encrypted in transit, and never written to disk. We store only session metadata: who, when, and how long.",
+  },
+  {
+    heading: "AI features",
+    body: "When you use Pulse, the relevant part of your question, goals or uploaded resources is sent to our model provider to generate an answer. It isn't used to train their models. You can turn AI features off in settings.",
+  },
+  {
+    heading: "Data security",
+    body: "We use encryption in transit and at rest, scoped database access, and regular reviews. No method of transmission over the internet is completely secure, but we take this seriously.",
+  },
+  {
+    heading: "Your rights",
+    body: "You can access, correct, export or delete your personal information at any time from account settings, or by asking us. Deletion is permanent within 30 days.",
+  },
+  {
+    heading: "Changes to this policy",
+    body: "If we change something meaningful, we'll tell you in the app and by email before it takes effect.",
+  },
+]
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-[#f5f1e8]">
-      <Header />
-      
-      <main className="max-w-4xl mx-auto px-4 py-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-6">Privacy Policy</h1>
-        <div className="bg-[#fdfcfa] rounded-2xl shadow-sm border-2 border-gray-300 p-8 space-y-6">
-          <p className="text-gray-600">
-            Last updated: {new Date().toLocaleDateString()}
-          </p>
-          
-          <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Information We Collect</h2>
-            <p className="text-gray-700 mb-3">
-              We collect information you provide directly to us, including:
-            </p>
-            <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
-              <li>Name and email address</li>
-              <li>Profile information (major, year, study preferences)</li>
-              <li>Study session data and goals</li>
-              <li>Usage information and analytics</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">2. How We Use Your Information</h2>
-            <p className="text-gray-700 mb-3">
-              We use the information we collect to:
-            </p>
-            <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
-              <li>Provide and improve our services</li>
-              <li>Match you with compatible study partners</li>
-              <li>Send you notifications and updates</li>
-              <li>Analyze usage patterns to enhance user experience</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">3. Data Security</h2>
-            <p className="text-gray-700">
-              We implement appropriate security measures to protect your personal information. However, no method of transmission over the internet is 100% secure.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">4. Video Call Privacy</h2>
-            <p className="text-gray-700">
-              Video calls are peer-to-peer and encrypted. We do not record or store video content. Session metadata (duration, participants) may be stored for analytics.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">5. Your Rights</h2>
-            <p className="text-gray-700">
-              You have the right to access, update, or delete your personal information at any time through your account settings.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">6. Changes to This Policy</h2>
-            <p className="text-gray-700">
-              We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy on this page.
-            </p>
-          </section>
-        </div>
-      </main>
-    </div>
+    <LegalPage
+      eyebrow="Legal"
+      title="Privacy Policy"
+      intro="The short version: we collect what's needed to match you, we don't record your sessions, and we never sell your data."
+      sections={SECTIONS}
+    />
   )
 }

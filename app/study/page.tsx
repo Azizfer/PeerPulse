@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Header from "@/components/Header"
+import { Avatar } from "@/components/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -376,7 +377,7 @@ export default function StudyPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-white overflow-x-hidden">
+    <div className="relative flex min-h-screen flex-col bg-paper overflow-x-hidden">
         <Header />
         
         {/* Live Cursors for real-time collaboration */}
@@ -396,14 +397,20 @@ export default function StudyPage() {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <h2 className="px-4 pt-5 pb-3 text-left text-3xl font-bold text-[#0A0A0A]" style={{ fontWeight: 700, letterSpacing: '-0.01em' }}>
-                    Set up your collaborative study session
-                  </h2>
+                  <div className="px-4 pb-2 pt-1">
+                    <p className="eyebrow">Focus room</p>
+                    <h2 className="mt-2 font-display text-[30px] font-extrabold leading-[1.08] tracking-[-0.035em] text-ink">
+                      Set up your session
+                    </h2>
+                    <p className="mt-2.5 text-[15px] leading-relaxed text-ink-soft">
+                      Pick what you&apos;re working on. We&apos;ll match you with someone in the same subject.
+                    </p>
+                  </div>
 
                   <div className="space-y-6">
                     {/* Subject Selection */}
                     <div className="px-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                      <label className="block text-sm font-medium text-ink-soft mb-2">Subject</label>
                       <CustomSelect
                         value={subject}
                         onChange={setSubject}
@@ -422,7 +429,7 @@ export default function StudyPage() {
 
                     {/* Duration Selection */}
                     <div className="px-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Duration</label>
+                      <label className="block text-sm font-medium text-ink-soft mb-2">Duration</label>
                       <CustomSelect
                         value={duration}
                         onChange={setDuration}
@@ -439,7 +446,7 @@ export default function StudyPage() {
 
                     {/* Draggable Study Goals */}
                     <div className="px-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                      <label className="block text-sm font-medium text-ink-soft mb-3">
                         Study Goals (Drag to reorder, shared with partners)
                       </label>
                       
@@ -462,17 +469,17 @@ export default function StudyPage() {
                                 >
                                   <SortableItem
                                     id={goal.id}
-                                    className="bg-gray-50 rounded-lg p-3 border border-gray-200"
+                                    className="rounded-2xl border border-line bg-surface-sunken p-3.5"
                                   >
                                     <div className="flex items-center justify-between">
-                                      <span className="text-sm text-gray-700">{goal.text}</span>
+                                      <span className="text-sm text-ink-soft">{goal.text}</span>
                                       <Button
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => removeGoal(goal.id)}
-                                        className="h-6 w-6 p-0 hover:bg-red-100"
+                                        className="h-7 w-7 p-0 hover:bg-rose/50"
                                       >
-                                        <X className="w-3 h-3 text-red-500" />
+                                        <X className="h-3.5 w-3.5 text-rose-deep" />
                                       </Button>
                                     </div>
                                   </SortableItem>
@@ -491,7 +498,7 @@ export default function StudyPage() {
                           value={newGoal}
                           onChange={(e) => setNewGoal(e.target.value)}
                           onKeyPress={(e) => e.key === 'Enter' && addGoal()}
-                          className="flex-1 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500 bg-[#fdfcfa] text-gray-900 transition-all duration-200 hover:border-gray-400 shadow-sm"
+                          className="h-11 flex-1 rounded-full border border-line-strong bg-surface px-4 text-[14px] text-ink transition-all duration-200 placeholder:text-ink-faint hover:border-ink-faint focus:border-pulse focus:outline-none focus:ring-4 focus:ring-pulse/10"
                         />
                         <Button onClick={addGoal} size="sm" disabled={!newGoal.trim()}>
                           <Plus className="w-4 h-4" />
@@ -501,7 +508,7 @@ export default function StudyPage() {
 
                     {/* File Upload Zone */}
                     <div className="px-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                      <label className="block text-sm font-medium text-ink-soft mb-3">
                         Study Materials (Shared with partners)
                       </label>
                       <FileUploadZone onFilesUploaded={(files) => console.log('Files:', files)} />
@@ -509,7 +516,7 @@ export default function StudyPage() {
 
                     {/* Camera and Mic Controls */}
                     <div className="px-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-3">Media Settings</label>
+                      <label className="block text-sm font-medium text-ink-soft mb-3">Media Settings</label>
                       <div className="flex gap-3">
                         <Button
                             onClick={handleCameraToggle}
@@ -536,7 +543,7 @@ export default function StudyPage() {
                           onClick={handleStartPairing}
                           disabled={!isFormValid}
                           loading={isStartingSession}
-                          className="h-12 min-w-[200px] relative bg-[#0A0A0A] text-white rounded-xl overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300" style={{ fontWeight: 600 }}
+                          className="h-12 min-w-[240px]" style={{ fontWeight: 600 }}
                         >
                           {!isStartingSession && <Search className="w-4 h-4 mr-2" />}
                           {isStartingSession ? "Preparing..." : "Start Collaborative Session"}
@@ -546,7 +553,7 @@ export default function StudyPage() {
                     {/* Form validation feedback */}
                     {!isFormValid && (
                       <div className="px-4">
-                        <p className="text-sm text-gray-500 text-center">
+                        <p className="text-sm text-ink-mute text-center">
                           Please fill in all fields and add at least one study goal to start pairing
                         </p>
                       </div>
@@ -563,7 +570,7 @@ export default function StudyPage() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.2 }}
-                  className="fixed inset-0 flex items-center justify-center bg-white z-10"
+                  className="fixed inset-0 flex items-center justify-center bg-paper z-10"
                   style={{ marginTop: '64px' }}
                 >
                   <div className="flex flex-col items-center justify-center max-w-md w-full px-6">
@@ -575,20 +582,20 @@ export default function StudyPage() {
                       }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
-                      <div className="absolute inset-0 bg-blue-500 rounded-full opacity-20 animate-ping" />
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                      <div className="absolute inset-0 bg-pulse rounded-full opacity-20 animate-ping" />
+                      <div className="absolute inset-0 flex items-center justify-center rounded-full bg-ink">
                         <Loader2 className="w-12 h-12 text-white animate-spin" />
                       </div>
                     </motion.div>
 
                     <motion.h3 
-                      className="text-2xl font-bold text-gray-900 mb-3 text-center"
+                      className="font-display text-[28px] font-extrabold tracking-[-0.035em] text-ink mb-3 text-center"
                       animate={{ opacity: [0.7, 1, 0.7] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
                       Finding your study partner
                     </motion.h3>
-                    <p className="text-gray-600 text-center mb-8">
+                    <p className="text-ink-soft text-center mb-8">
                       Matching you with someone studying {subject}...
                     </p>
 
@@ -609,54 +616,40 @@ export default function StudyPage() {
                   transition={{ duration: 0.5 }}
                 >
                   {/* Partner Info */}
-                  <Card className="hover:shadow-md transition-shadow mb-6 border-gray-200">
+                  <Card className="mb-6 border-line bg-surface">
                       <CardContent className="p-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
-                            <span className="text-white text-sm font-bold">{partner.name.charAt(0)}</span>
-                          </div>
+                          <Avatar name={partner.name} size="md" status="online" />
                           <div>
-                            <h3 className="font-bold text-gray-900">Studying with {partner.name}</h3>
-                            <p className="text-sm text-gray-600">{subject} • {duration} minutes</p>
+                            <h3 className="font-display font-bold tracking-[-0.02em] text-ink">Studying with {partner.name}</h3>
+                            <p className="text-sm text-ink-soft">{subject} • {duration} minutes</p>
                           </div>
                         </div>
                       </CardContent>
                     </Card>
 
-                  <h2 className="px-4 pt-5 pb-3 text-left text-3xl font-bold text-[#0A0A0A]" style={{ fontWeight: 700, letterSpacing: '-0.01em' }}>Collaborative Pomodoro Session</h2>
+                  <h2 className="px-4 pt-2 pb-3 text-left font-display text-[26px] font-extrabold tracking-[-0.035em] text-ink">Session</h2>
 
                   {/* Tabs for Timer/Whiteboard/Activity */}
-                  <div className="flex gap-2 px-4 mb-4 border-b border-gray-200">
-                    <button
-                      onClick={() => setActiveTab('timer')}
-                      className={`px-4 py-2 font-medium text-sm transition-colors ${
-                        activeTab === 'timer'
-                          ? 'text-blue-600 border-b-2 border-blue-600'
-                          : 'text-gray-600 hover:text-gray-900'
-                      }`}
-                    >
-                      Timer
-                    </button>
-                    <button
-                      onClick={() => setActiveTab('whiteboard')}
-                      className={`px-4 py-2 font-medium text-sm transition-colors ${
-                        activeTab === 'whiteboard'
-                          ? 'text-blue-600 border-b-2 border-blue-600'
-                          : 'text-gray-600 hover:text-gray-900'
-                      }`}
-                    >
-                      Whiteboard
-                    </button>
-                    <button
-                      onClick={() => setActiveTab('activity')}
-                      className={`px-4 py-2 font-medium text-sm transition-colors ${
-                        activeTab === 'activity'
-                          ? 'text-blue-600 border-b-2 border-blue-600'
-                          : 'text-gray-600 hover:text-gray-900'
-                      }`}
-                    >
-                      Activity
-                    </button>
+                  <div className="mb-6 inline-flex gap-1 rounded-full border border-line bg-surface-sunken p-1">
+                    {([
+                      { id: 'timer', label: 'Timer' },
+                      { id: 'whiteboard', label: 'Whiteboard' },
+                      { id: 'activity', label: 'Activity' },
+                    ] as const).map((tab) => (
+                      <button
+                        key={tab.id}
+                        type="button"
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`rounded-full px-4 py-2 font-display text-[13.5px] font-semibold transition-all ${
+                          activeTab === tab.id
+                            ? 'bg-surface text-ink shadow-soft'
+                            : 'text-ink-mute hover:text-ink'
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
                   </div>
 
                   {/* Timer Tab */}
@@ -670,8 +663,8 @@ export default function StudyPage() {
                       <div className="text-center mb-3">
                         <span className={`inline-block px-4 py-1 rounded-full text-sm font-medium ${
                           timerMode === 'work' 
-                            ? 'bg-blue-100 text-blue-700' 
-                            : 'bg-green-100 text-green-700'
+                            ? 'bg-pulse-soft text-pulse-dark' 
+                            : 'bg-lemon text-lemon-deep'
                         }`}>
                           {timerMode === 'work' ? 'Focus Time' : 'Break Time'}
                         </span>
@@ -680,25 +673,25 @@ export default function StudyPage() {
                       {/* Compact Timer Display */}
                       <div className="flex gap-3 justify-center mb-4">
                         <div className="text-center">
-                          <div className={`rounded-lg px-4 py-3 min-w-[80px] ${
-                            timerMode === 'work' ? 'bg-gray-100' : 'bg-green-50'
+                          <div className={`rounded-2xl px-6 py-4 min-w-[104px] ${
+                            timerMode === 'work' ? 'bg-surface-sunken' : 'bg-lemon/60'
                           }`}>
-                            <p className={`text-3xl font-bold ${
-                              timerMode === 'work' ? 'text-gray-900' : 'text-green-700'
+                            <p className={`text-[44px] font-extrabold leading-none tracking-tight ${
+                              timerMode === 'work' ? 'text-ink' : 'text-lemon-deep'
                             }`}>{minutes}</p>
                           </div>
-                          <p className="text-xs text-gray-600 mt-1">Minutes</p>
+                          <p className="text-xs text-ink-soft mt-1">Minutes</p>
                         </div>
-                        <div className="flex items-center text-2xl font-bold text-gray-400">:</div>
+                        <div className="flex items-center text-2xl font-bold text-ink-faint">:</div>
                         <div className="text-center">
-                          <div className={`rounded-lg px-4 py-3 min-w-[80px] ${
-                            timerMode === 'work' ? 'bg-gray-100' : 'bg-green-50'
+                          <div className={`rounded-2xl px-6 py-4 min-w-[104px] ${
+                            timerMode === 'work' ? 'bg-surface-sunken' : 'bg-lemon/60'
                           }`}>
-                            <p className={`text-3xl font-bold ${
-                              timerMode === 'work' ? 'text-gray-900' : 'text-green-700'
+                            <p className={`text-[44px] font-extrabold leading-none tracking-tight ${
+                              timerMode === 'work' ? 'text-ink' : 'text-lemon-deep'
                             }`}>{seconds}</p>
                           </div>
-                          <p className="text-xs text-gray-600 mt-1">Seconds</p>
+                          <p className="text-xs text-ink-soft mt-1">Seconds</p>
                         </div>
                       </div>
 
@@ -707,7 +700,7 @@ export default function StudyPage() {
                     <div className="flex max-w-[480px] flex-1 flex-wrap justify-center gap-3 px-4 py-3">
                       <Button
                           onClick={running ? pauseTimer : startTimer}
-                          className="relative w-full bg-[#0A0A0A] text-white rounded-xl overflow-hidden group transition-all duration-300" style={{ fontWeight: 600 }}
+                          className="w-full" style={{ fontWeight: 600 }}
                         >
                           {running ? 'Pause' : 'Start'}
                         </Button>
@@ -722,7 +715,7 @@ export default function StudyPage() {
                         <Button
                           onClick={skipBreak}
                           variant="outline"
-                          className="w-full border-green-500 text-green-700 hover:bg-green-50"
+                          className="w-full border-pulse text-pulse-dark hover:bg-pulse-soft"
                         >
                           Skip Break
                         </Button>
@@ -730,7 +723,7 @@ export default function StudyPage() {
                         <Button
                           onClick={takeBreak}
                           variant="outline"
-                          className="w-full border-green-500 text-green-700 hover:bg-green-50"
+                          className="w-full border-pulse text-pulse-dark hover:bg-pulse-soft"
                         >
                           Take Break
                         </Button>
@@ -745,15 +738,15 @@ export default function StudyPage() {
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.5 }}
                   >
-                    <p className="text-base font-medium text-gray-900">
+                    <p className="text-base font-medium text-ink">
                       {timerMode === 'work' ? 'Work Progress' : 'Break Progress'}
                     </p>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="h-2.5 w-full rounded-full bg-line">
                       <motion.div
                         className={`h-2 rounded-full ${
                           timerMode === 'work' 
-                            ? 'bg-gradient-to-r from-blue-500 to-blue-600' 
-                            : 'bg-gradient-to-r from-green-400 to-green-600'
+                            ? 'bg-ink' 
+                            : 'bg-pulse'
                         }`}
                         initial={{ width: 0 }}
                         animate={{ width: `${Math.max(0, Math.min(100, ((
@@ -764,7 +757,7 @@ export default function StudyPage() {
                         transition={{ duration: 0.3 }}
                       />
                     </div>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-ink-soft">
                       {Math.max(0, Math.min(100, Math.round(((
                         (timerMode === 'work' ? WORK_MINUTES : BREAK_MINUTES) * 60 - secondsLeft
                       ) / (
@@ -781,9 +774,9 @@ export default function StudyPage() {
                     transition={{ delay: 0.6 }}
                   >
                     <div className="flex items-center justify-between mb-3">
-                      <p className="text-base font-medium text-gray-900">Study Goals</p>
+                      <p className="text-base font-medium text-ink">Study Goals</p>
                       {running && (
-                        <p className="text-xs text-gray-500">Pause to change</p>
+                        <p className="text-xs text-ink-mute">Pause to change</p>
                       )}
                     </div>
                     <ul className="space-y-2">
@@ -794,28 +787,28 @@ export default function StudyPage() {
                             <button
                               onClick={() => !running && setActiveGoalId(isActive ? null : goal.id)}
                               disabled={running}
-                              className={`w-full flex items-start gap-2 text-sm p-2 rounded-lg transition-all ${
+                              className={`w-full flex items-start gap-2.5 text-sm p-3 rounded-2xl transition-all ${
                                 isActive 
-                                  ? 'bg-blue-50 border-2 border-blue-500 shadow-sm' 
-                                  : 'bg-[#fdfcfa] border-2 border-transparent hover:bg-gray-50'
+                                  ? 'border-2 border-pulse bg-pulse-soft/70' 
+                                  : 'border-2 border-transparent bg-surface hover:bg-surface-sunken'
                               } ${
                                 running ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
                               }`}
                             >
                               <Badge variant="outline" className={`mt-0.5 ${
                                 isActive 
-                                  ? 'bg-blue-600 text-white border-blue-600' 
-                                  : 'bg-blue-50 text-blue-700 border-blue-200'
+                                  ? 'border-pulse bg-pulse text-white' 
+                                  : 'border-line bg-surface-sunken text-ink-soft'
                               }`}>
                                 {studyGoals.indexOf(goal) + 1}
                               </Badge>
                               <span className={`flex-1 text-left ${
-                                isActive ? 'text-gray-900 font-medium' : 'text-gray-700'
+                                isActive ? 'text-ink font-medium' : 'text-ink-soft'
                               }`}>
                                 {goal.text}
                               </span>
                               {isActive && running && (
-                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mt-1.5"></div>
+                                <div className="mt-1.5 h-2 w-2 animate-pulse rounded-full bg-pulse"></div>
                               )}
                             </button>
                           </li>
@@ -851,7 +844,7 @@ export default function StudyPage() {
 
                   {/* End Session Button */}
                   <div className="flex justify-center px-4 py-3">
-                    <Button variant="outline" onClick={handleBackToSetup} className="text-red-600 border-red-300 hover:bg-red-50">
+                    <Button variant="outline" onClick={handleBackToSetup} className="border-rose text-rose-deep hover:bg-rose/40">
                       End Session
                     </Button>
                   </div>
@@ -867,15 +860,15 @@ export default function StudyPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-gray-900 z-50 flex flex-col"
+                className="fixed inset-0 z-50 flex flex-col bg-ink"
               >
                 {/* Timer Bar at Top */}
-                <div className="bg-black bg-opacity-50 backdrop-blur-sm px-6 py-4 flex items-center justify-between">
+                <div className="flex items-center justify-between bg-ink/80 px-6 py-4 backdrop-blur-md">
                   <div className="flex items-center gap-4">
                     <div className="text-white font-mono text-2xl font-bold">
                       {minutes}:{seconds}
                     </div>
-                    <div className="text-gray-300 text-sm">
+                    <div className="text-ink-mute text-sm">
                       Studying {subject} with {partner.name}
                     </div>
                   </div>
@@ -886,7 +879,7 @@ export default function StudyPage() {
                         onClick={running ? pauseTimer : startTimer}
                         variant="outline"
                         size="sm"
-                        className="bg-white bg-opacity-20 hover:bg-opacity-30 hover:text-white text-white border-white border-opacity-30"
+                        className="border-white/25 bg-white/10 text-white hover:bg-white/20"
                       >
                         {running ? 'Pause' : 'Start'}
                       </Button>
@@ -894,20 +887,20 @@ export default function StudyPage() {
                         onClick={resetTimer}
                         variant="outline"
                         size="sm"
-                        className="bg-white bg-opacity-20 hover:bg-opacity-30 hover:text-white text-white border-white border-opacity-30"
+                        className="border-white/25 bg-white/10 text-white hover:bg-white/20"
                       >
                         Reset
                       </Button>
                     </div>
                     
-                    <div className="h-6 w-px bg-white bg-opacity-30"></div>
+                    <div className="h-6 w-px bg-white/25"></div>
                     
                     <div className="flex items-center gap-2">
                       <Button
                         onClick={() => setShowChatInFullscreen(!showChatInFullscreen)}
                         variant="outline"
                         size="sm"
-                        className="bg-white bg-opacity-20 hover:bg-opacity-30 hover:text-white text-white border-white border-opacity-30"
+                        className="border-white/25 bg-white/10 text-white hover:bg-white/20"
                       >
                         {showChatInFullscreen ? 'Hide' : 'Show'} Chat
                       </Button>
@@ -915,7 +908,7 @@ export default function StudyPage() {
                         onClick={() => setIsFullscreen(false)}
                         variant="outline"
                         size="sm"
-                        className="bg-white bg-opacity-20 hover:bg-opacity-30 hover:text-white text-white border-white border-opacity-30"
+                        className="border-white/25 bg-white/10 text-white hover:bg-white/20"
                       >
                         Exit Fullscreen
                       </Button>
@@ -928,28 +921,28 @@ export default function StudyPage() {
                   {/* Main Camera (Large) - Centered */}
                   <div className="flex-1 max-w-4xl">
                     <div className="relative group">
-                      <div className="aspect-video bg-gray-800 rounded-xl flex items-center justify-center">
+                      <div className="aspect-video flex items-center justify-center rounded-3xl bg-ink/80 ring-1 ring-white/10">
                         {mainCameraIsPartner ? (
                           cameraOn ? (
-                            <div className="text-gray-400 text-lg">Partner's Camera</div>
+                            <div className="text-[17px] text-white/45">Partner's Camera</div>
                           ) : (
-                            <div className="flex flex-col items-center text-gray-400">
+                            <div className="flex flex-col items-center text-white/45">
                               <VideoOff className="w-16 h-16 mb-3" />
                               <span>{partner.name}'s camera is off</span>
                             </div>
                           )
                         ) : (
                           cameraOn ? (
-                            <div className="text-gray-400 text-lg">Your Camera</div>
+                            <div className="text-[17px] text-white/45">Your Camera</div>
                           ) : (
-                            <div className="flex flex-col items-center text-gray-400">
+                            <div className="flex flex-col items-center text-white/45">
                               <VideoOff className="w-16 h-16 mb-3" />
                               <span>Your camera is off</span>
                             </div>
                           )
                         )}
                       </div>
-                      <div className="absolute bottom-4 left-4 bg-black bg-opacity-70 text-white px-3 py-1 rounded-lg">
+                      <div className="absolute bottom-4 left-4 rounded-lg bg-black/60 px-3 py-1 text-white backdrop-blur-sm">
                         {mainCameraIsPartner ? partner.name : 'You'}
                       </div>
                     </div>
@@ -958,34 +951,34 @@ export default function StudyPage() {
                   {/* Small Camera - Click to switch */}
                   <div className="w-80 flex-shrink-0">
                     <div 
-                      className="relative group cursor-pointer hover:ring-4 hover:ring-blue-500 rounded-lg transition-all"
+                      className="relative group cursor-pointer hover:ring-4 hover:ring-pulse rounded-lg transition-all"
                       onClick={() => setMainCameraIsPartner(!mainCameraIsPartner)}
                     >
-                      <div className="aspect-video bg-gray-700 rounded-lg flex items-center justify-center">
+                      <div className="aspect-video flex items-center justify-center rounded-2xl bg-ink/70 ring-1 ring-white/10">
                         {mainCameraIsPartner ? (
                           cameraOn ? (
-                            <div className="text-gray-400 text-sm">Your Camera</div>
+                            <div className="text-[14px] text-white/45">Your Camera</div>
                           ) : (
-                            <div className="flex flex-col items-center text-gray-400">
+                            <div className="flex flex-col items-center text-white/45">
                               <VideoOff className="w-8 h-8 mb-1" />
                               <span className="text-xs">Camera off</span>
                             </div>
                           )
                         ) : (
                           cameraOn ? (
-                            <div className="text-gray-400 text-sm">Partner's Camera</div>
+                            <div className="text-[14px] text-white/45">Partner's Camera</div>
                           ) : (
-                            <div className="flex flex-col items-center text-gray-400">
+                            <div className="flex flex-col items-center text-white/45">
                               <VideoOff className="w-8 h-8 mb-1" />
                               <span className="text-xs">{partner.name}'s camera is off</span>
                             </div>
                           )
                         )}
                       </div>
-                      <div className="absolute bottom-2 left-2 bg-black bg-opacity-70 text-white px-2 py-0.5 rounded text-xs">
+                      <div className="absolute bottom-2 left-2 rounded bg-black/60 px-2 py-0.5 text-xs text-white backdrop-blur-sm">
                         {mainCameraIsPartner ? 'You' : partner.name}
                       </div>
-                      <div className="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute top-2 right-2 bg-pulse text-white px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity">
                         Click to swap
                       </div>
                     </div>
@@ -993,29 +986,29 @@ export default function StudyPage() {
                 </div>
 
                 {/* Controls at Bottom - No extra margin */}
-                <div className="bg-black bg-opacity-50 backdrop-blur-sm px-6 py-3 flex items-center justify-center gap-4">
+                <div className="flex items-center justify-center gap-4 bg-ink/80 px-6 py-4 backdrop-blur-md">
                   <button
                     onClick={handleCameraToggle}
-                    className={`rounded-full w-14 h-14 flex items-center justify-center transition-colors ${
+                    className={`flex h-14 w-14 items-center justify-center rounded-full transition-colors ${
                       cameraOn 
-                        ? 'bg-gray-700 hover:bg-gray-600' 
-                        : 'bg-red-600 hover:bg-red-700'
+                        ? 'bg-white/12 hover:bg-white/20' 
+                        : 'bg-rose-deep hover:bg-rose-deep/85'
                     }`}
                   >
                     {cameraOn ? <Video className="w-6 h-6 text-white" /> : <VideoOff className="w-6 h-6 text-white" />}
                   </button>
                   <button
                     onClick={handleMicToggle}
-                    className={`rounded-full w-14 h-14 flex items-center justify-center transition-colors ${
+                    className={`flex h-14 w-14 items-center justify-center rounded-full transition-colors ${
                       micOn 
-                        ? 'bg-gray-700 hover:bg-gray-600' 
-                        : 'bg-red-600 hover:bg-red-700'
+                        ? 'bg-white/12 hover:bg-white/20' 
+                        : 'bg-rose-deep hover:bg-rose-deep/85'
                     }`}
                   >
                     {micOn ? <Mic className="w-6 h-6 text-white" /> : <MicOff className="w-6 h-6 text-white" />}
                   </button>
                   
-                  <div className="h-8 w-px bg-white bg-opacity-30 mx-2"></div>
+                  <div className="mx-2 h-8 w-px bg-white/25"></div>
                   
                   <button
                     onClick={() => {
@@ -1025,7 +1018,7 @@ export default function StudyPage() {
                         setSearchProgress(0)
                       }, 300)
                     }}
-                    className="rounded-full w-14 h-14 flex items-center justify-center transition-colors bg-blue-600 hover:bg-blue-700"
+                    className="rounded-full w-14 h-14 flex items-center justify-center transition-colors bg-pulse hover:bg-pulse-dark"
                     title="Skip to find another partner"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1039,7 +1032,7 @@ export default function StudyPage() {
                       setIsFullscreen(false)
                       handleBackToSetup()
                     }}
-                    className="rounded-full w-14 h-14 flex items-center justify-center transition-colors bg-red-600 hover:bg-red-700"
+                    className="flex h-14 w-14 items-center justify-center rounded-full bg-rose-deep transition-colors hover:bg-rose-deep/85"
                     title="End session"
                   >
                     <X className="w-6 h-6 text-white" />
@@ -1054,11 +1047,11 @@ export default function StudyPage() {
                       animate={{ x: 0, opacity: 1 }}
                       exit={{ x: 400, opacity: 0 }}
                       transition={{ type: "spring", damping: 25 }}
-                      className="absolute right-0 top-0 bottom-0 w-96 bg-[#fdfcfa] shadow-2xl"
+                      className="absolute right-0 top-0 bottom-0 w-96 bg-surface shadow-2xl"
                     >
                       <div className="flex flex-col h-full">
-                        <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-                          <h3 className="font-bold text-gray-900">Chat with {partner.name}</h3>
+                        <div className="p-4 border-b border-line flex items-center justify-between">
+                          <h3 className="font-bold text-ink">Chat with {partner.name}</h3>
                           <Button
                             onClick={() => setShowChatInFullscreen(false)}
                             variant="ghost"
@@ -1067,19 +1060,19 @@ export default function StudyPage() {
                             <X className="w-4 h-4" />
                           </Button>
                         </div>
-                        <div className="h-64 bg-gray-50 p-4 overflow-y-auto">
+                        <div className="h-64 overflow-y-auto bg-surface-sunken p-4">
                           <div className="space-y-3">
                             {messages.map((msg) => (
                               <div key={msg.id} className="text-sm">
-                                <span className={`font-medium ${msg.sender === 'you' ? 'text-green-600' : 'text-blue-600'}`}>
+                                <span className={`font-medium ${msg.sender === 'you' ? 'text-pulse-dark' : 'text-lilac-deep'}`}>
                                   {msg.sender === 'you' ? 'You' : partner.name}:
                                 </span>
-                                <span className="ml-2 text-gray-700">{msg.text}</span>
+                                <span className="ml-2 text-ink-soft">{msg.text}</span>
                               </div>
                             ))}
                           </div>
                         </div>
-                        <div className="p-4 border-t border-gray-200">
+                        <div className="p-4 border-t border-line">
                           <div className="flex gap-2">
                             <input
                               type="text"
@@ -1087,9 +1080,9 @@ export default function StudyPage() {
                               onChange={(e) => setMessageInput(e.target.value)}
                               onKeyPress={handleMessageKeyPress}
                               placeholder="Type a message..."
-                              className="flex-1 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500 bg-white hover:border-gray-400 transition-all duration-200"
+                              className="h-11 flex-1 rounded-full border border-line-strong bg-surface px-4 text-[14px] text-ink transition-all duration-200 placeholder:text-ink-faint hover:border-ink-faint focus:border-pulse focus:outline-none focus:ring-4 focus:ring-pulse/10"
                             />
-                            <Button onClick={sendMessage} size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">Send</Button>
+                            <Button onClick={sendMessage} size="sm" className="bg-pulse hover:bg-pulse-dark text-white">Send</Button>
                           </div>
                         </div>
                       </div>
@@ -1111,10 +1104,10 @@ export default function StudyPage() {
                 transition={{ duration: 0.5 }}
               >
                 {/* Video Feed - Larger */}
-                <Card className="hover:shadow-md transition-shadow border-gray-200 flex-1">
+                <Card className="hover:shadow-md transition-shadow border-line flex-1">
                     <CardContent className="p-4 h-full flex flex-col">
                       <div className="flex items-center justify-between mb-4">
-                        <h3 className="font-bold text-gray-900">Video Call</h3>
+                        <h3 className="font-bold text-ink">Video Call</h3>
                         <div className="flex gap-2">
                           <Button
                             onClick={handleActivatePiP}
@@ -1138,34 +1131,34 @@ export default function StudyPage() {
                       <div className="space-y-4">
                         {/* Partner's Video */}
                         <div className="relative group">
-                          <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center hover:bg-gray-200 transition-colors duration-200">
+                          <div className="aspect-video flex items-center justify-center rounded-2xl bg-ink ring-1 ring-white/10 transition-colors duration-200">
                             {cameraOn ? (
-                              <div className="text-gray-500">Partner's Camera</div>
+                              <div className="text-[14px] text-white/45">Partner's camera</div>
                             ) : (
-                              <div className="flex flex-col items-center text-gray-500">
+                              <div className="flex flex-col items-center text-white/45">
                                 <VideoOff className="w-8 h-8 mb-2" />
                                 <span className="text-sm">{partner.name}'s camera is off</span>
                               </div>
                             )}
                           </div>
-                          <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
+                          <div className="absolute bottom-2 left-2 rounded bg-black/55 px-2 py-1 text-xs text-white backdrop-blur-sm">
                             {partner.name}
                           </div>
                         </div>
 
                         {/* Your Video */}
                         <div className="relative group">
-                          <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center hover:bg-gray-200 transition-colors duration-200">
+                          <div className="aspect-video flex items-center justify-center rounded-2xl bg-ink ring-1 ring-white/10 transition-colors duration-200">
                             {cameraOn ? (
-                              <div className="text-gray-500">Your Camera</div>
+                              <div className="text-[14px] text-white/45">Your camera</div>
                             ) : (
-                              <div className="flex flex-col items-center text-gray-500">
+                              <div className="flex flex-col items-center text-white/45">
                                 <VideoOff className="w-8 h-8 mb-2" />
                                 <span className="text-sm">Your camera is off</span>
                               </div>
                             )}
                           </div>
-                          <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
+                          <div className="absolute bottom-2 left-2 rounded bg-black/55 px-2 py-1 text-xs text-white backdrop-blur-sm">
                             You
                           </div>
                         </div>
@@ -1194,19 +1187,19 @@ export default function StudyPage() {
                   </Card>
 
                 {/* Chat - Larger */}
-                <Card className="flex-1 hover:shadow-md transition-shadow duration-200 border-gray-200">
+                <Card className="flex-1 hover:shadow-md transition-shadow duration-200 border-line">
                     <CardContent className="p-4 h-full flex flex-col">
-                      <h3 className="font-bold text-gray-900 mb-4">Chat with {partner.name}</h3>
+                      <h3 className="font-bold text-ink mb-4">Chat with {partner.name}</h3>
 
                       {/* Chat Messages */}
-                      <div className="h-48 bg-gray-50 rounded-lg p-3 mb-4 overflow-y-auto">
+                      <div className="mb-4 h-48 overflow-y-auto rounded-2xl bg-surface-sunken p-3.5">
                         <div className="space-y-3">
                           {messages.map((msg) => (
                             <div key={msg.id} className="text-sm">
-                              <span className={`font-medium ${msg.sender === 'you' ? 'text-green-600' : 'text-blue-600'}`}>
+                              <span className={`font-medium ${msg.sender === 'you' ? 'text-pulse-dark' : 'text-lilac-deep'}`}>
                                 {msg.sender === 'you' ? 'You' : partner.name}:
                               </span>
-                              <span className="ml-2 text-gray-700">{msg.text}</span>
+                              <span className="ml-2 text-ink-soft">{msg.text}</span>
                             </div>
                           ))}
                         </div>
@@ -1220,9 +1213,9 @@ export default function StudyPage() {
                           onChange={(e) => setMessageInput(e.target.value)}
                           onKeyPress={handleMessageKeyPress}
                           placeholder="Type a message..."
-                          className="flex-1 px-3 py-2.5 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500 bg-white text-gray-900 transition-all duration-200 hover:border-gray-400 shadow-sm"
+                          className="h-11 flex-1 rounded-full border border-line-strong bg-surface px-4 text-[14px] text-ink transition-all duration-200 placeholder:text-ink-faint hover:border-ink-faint focus:border-pulse focus:outline-none focus:ring-4 focus:ring-pulse/10"
                         />
-                        <Button onClick={sendMessage} size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">Send</Button>
+                        <Button onClick={sendMessage} size="sm" className="bg-pulse hover:bg-pulse-dark text-white">Send</Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -1238,65 +1231,65 @@ export default function StudyPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+              className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-4 backdrop-blur-sm"
             >
               <motion.div
                 initial={{ scale: 0.9, y: 20 }}
                 animate={{ scale: 1, y: 0 }}
                 exit={{ scale: 0.9, y: 20 }}
-                className="bg-[#fdfcfa] rounded-2xl shadow-2xl max-w-[380px] w-full overflow-hidden"
+                className="w-full max-w-[380px] overflow-hidden rounded-[28px] bg-surface shadow-lift"
               >
                 {/* Simple header bar */}
-                <div className="bg-gradient-to-r from-blue-600 to-blue-500 px-5 py-2.5 text-white text-center">
-                  <h2 className="text-base font-semibold">Match Found</h2>
+                <div className="bg-ink px-5 py-3 text-center text-white">
+                  <h2 className="font-display text-[15px] font-bold uppercase tracking-[0.1em]">Match found</h2>
                 </div>
 
                 {/* Content */}
                 <div className="p-4">
                   {/* Partner Profile */}
                   <div className="text-center mb-3">
-                    <div className="w-16 h-16 mx-auto mb-2 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-md">
-                      {partner.name[0]}
+                    <div className="mb-2 flex justify-center">
+                      <Avatar name={partner.name} size="xl" />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900">{partner.name}</h3>
-                    <p className="text-xs text-gray-600">{partner.major} • {partner.year}</p>
+                    <h3 className="text-lg font-bold text-ink">{partner.name}</h3>
+                    <p className="text-xs text-ink-soft">{partner.major} • {partner.year}</p>
                     <div className="flex items-center justify-center gap-1 mt-1.5">
                       {[...Array(5)].map((_, i) => (
                         <svg
                           key={i}
-                          className={`w-4 h-4 ${i < Math.floor(partner.rating) ? 'text-yellow-400' : 'text-gray-300'}`}
+                          className={`w-4 h-4 ${i < Math.floor(partner.rating) ? 'text-lemon-deep' : 'text-line-strong'}`}
                           fill="currentColor"
                           viewBox="0 0 20 20"
                         >
                           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                         </svg>
                       ))}
-                      <span className="text-sm text-gray-600 ml-1">({partner.rating})</span>
+                      <span className="text-sm text-ink-soft ml-1">({partner.rating})</span>
                     </div>
                   </div>
 
                   {/* Session Details */}
-                  <div className="bg-gray-50 rounded-lg p-3 mb-3">
+                  <div className="bg-surface-sunken rounded-lg p-3 mb-3">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-semibold text-gray-700">Subject</span>
-                      <span className="text-sm font-bold text-gray-900">{subject}</span>
+                      <span className="text-sm font-semibold text-ink-soft">Subject</span>
+                      <span className="text-sm font-bold text-ink">{subject}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-semibold text-gray-700">Duration</span>
-                      <span className="text-sm font-bold text-gray-900">{duration} minutes</span>
+                      <span className="text-sm font-semibold text-ink-soft">Duration</span>
+                      <span className="text-sm font-bold text-ink">{duration} minutes</span>
                     </div>
                   </div>
 
                   {/* Their Goals */}
                   <div className="mb-3">
-                    <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1">
+                    <h4 className="text-sm font-semibold text-ink-soft mb-2 flex items-center gap-1">
                       <Target className="w-4 h-4" />
                       Their Goals
                     </h4>
                     <div className="space-y-2">
                       {partner.sessionGoals.map((goal, idx) => (
-                        <div key={idx} className="flex items-start gap-2 text-sm text-gray-600">
-                          <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-1.5 flex-shrink-0" />
+                        <div key={idx} className="flex items-start gap-2 text-sm text-ink-soft">
+                          <div className="w-1.5 h-1.5 bg-pulse rounded-full mt-1.5 flex-shrink-0" />
                           <span>{goal}</span>
                         </div>
                       ))}
@@ -1314,7 +1307,7 @@ export default function StudyPage() {
                           setPhase('searching')
                         }, 100)
                       }}
-                      className="flex-1 px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all"
+                      className="flex-1 rounded-xl bg-surface-sunken px-5 py-2.5 font-semibold text-ink-soft transition-all hover:bg-line/50"
                     >
                       Decline
                     </button>
@@ -1323,7 +1316,7 @@ export default function StudyPage() {
                         setShowMatchCard(false)
                         setPhase('session')
                       }}
-                      className="flex-1 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
+                      className="flex-1 rounded-xl bg-ink px-5 py-2.5 font-semibold text-white shadow-soft transition-all hover:shadow-card"
                     >
                       Accept
                     </button>

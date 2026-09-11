@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Header from "@/components/Header"
-import { PageTransition } from "@/components/page-transition"
+import { Avatar } from "@/components/avatar"
 import { X, Search, ChevronLeft, ChevronRight } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
@@ -164,33 +164,36 @@ export default function SchedulePage() {
     .sort((a, b) => a.date.getTime() - b.date.getTime())
 
   return (
-    <PageTransition>
-      <div className="min-h-screen bg-white">
+    <>
+      <div className="min-h-screen bg-paper">
         <Header />
 
-        <main className="max-w-[1400px] mx-auto px-6 py-16">
-          <div className="mb-12">
-            <h1 className="text-6xl font-bold text-gray-900 mb-4">Schedule</h1>
-            <p className="text-xl text-gray-600">Plan your study sessions with friends</p>
+        <main className="container-page max-w-6xl py-10 sm:py-14">
+          <div className="mb-10">
+            <span className="eyebrow">Plan ahead</span>
+            <h1 className="mt-3 font-display text-h2 font-extrabold text-ink">Schedule</h1>
+            <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-ink-soft">
+              Book a focus session with a peer, or claim a slot for yourself first.
+            </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-3xl p-6 border-2 border-gray-300">
+              <div className="rounded-3xl border border-line bg-surface p-6 shadow-soft">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">
+                  <h2 className="font-display text-[22px] font-extrabold tracking-[-0.03em] text-ink">
                     {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
                   </h2>
                   <div className="flex gap-2">
                     <button
                       onClick={previousMonth}
-                      className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                      className="rounded-full p-2 text-ink-soft transition-colors hover:bg-surface-sunken hover:text-ink"
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </button>
                     <button
                       onClick={nextMonth}
-                      className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                      className="rounded-full p-2 text-ink-soft transition-colors hover:bg-surface-sunken hover:text-ink"
                     >
                       <ChevronRight className="w-5 h-5" />
                     </button>
@@ -199,7 +202,7 @@ export default function SchedulePage() {
 
                 <div className="grid grid-cols-7 gap-1.5">
                   {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
-                    <div key={day} className="text-center text-xs font-semibold text-gray-600 py-1.5">
+                    <div key={day} className="py-1.5 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-faint">
                       {day}
                     </div>
                   ))}
@@ -218,16 +221,16 @@ export default function SchedulePage() {
                         key={day}
                         onClick={() => handleDayClick(day)}
                         className={`
-                          aspect-square rounded-lg p-1 text-sm text-center relative
-                          transition-all hover:scale-105
-                          ${today ? "bg-[#2a2622] text-white font-bold" : "hover:bg-gray-100"}
-                          ${hasSessionDay && !today ? "bg-[#e8dcc8] font-semibold" : ""}
+                          relative aspect-square rounded-xl p-1 text-center text-sm
+                          transition-all duration-150 hover:-translate-y-0.5
+                          ${today ? "bg-ink font-bold text-white shadow-soft" : "text-ink-soft hover:bg-surface-sunken hover:text-ink"}
+                          ${hasSessionDay && !today ? "bg-pulse-soft font-semibold text-pulse-dark hover:bg-pulse-soft" : ""}
                         `}
                       >
                         <span>{day}</span>
                         {hasSessionDay && (
                           <div className="absolute bottom-0.5 left-1/2 transform -translate-x-1/2">
-                            <div className="w-1 h-1 bg-blue-500 rounded-full" />
+                            <div className="h-1.5 w-1.5 rounded-full bg-pulse" />
                           </div>
                         )}
                       </button>
@@ -238,35 +241,35 @@ export default function SchedulePage() {
             </div>
 
             <div>
-              <div className="bg-white rounded-3xl p-8 border-2 border-gray-300 sticky top-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">Upcoming Sessions</h3>
+              <div className="sticky top-8 rounded-3xl border border-line bg-surface p-6 shadow-soft">
+                <h3 className="font-display text-[18px] font-extrabold tracking-[-0.025em] text-ink">Upcoming sessions</h3>
                 
                 <div className="space-y-4">
                   {upcomingSessions.length === 0 ? (
                     <div className="text-center py-8">
-                      <CalendarIcon className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                      <p className="text-gray-500">No sessions scheduled</p>
-                      <p className="text-sm text-gray-400 mt-1">Click a date to create one</p>
+                      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-surface-sunken">
+                        <CalendarIcon className="w-6 h-6 text-ink-faint" />
+                      </div>
+                      <p className="font-display text-[15px] font-bold text-ink">No sessions scheduled</p>
+                      <p className="mt-1 text-sm text-ink-faint">Click a date to create one</p>
                     </div>
                   ) : (
                     upcomingSessions.map(session => (
                       <div
                         key={session.id}
-                        className="p-4 bg-[#f5f1e8] rounded-xl hover:bg-[#e8dcc8] transition-colors"
+                        className="rounded-2xl border border-line bg-surface-sunken/60 p-4 transition-colors hover:border-pulse/40 hover:bg-pulse-soft/40"
                       >
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex items-center gap-2">
-                            <div className="w-10 h-10 rounded-full bg-[#2a2622] text-white flex items-center justify-center text-sm font-bold">
-                              {session.friend.avatar}
-                            </div>
+                            <Avatar name={session.friend.name} size="sm" status={session.friend.status} />
                             <div>
-                              <div className="font-semibold text-gray-900">{session.friend.name}</div>
-                              <div className="text-xs text-gray-600">{session.time}</div>
+                              <div className="font-semibold text-ink">{session.friend.name}</div>
+                              <div className="text-xs text-ink-soft">{session.time}</div>
                             </div>
                           </div>
                         </div>
-                        <div className="text-sm text-gray-700 mb-1">{session.topic}</div>
-                        <div className="flex items-center gap-3 text-xs text-gray-500">
+                        <div className="mb-2 text-sm font-medium text-ink">{session.topic}</div>
+                        <div className="flex items-center gap-3 text-xs text-ink-mute">
                           <span className="flex items-center gap-1">
                             <CalendarIcon className="w-3 h-3" />
                             {session.date.toLocaleDateString()}
@@ -292,29 +295,29 @@ export default function SchedulePage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/50 z-40"
+                className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
                 onClick={() => setIsModalOpen(false)}
               />
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-white rounded-3xl p-8 z-50 max-h-[90vh] overflow-y-auto"
+                className="fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-[28px] border border-line bg-surface p-7 shadow-lift sm:p-8"
               >
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-3xl font-bold text-gray-900">Schedule Session</h2>
+                  <h2 className="font-display text-[26px] font-extrabold tracking-[-0.03em] text-ink">Schedule session</h2>
                   <button
                     onClick={() => setIsModalOpen(false)}
-                    className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+                    className="rounded-full p-2 text-ink-mute transition-colors hover:bg-surface-sunken hover:text-ink"
                   >
                     <X className="w-6 h-6" />
                   </button>
                 </div>
 
                 <div className="space-y-6">
-                  <div className="p-4 bg-[#f5f1e8] rounded-xl">
-                    <div className="text-sm text-gray-600 mb-1">Selected Date</div>
-                    <div className="text-xl font-semibold text-gray-900">
+                  <div className="rounded-2xl bg-pulse-soft/60 p-4">
+                    <div className="text-xs font-semibold uppercase tracking-[0.14em] text-pulse-dark">Selected date</div>
+                    <div className="mt-1 font-display text-[18px] font-bold text-ink">
                       {selectedDate?.toLocaleDateString("en-US", {
                         weekday: "long",
                         year: "numeric",
@@ -325,17 +328,17 @@ export default function SchedulePage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-3">
-                      Select Friend
+                    <label className="mb-3 block text-sm font-semibold text-ink">
+                      Select friend
                     </label>
                     <div className="relative mb-3">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-ink-faint" />
                       <Input
                         type="text"
                         placeholder="Search friends..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10 h-12 rounded-xl border-2 border-gray-300"
+                        className="h-12 rounded-xl border-line pl-10"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto">
@@ -344,21 +347,18 @@ export default function SchedulePage() {
                           key={friend.id}
                           onClick={() => setSelectedFriend(friend)}
                           className={`
-                            p-4 rounded-xl border-2 transition-all text-left
+                            rounded-2xl border p-4 text-left transition-all duration-150
                             ${selectedFriend?.id === friend.id
-                              ? "border-[#2a2622] bg-[#f5f1e8]"
-                              : "border-gray-300 hover:border-gray-400"
+                              ? "border-pulse bg-pulse-soft/50 shadow-soft"
+                              : "border-line hover:border-ink-faint hover:bg-surface-sunken/50"
                             }
                           `}
                         >
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-[#2a2622] text-white flex items-center justify-center font-bold">
-                              {friend.avatar}
-                            </div>
+                            <Avatar name={friend.name} size="sm" status={friend.status} />
                             <div>
-                              <div className="font-semibold text-gray-900">{friend.name}</div>
-                              <div className="text-xs text-gray-600 flex items-center gap-1">
-                                <div className={`w-2 h-2 rounded-full ${friend.status === "online" ? "bg-green-500" : "bg-gray-400"}`} />
+                              <div className="font-semibold text-ink">{friend.name}</div>
+                              <div className="flex items-center gap-1 text-xs capitalize text-ink-mute">
                                 {friend.status}
                               </div>
                             </div>
@@ -370,7 +370,7 @@ export default function SchedulePage() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-900 mb-2">
+                      <label className="mb-2 block text-sm font-semibold text-ink">
                         Time
                       </label>
                       <TimeInput
@@ -380,7 +380,7 @@ export default function SchedulePage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-900 mb-2">
+                      <label className="mb-2 block text-sm font-semibold text-ink">
                         Duration
                       </label>
                       <div className="h-12">
@@ -396,29 +396,23 @@ export default function SchedulePage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">
-                      Session Topic
+                    <label className="mb-2 block text-sm font-semibold text-ink">
+                      Session topic
                     </label>
                     <Textarea
                       placeholder="What will you be studying?"
                       value={sessionTopic}
                       onChange={(e) => setSessionTopic(e.target.value)}
-                      className="min-h-24 rounded-xl border-2 border-gray-300"
+                      className="min-h-24 rounded-xl border-line"
                     />
                   </div>
 
                   <div className="flex gap-3 pt-4">
-                    <Button
-                      onClick={() => setIsModalOpen(false)}
-                      className="flex-1 h-12 rounded-xl bg-gray-200 text-gray-900 hover:bg-gray-300"
-                    >
+                    <Button variant="outline" size="lg" className="flex-1" onClick={() => setIsModalOpen(false)}>
                       Cancel
                     </Button>
-                    <Button
-                      onClick={handleCreateSession}
-                      className="flex-1 h-12 rounded-xl bg-[#2a2622] text-white hover:bg-[#1a1612]"
-                    >
-                      Schedule Session
+                    <Button variant="accent" size="lg" className="flex-1" onClick={handleCreateSession}>
+                      Schedule session
                     </Button>
                   </div>
                 </div>
@@ -427,6 +421,6 @@ export default function SchedulePage() {
           )}
         </AnimatePresence>
       </div>
-    </PageTransition>
+    </>
   )
 }

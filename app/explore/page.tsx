@@ -1,173 +1,186 @@
 "use client"
 
 import { useState } from "react"
+import { Clock, Globe, Lock, Search, Users, X } from "lucide-react"
 import Header from "@/components/Header"
-import { PageTransition } from "@/components/page-transition"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Users, Search, Lock, Clock, TrendingUp, Globe, X } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { Avatar } from "@/components/avatar"
+import { Reveal } from "@/components/reveal"
 import { AnimatePresence, motion } from "framer-motion"
 
 const allCommunities = [
   {
     id: 1,
     name: "Advanced Calculus Study Group",
-    description: "Deep dive into calculus concepts with fellow math enthusiasts. We cover derivatives, integrals, and real-world applications.",
+    description:
+      "Deep dive into calculus with fellow math students. Derivatives, integrals and the problems that keep coming up in past papers.",
     members: 247,
     subject: "Mathematics",
     level: "Advanced",
     meetingTime: "Tuesdays 7 PM",
     creator: "Dr. Sarah Chen",
-    isPremium: true,
     isPublic: true,
-    membershipStatus: null as 'member' | 'pending' | null,
+    membershipStatus: null as "member" | "pending" | null,
   },
   {
     id: 2,
     name: "Biology Pre-Med Students",
-    description: "Study group for pre-med students focusing on biology fundamentals, anatomy, and MCAT preparation.",
+    description:
+      "For pre-med students grinding through biology fundamentals, anatomy and MCAT preparation.",
     members: 189,
     subject: "Biology",
     level: "Intermediate",
     meetingTime: "Thursdays 6 PM",
     creator: "Alex Rodriguez",
-    isPremium: true,
     isPublic: false,
-    membershipStatus: null as 'member' | 'pending' | null,
+    membershipStatus: null as "member" | "pending" | null,
   },
   {
     id: 3,
     name: "Computer Science Algorithms",
-    description: "Master data structures and algorithms together. Perfect for coding interviews and competitive programming.",
+    description:
+      "Master data structures and algorithms together. Built around interview prep and competitive programming.",
     members: 312,
     subject: "Computer Science",
     level: "Intermediate",
     meetingTime: "Saturdays 3 PM",
     creator: "Mike Johnson",
-    isPremium: true,
     isPublic: true,
-    membershipStatus: null as 'member' | 'pending' | null,
+    membershipStatus: null as "member" | "pending" | null,
   },
   {
     id: 4,
     name: "Physics Study Hub",
-    description: "Explore physics concepts from mechanics to quantum theory. Collaborative problem-solving and discussions.",
+    description:
+      "From mechanics to quantum. Collaborative problem-solving, weekly problem sets, no judgement.",
     members: 156,
     subject: "Physics",
     level: "Advanced",
     meetingTime: "Wednesdays 5 PM",
     creator: "Emma Wilson",
-    isPremium: true,
     isPublic: false,
-    membershipStatus: null as 'member' | 'pending' | null,
+    membershipStatus: null as "member" | "pending" | null,
   },
   {
     id: 5,
     name: "Spanish Learners",
-    description: "Practice Spanish conversation, grammar, and culture. All levels welcome from beginners to advanced.",
+    description:
+      "Practise conversation and grammar together. Beginners welcome — everyone was a beginner last term.",
     members: 89,
     subject: "Languages",
     level: "Beginner",
     meetingTime: "Mondays 7 PM",
     creator: "Carlos Martinez",
-    isPremium: true,
     isPublic: true,
-    membershipStatus: null as 'member' | 'pending' | null,
+    membershipStatus: null as "member" | "pending" | null,
   },
   {
     id: 6,
     name: "Data Science 101",
-    description: "Learn Python, machine learning, and data visualization. Build real-world projects together.",
+    description:
+      "Python, machine learning and visualisation, with real projects you can put on a CV afterwards.",
     members: 234,
     subject: "Computer Science",
     level: "Intermediate",
     meetingTime: "Fridays 6 PM",
     creator: "Lisa Chen",
-    isPremium: true,
     isPublic: true,
-    membershipStatus: null as 'member' | 'pending' | null,
+    membershipStatus: null as "member" | "pending" | null,
   },
   {
     id: 7,
     name: "World History Discussion",
-    description: "Explore historical events, analyze primary sources, and debate historical interpretations.",
+    description:
+      "Work through primary sources, argue about interpretations, and leave with better essays.",
     members: 67,
     subject: "History",
     level: "Intermediate",
     meetingTime: "Sundays 4 PM",
     creator: "Prof. Anderson",
-    isPremium: true,
     isPublic: false,
-    membershipStatus: null as 'member' | 'pending' | null,
+    membershipStatus: null as "member" | "pending" | null,
   },
   {
     id: 8,
     name: "Chemistry Lab Partners",
-    description: "Collaborate on chemistry experiments, study reactions, and prepare for organic chemistry.",
+    description:
+      "Compare lab results, study reaction mechanisms and survive organic chemistry as a group.",
     members: 123,
     subject: "Chemistry",
     level: "Advanced",
     meetingTime: "Tuesdays 6 PM",
     creator: "Dr. Patel",
-    isPremium: true,
     isPublic: true,
-    membershipStatus: null as 'member' | 'pending' | null,
+    membershipStatus: null as "member" | "pending" | null,
   },
   {
     id: 9,
     name: "Creative Writing Circle",
-    description: "Share your stories, get feedback, and improve your writing skills in a supportive environment.",
+    description:
+      "Share drafts, get honest feedback and write more often than you would on your own.",
     members: 78,
     subject: "English",
     level: "All Levels",
     meetingTime: "Thursdays 7 PM",
     creator: "Jane Cooper",
-    isPremium: true,
     isPublic: true,
-    membershipStatus: null as 'member' | 'pending' | null,
+    membershipStatus: null as "member" | "pending" | null,
   },
 ]
 
+const SUBJECTS = [
+  "All",
+  "Mathematics",
+  "Biology",
+  "Computer Science",
+  "Physics",
+  "Languages",
+  "History",
+  "Chemistry",
+  "English",
+]
+
+const LEVELS = ["All", "Beginner", "Intermediate", "Advanced"]
+
 export default function ExplorePage() {
-  const { toast } = useToast()
   const [communities, setCommunities] = useState(allCommunities)
   const [searchQuery, setSearchQuery] = useState("")
   const [filterSubject, setFilterSubject] = useState<string>("all")
   const [filterLevel, setFilterLevel] = useState<string>("all")
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
-  const [confirmAction, setConfirmAction] = useState<{ communityId: number; action: 'cancel' | 'leave'; name: string } | null>(null)
+  const [confirmAction, setConfirmAction] = useState<{
+    communityId: number
+    action: "cancel" | "leave"
+    name: string
+  } | null>(null)
 
-  const subjects = ["All", "Mathematics", "Biology", "Computer Science", "Physics", "Languages", "History", "Chemistry", "English"]
-  const levels = ["All", "Beginner", "Intermediate", "Advanced"]
-
-  const filteredCommunities = communities.filter(community => {
-    const matchesSearch = community.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         community.description.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredCommunities = communities.filter((community) => {
+    const query = searchQuery.toLowerCase()
+    const matchesSearch =
+      community.name.toLowerCase().includes(query) ||
+      community.description.toLowerCase().includes(query)
     const matchesSubject = filterSubject === "all" || community.subject === filterSubject
-    return matchesSearch && matchesSubject
+    const matchesLevel = filterLevel === "all" || community.level === filterLevel
+    return matchesSearch && matchesSubject && matchesLevel
   })
 
   const handleJoin = (communityId: number) => {
-    setCommunities(prev => prev.map(c => {
-      if (c.id === communityId) {
-        if (c.isPublic) {
-          return { ...c, membershipStatus: 'member' }
-        } else {
-          return { ...c, membershipStatus: 'pending' }
-        }
-      }
-      return c
-    }))
+    setCommunities((prev) =>
+      prev.map((c) =>
+        c.id === communityId
+          ? { ...c, membershipStatus: c.isPublic ? "member" : "pending" }
+          : c,
+      ),
+    )
   }
 
-  const handleButtonClick = (community: typeof communities[0]) => {
-    if (community.membershipStatus === 'pending') {
-      setConfirmAction({ communityId: community.id, action: 'cancel', name: community.name })
+  const handleButtonClick = (community: (typeof communities)[0]) => {
+    if (community.membershipStatus === "pending") {
+      setConfirmAction({ communityId: community.id, action: "cancel", name: community.name })
       setShowConfirmDialog(true)
-    } else if (community.membershipStatus === 'member') {
-      setConfirmAction({ communityId: community.id, action: 'leave', name: community.name })
+    } else if (community.membershipStatus === "member") {
+      setConfirmAction({ communityId: community.id, action: "leave", name: community.name })
       setShowConfirmDialog(true)
     } else {
       handleJoin(community.id)
@@ -176,210 +189,252 @@ export default function ExplorePage() {
 
   const handleConfirm = () => {
     if (!confirmAction) return
-
-    if (confirmAction.action === 'cancel' || confirmAction.action === 'leave') {
-      setCommunities(prev => prev.map(c => 
-        c.id === confirmAction.communityId ? { ...c, membershipStatus: null } : c
-      ))
-    }
-
+    setCommunities((prev) =>
+      prev.map((c) =>
+        c.id === confirmAction.communityId ? { ...c, membershipStatus: null } : c,
+      ),
+    )
     setShowConfirmDialog(false)
     setConfirmAction(null)
   }
 
   return (
-    <PageTransition>
-      <div className="min-h-screen bg-[#f5f1e8] font-[Lexend,_'Noto_Sans',_sans-serif]">
-        <Header />
+    <div className="min-h-screen bg-paper">
+      <Header />
 
-        <main className="max-w-7xl mx-auto px-4 py-4">
-          {/* Header */}
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Explore Communities</h1>
-            <p className="text-sm text-gray-600">
-              Discover and join study communities. Connect with students who share your interests.
-            </p>
-          </div>
-
-          {/* Search and Filters */}
-          <div className="mb-6 space-y-3">
-            {/* Search Bar */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search communities..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500 bg-[#fdfcfa] hover:border-gray-400 transition-all duration-200"
-              />
-            </div>
-
-            {/* Filter Buttons */}
-            <div className="flex gap-2 overflow-x-auto pb-2">
-              {/* Subject Filters */}
-              {subjects.map((subject) => (
-                <button
-                  key={subject}
-                  onClick={() => setFilterSubject(subject === "All" ? "all" : subject)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
-                    (filterSubject === "all" && subject === "All") || filterSubject === subject
-                      ? "bg-blue-600 text-white"
-                      : "bg-[#fdfcfa] border-2 border-gray-300 text-gray-700 hover:border-gray-400"
-                  }`}
-                >
-                  {subject}
-                </button>
-              ))}
+      <main className="container-page py-10 sm:py-14">
+        <Reveal>
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="eyebrow">Explore</p>
+              <h1 className="mt-2 font-display text-[34px] font-extrabold leading-tight tracking-[-0.03em] text-ink sm:text-[40px]">
+                Find your people
+              </h1>
+              <p className="mt-2 text-[15px] text-ink-soft">
+                Subject communities with regular sessions, shared resources and people who are
+                stuck on the same things you are.
+              </p>
             </div>
           </div>
+        </Reveal>
 
-          {/* Results Count */}
-          <div className="mb-4">
-            <p className="text-sm text-gray-600">
-              {filteredCommunities.length} {filteredCommunities.length === 1 ? "community" : "communities"} found
-            </p>
+        {/* ---------------- Filters ---------------- */}
+        <div className="mt-8 space-y-4">
+          <div className="relative max-w-md">
+            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-faint" />
+            <input
+              type="text"
+              placeholder="Search communities…"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="h-12 w-full rounded-full border border-line-strong bg-surface pl-11 pr-4 text-[15px] text-ink transition-all duration-200 placeholder:text-ink-faint hover:border-ink-faint focus:border-pulse focus:outline-none focus:ring-4 focus:ring-pulse/10"
+            />
           </div>
 
-          {/* Communities Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredCommunities.map((community) => (
-              <Card key={community.id} className="bg-[#fdfcfa] border-2 border-gray-300 hover:border-gray-400 hover:shadow-lg transition-all duration-200">
-                <CardContent className="p-4">
-                  {/* Header */}
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <h3 className="text-sm font-bold text-gray-900 mb-1 line-clamp-2">{community.name}</h3>
-                      <Badge variant="secondary" className="text-xs">
-                        {community.subject}
-                      </Badge>
-                    </div>
-                    <div className="ml-2">
-                      {community.isPublic ? (
-                        <Globe className="w-4 h-4 text-green-600" />
-                      ) : (
-                        <Lock className="w-4 h-4 text-orange-600" />
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Description */}
-                  <p className="text-xs text-gray-600 mb-3 line-clamp-2">{community.description}</p>
-
-                  {/* Details */}
-                  <div className="space-y-2 mb-3">
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                      <Users className="w-3 h-3" />
-                      <span>{community.members} members</span>
-                    </div>
-                  </div>
-
-                  <p className="text-xs text-gray-500 mb-3">Created by {community.creator}</p>
-
-                  {/* Action Button */}
-                  <Button 
-                    onClick={() => handleButtonClick(community)}
-                    className={`w-full h-8 text-xs ${
-                      community.membershipStatus === 'member' 
-                        ? 'bg-emerald-500 hover:bg-emerald-600' 
-                        : community.membershipStatus === 'pending'
-                        ? 'bg-amber-500 hover:bg-amber-600'
-                        : 'bg-blue-600 hover:bg-blue-700'
-                    }`}
-                  >
-                    {community.membershipStatus === 'member' ? 'Joined' : 
-                     community.membershipStatus === 'pending' ? 'Pending Request' : 
-                     community.isPublic ? 'Join Community' : 'Request to Join'}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Empty State */}
-          {filteredCommunities.length === 0 && (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Search className="w-8 h-8 text-gray-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No communities found</h3>
-              <p className="text-gray-600 mb-4">Try adjusting your search or filters</p>
-              <Button
-                onClick={() => {
-                  setSearchQuery("")
-                  setFilterSubject("all")
-                  setFilterLevel("all")
-                }}
-                variant="outline"
-              >
-                Clear Filters
-              </Button>
-            </div>
-          )}
-        </main>
-
-        {/* Confirmation Dialog */}
-        <AnimatePresence>
-          {showConfirmDialog && confirmAction && (
-            <>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/50 z-50"
-                onClick={() => setShowConfirmDialog(false)}
-              />
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm bg-white rounded-2xl shadow-2xl z-50 p-6"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <h2 className="text-lg font-bold text-gray-900">
-                    {confirmAction.action === 'cancel' ? 'Cancel Request?' : 'Leave Community?'}
-                  </h2>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {SUBJECTS.map((subject) => {
+                const active =
+                  (filterSubject === "all" && subject === "All") || filterSubject === subject
+                return (
                   <button
-                    onClick={() => setShowConfirmDialog(false)}
-                    className="p-1 hover:bg-gray-100 rounded-lg transition-colors -mt-1 -mr-2"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-
-                <p className="text-sm text-gray-600 mb-5">
-                  {confirmAction.action === 'cancel' 
-                    ? `Are you sure you want to cancel your request to join "${confirmAction.name}"?`
-                    : `Are you sure you want to leave "${confirmAction.name}"?`
-                  }
-                </p>
-
-                <div className="flex gap-2">
-                  <Button
-                    onClick={() => setShowConfirmDialog(false)}
-                    variant="outline"
-                    size="sm"
-                    className="flex-1"
-                  >
-                    No, Keep It
-                  </Button>
-                  <Button
-                    onClick={handleConfirm}
-                    size="sm"
-                    className={`flex-1 ${
-                      confirmAction.action === 'cancel' 
-                        ? 'bg-gray-700 hover:bg-gray-800' 
-                        : 'bg-gray-700 hover:bg-gray-800'
+                    key={subject}
+                    type="button"
+                    onClick={() => setFilterSubject(subject === "All" ? "all" : subject)}
+                    className={`whitespace-nowrap rounded-full px-3.5 py-2 font-display text-[13px] font-semibold transition-colors ${
+                      active
+                        ? "bg-ink text-white"
+                        : "border border-line bg-surface text-ink-soft hover:border-ink-faint hover:text-ink"
                     }`}
                   >
-                    Yes, {confirmAction.action === 'cancel' ? 'Cancel' : 'Leave'}
-                  </Button>
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
-      </div>
-    </PageTransition>
+                    {subject}
+                  </button>
+                )
+              })}
+            </div>
+
+            <div className="h-6 w-px bg-line hidden sm:block" />
+
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {LEVELS.map((level) => {
+                const active =
+                  (filterLevel === "all" && level === "All") || filterLevel === level
+                return (
+                  <button
+                    key={level}
+                    type="button"
+                    onClick={() => setFilterLevel(level === "All" ? "all" : level)}
+                    className={`whitespace-nowrap rounded-full px-3.5 py-2 text-[13px] font-medium transition-colors ${
+                      active
+                        ? "bg-pulse-soft text-pulse-dark"
+                        : "text-ink-mute hover:text-ink"
+                    }`}
+                  >
+                    {level}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+
+        <p className="mt-6 text-[13.5px] text-ink-mute">
+          {filteredCommunities.length}{" "}
+          {filteredCommunities.length === 1 ? "community" : "communities"} found
+        </p>
+
+        {/* ---------------- Grid ---------------- */}
+        <div className="mt-4 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {filteredCommunities.map((community) => (
+            <div
+              key={community.id}
+              className="flex flex-col rounded-3xl border border-line bg-surface p-6 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-line-strong hover:shadow-card"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <Avatar name={community.name} size="md" />
+                <span
+                  className="inline-flex items-center gap-1.5 rounded-full bg-surface-sunken px-2.5 py-1 text-[11.5px] font-semibold text-ink-mute"
+                  title={community.isPublic ? "Public" : "Private"}
+                >
+                  {community.isPublic ? (
+                    <Globe className="h-3 w-3" />
+                  ) : (
+                    <Lock className="h-3 w-3" />
+                  )}
+                  {community.isPublic ? "Open" : "Request"}
+                </span>
+              </div>
+
+              <h2 className="mt-4 font-display text-[17px] font-bold leading-snug tracking-[-0.02em] text-ink">
+                {community.name}
+              </h2>
+
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <Badge variant="lilac">{community.subject}</Badge>
+                <Badge variant="outline">{community.level}</Badge>
+              </div>
+
+              <p className="mt-3 line-clamp-3 text-[14px] leading-relaxed text-ink-soft">
+                {community.description}
+              </p>
+
+              <div className="mt-4 space-y-1.5 border-t border-line pt-4">
+                <p className="flex items-center gap-2 text-[13px] text-ink-mute">
+                  <Users className="h-3.5 w-3.5" />
+                  {community.members} members
+                </p>
+                <p className="flex items-center gap-2 text-[13px] text-ink-mute">
+                  <Clock className="h-3.5 w-3.5" />
+                  {community.meetingTime}
+                </p>
+              </div>
+
+              <div className="mt-5">
+                <Button
+                  onClick={() => handleButtonClick(community)}
+                  className="w-full"
+                  size="sm"
+                  variant={
+                    community.membershipStatus === "member"
+                      ? "accent"
+                      : community.membershipStatus === "pending"
+                        ? "secondary"
+                        : "default"
+                  }
+                >
+                  {community.membershipStatus === "member"
+                    ? "Joined"
+                    : community.membershipStatus === "pending"
+                      ? "Request pending"
+                      : community.isPublic
+                        ? "Join community"
+                        : "Request to join"}
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* ---------------- Empty state ---------------- */}
+        {filteredCommunities.length === 0 && (
+          <div className="rounded-3xl border border-line bg-surface py-16 text-center">
+            <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-surface-sunken text-ink-faint">
+              <Search className="h-6 w-6" />
+            </span>
+            <h3 className="mt-5 font-display text-lg font-bold text-ink">No communities found</h3>
+            <p className="mt-1.5 text-[14.5px] text-ink-soft">
+              Try a different subject, or search for something broader.
+            </p>
+            <Button
+              className="mt-6"
+              variant="secondary"
+              onClick={() => {
+                setSearchQuery("")
+                setFilterSubject("all")
+                setFilterLevel("all")
+              }}
+            >
+              Clear filters
+            </Button>
+          </div>
+        )}
+      </main>
+
+      {/* ---------------- Confirm dialog ---------------- */}
+      <AnimatePresence>
+        {showConfirmDialog && confirmAction && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-ink/40 backdrop-blur-sm"
+              onClick={() => setShowConfirmDialog(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 8 }}
+              transition={{ duration: 0.18 }}
+              className="fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-[28px] border border-line bg-surface p-6 shadow-lift"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <h2 className="font-display text-lg font-bold tracking-[-0.02em] text-ink">
+                  {confirmAction.action === "cancel" ? "Cancel request?" : "Leave community?"}
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmDialog(false)}
+                  aria-label="Close"
+                  className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-ink-mute transition-colors hover:bg-surface-sunken hover:text-ink"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <p className="mt-3 text-[14.5px] leading-relaxed text-ink-soft">
+                {confirmAction.action === "cancel"
+                  ? `Are you sure you want to cancel your request to join “${confirmAction.name}”?`
+                  : `Are you sure you want to leave “${confirmAction.name}”?`}
+              </p>
+
+              <div className="mt-6 flex gap-2">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="flex-1"
+                  onClick={() => setShowConfirmDialog(false)}
+                >
+                  Keep it
+                </Button>
+                <Button size="sm" className="flex-1" onClick={handleConfirm}>
+                  Yes, {confirmAction.action === "cancel" ? "cancel" : "leave"}
+                </Button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
   )
 }
