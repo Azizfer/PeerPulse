@@ -108,7 +108,7 @@ export default function MessagesDropdown() {
           className="relative h-8 w-8 p-0"
           onClick={() => setIsOpen(!isOpen)}
         >
-          <MessageCircle className="w-4 h-4 text-gray-700" strokeWidth={1.5} />
+          <MessageCircle className="w-4 h-4 text-ink-soft" strokeWidth={1.5} />
           {unreadCount > 0 && (
             <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
               <span className="text-[10px] text-white font-bold leading-none">
@@ -126,11 +126,11 @@ export default function MessagesDropdown() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full mt-2 w-96 bg-[#fdfcfa] rounded-lg shadow-xl border-2 border-gray-300 z-50 max-h-80 overflow-y-auto font-[Lexend,_'Noto_Sans',_sans-serif]"
+            className="absolute right-0 top-full mt-2 w-96 bg-surface rounded-lg shadow-xl border border-line-strong z-50 max-h-80 overflow-y-auto font-[Lexend,_'Noto_Sans',_sans-serif]"
           >
             {/* Header */}
-            <div className="px-4 py-3 border-b border-gray-100">
-              <h3 className="text-left text-xl font-semibold tracking-[-0.015em] text-[#111518]">
+            <div className="px-4 py-3 border-b border-line">
+              <h3 className="text-left text-xl font-semibold tracking-[-0.015em] text-ink">
                 Messages
               </h3>
               {unreadCount > 0 && (
@@ -143,7 +143,7 @@ export default function MessagesDropdown() {
             {/* Messages List */}
             <div>
               {messages.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-8 text-gray-500">
+                <div className="flex flex-col items-center justify-center py-8 text-ink-mute">
                   <MessageCircle className="w-8 h-8 mb-2 opacity-50" />
                   <p className="text-sm">No messages yet</p>
                 </div>
@@ -155,8 +155,8 @@ export default function MessagesDropdown() {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.05 }}
-                      className={`flex min-h-[56px] items-center justify-between gap-3 px-4 py-1.5 hover:bg-gray-100 transition-colors cursor-pointer relative group ${
-                        message.unread ? 'bg-blue-50/30 border-l-4 border-l-blue-500' : 'bg-[#fdfcfa] border-l-4 border-l-transparent'
+                      className={`flex min-h-[56px] items-center justify-between gap-3 px-4 py-1.5 hover:bg-surface-sunken transition-colors cursor-pointer relative group ${
+                        message.unread ? 'bg-blue-50/30 border-l-4 border-l-blue-500' : 'bg-surface border-l-4 border-l-transparent'
                       }`}
                       onClick={() => handleMessageClick(message.id)}
                     >
@@ -173,7 +173,7 @@ export default function MessagesDropdown() {
                         {/* Content */}
                         <div className="flex flex-col justify-center flex-1 min-w-0">
                           <p className={`text-sm font-medium leading-tight ${
-                            message.unread ? 'text-[#111518]' : 'text-[#637888]'
+                            message.unread ? 'text-ink' : 'text-[#637888]'
                           }`}>
                             {message.name}
                           </p>
@@ -191,14 +191,14 @@ export default function MessagesDropdown() {
                         
                         {/* Unread indicator */}
                         {message.unread && (
-                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                          <div className="w-2 h-2 bg-pulse rounded-full"></div>
                         )}
 
                         {/* More options (hidden by default, shown on hover) */}
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="p-1 h-6 w-6 text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="p-1 h-6 w-6 text-ink-faint hover:text-ink-soft opacity-0 group-hover:opacity-100 transition-opacity"
                           onClick={(e) => {
                             e.stopPropagation()
                             // Handle more options
@@ -215,10 +215,10 @@ export default function MessagesDropdown() {
             
             {/* Footer Button */}
             {messages.length > 0 && (
-              <div className="px-4 py-3 border-t border-gray-100">
+              <div className="px-4 py-3 border-t border-line">
                 <button 
                   onClick={handleViewAll}
-                  className="flex h-8 w-full min-w-[72px] items-center justify-center overflow-hidden rounded-lg bg-[#f0f3f4] px-3 text-xs font-semibold tracking-[0.015em] text-[#111518] hover:bg-gray-200 transition-colors"
+                  className="flex h-8 w-full min-w-[72px] items-center justify-center overflow-hidden rounded-lg bg-surface-sunken px-3 text-xs font-semibold tracking-[0.015em] text-ink hover:bg-gray-200 transition-colors"
                 >
                   View All Messages
                 </button>

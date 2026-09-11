@@ -152,7 +152,7 @@ export function PresenceAvatars({ roomId, maxVisible = 5 }: PresenceAvatarsProps
           <motion.div
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs font-medium text-gray-600 hover:bg-gray-300 transition-colors duration-200 cursor-pointer"
+            className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs font-medium text-ink-soft hover:bg-gray-300 transition-colors duration-200 cursor-pointer"
           >
             +{hiddenCount}
           </motion.div>

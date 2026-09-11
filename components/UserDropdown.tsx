@@ -42,11 +42,11 @@ export default function UserDropdown() {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-52 bg-[#fdfcfa] rounded-lg shadow-lg border-2 border-gray-300 py-2 z-50">
+        <div className="absolute right-0 top-full mt-2 w-52 bg-surface rounded-lg shadow-lg border border-line-strong py-2 z-50">
           {/* User Info Header */}
-          <div className="px-4 py-2 border-b border-gray-100">
-            <p className="font-semibold text-gray-900 text-sm">{user?.name || "Sarah"}</p>
-            <p className="text-xs text-gray-500">{user?.email || "sarah@example.com"}</p>
+          <div className="px-4 py-2 border-b border-line">
+            <p className="font-semibold text-ink text-sm">{user?.name || "Sarah"}</p>
+            <p className="text-xs text-ink-mute">{user?.email || "sarah@example.com"}</p>
           </div>
 
           {/* Menu Items */}
@@ -57,12 +57,12 @@ export default function UserDropdown() {
             {/* Logout Button */}
             <button
               onClick={handleLogout}
-              className="w-full flex min-h-12 items-center gap-3 bg-[#fdfcfa] px-4 hover:bg-gray-100 transition-colors"
+              className="w-full flex min-h-12 items-center gap-3 bg-surface px-4 hover:bg-surface-sunken transition-colors"
             >
-              <div className="size-8 shrink-0 rounded-lg bg-[#f0f3f4] flex items-center justify-center text-[#111518]">
+              <div className="size-8 shrink-0 rounded-lg bg-surface-sunken flex items-center justify-center text-ink">
                 <LogOut className="w-4 h-4" />
               </div>
-              <p className="flex-1 truncate text-sm font-normal text-[#111518] text-left">Sign out</p>
+              <p className="flex-1 truncate text-sm font-normal text-ink text-left">Sign out</p>
             </button>
           </div>
         </div>

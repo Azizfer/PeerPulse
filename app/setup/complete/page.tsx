@@ -36,13 +36,13 @@ export default function SetupCompletePage() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="rounded-3xl bg-white border-2 border-gray-300 p-8 shadow-lg text-center"
+            className="rounded-3xl bg-surface border border-line-strong p-8 shadow-lg text-center"
           >
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="text-3xl font-bold text-gray-900 mb-3"
+              className="text-3xl font-bold text-ink mb-3"
             >
               Welcome to PeerPulse!
             </motion.h1>
@@ -50,7 +50,7 @@ export default function SetupCompletePage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.5 }}
-              className="text-gray-600 mb-6"
+              className="text-ink-soft mb-6"
             >
               Your profile is ready. Let's start your study journey!
             </motion.p>
@@ -76,21 +76,21 @@ export default function SetupCompletePage() {
               transition={{ duration: 0.5, delay: 0.7 }}
             >
               <Link href="/dashboard">
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 h-12">
+                <Button className="w-full bg-pulse hover:bg-pulse-dark h-12">
                   Go to Dashboard
                 </Button>
               </Link>
 
-              <p className="text-xs text-gray-500 mt-4">
+              <p className="text-xs text-ink-mute mt-4">
                 Redirecting automatically in a few seconds...
               </p>
             </motion.div>
           </motion.div>
 
           <div className="text-center mt-6">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-ink-soft">
               You can customize your preferences anytime in{" "}
-              <Link href="/settings" className="text-blue-600 hover:text-blue-500 font-medium">
+              <Link href="/settings" className="text-pulse-dark hover:text-pulse font-medium">
                 Settings
               </Link>
             </p>

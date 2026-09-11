@@ -108,7 +108,7 @@ export default function NotificationDropdown() {
           className="relative h-8 w-8 p-0"
           onClick={() => setIsOpen(!isOpen)}
         >
-          <Bell className="w-4 h-4 text-gray-700" strokeWidth={1.5} />
+          <Bell className="w-4 h-4 text-ink-soft" strokeWidth={1.5} />
           {unreadCount > 0 && (
             <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
               <span className="text-[10px] text-white font-bold leading-none">
@@ -126,11 +126,11 @@ export default function NotificationDropdown() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full mt-2 w-96 bg-[#fdfcfa] rounded-lg shadow-xl border-2 border-gray-300 z-50 max-h-80 overflow-y-auto font-[Lexend,_'Noto_Sans',_sans-serif]"
+            className="absolute right-0 top-full mt-2 w-96 bg-surface rounded-lg shadow-xl border border-line-strong z-50 max-h-80 overflow-y-auto font-[Lexend,_'Noto_Sans',_sans-serif]"
           >
             {/* Header */}
-            <div className="px-4 py-2 border-b border-gray-100">
-              <h1 className="text-left text-xl font-semibold tracking-[-0.015em] text-[#111518]">
+            <div className="px-4 py-2 border-b border-line">
+              <h1 className="text-left text-xl font-semibold tracking-[-0.015em] text-ink">
                 Notifications
               </h1>
               {unreadCount > 0 && (
@@ -143,7 +143,7 @@ export default function NotificationDropdown() {
             {/* Notifications List */}
             <div>
               {notifications.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-8 text-gray-500">
+                <div className="flex flex-col items-center justify-center py-8 text-ink-mute">
                   <Bell className="w-8 h-8 mb-2 opacity-50" />
                   <p className="text-sm">No notifications yet</p>
                 </div>
@@ -155,8 +155,8 @@ export default function NotificationDropdown() {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.05 }}
-                      className={`flex min-h-[56px] items-center gap-3 px-4 py-1.5 hover:bg-gray-100 transition-colors relative group ${
-                        !notification.read ? 'bg-blue-50/30 border-l-4 border-l-blue-500' : 'bg-[#fdfcfa] border-l-4 border-l-transparent'
+                      className={`flex min-h-[56px] items-center gap-3 px-4 py-1.5 hover:bg-surface-sunken transition-colors relative group ${
+                        !notification.read ? 'bg-blue-50/30 border-l-4 border-l-blue-500' : 'bg-surface border-l-4 border-l-transparent'
                       }`}
                     >
                       {/* Avatar or Bell Icon */}
@@ -169,7 +169,7 @@ export default function NotificationDropdown() {
                           className="aspect-square h-12 w-12 rounded-full object-cover flex-shrink-0"
                         />
                       ) : (
-                        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[#f0f3f4] text-[#111518]">
+                        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-surface-sunken text-ink">
                           <svg
                             viewBox="0 0 256 256"
                             width={24}
@@ -185,7 +185,7 @@ export default function NotificationDropdown() {
                       {/* Content */}
                       <div className="flex flex-col justify-center flex-1 min-w-0">
                         <p className={`text-sm font-medium leading-tight ${
-                          notification.read ? 'text-[#637888]' : 'text-[#111518]'
+                          notification.read ? 'text-[#637888]' : 'text-ink'
                         }`}>
                           {notification.title}
                         </p>
@@ -204,7 +204,7 @@ export default function NotificationDropdown() {
                               e.stopPropagation()
                               markAsRead(notification.id)
                             }}
-                            className="p-1 h-6 w-6 text-gray-400 hover:text-green-600"
+                            className="p-1 h-6 w-6 text-ink-faint hover:text-green-600"
                             title="Mark as read"
                           >
                             <Check className="w-3 h-3" />
@@ -217,7 +217,7 @@ export default function NotificationDropdown() {
                             e.stopPropagation()
                             removeNotification(notification.id)
                           }}
-                          className="p-1 h-6 w-6 text-gray-400 hover:text-red-600"
+                          className="p-1 h-6 w-6 text-ink-faint hover:text-red-600"
                           title="Remove notification"
                         >
                           <X className="w-3 h-3" />
@@ -231,10 +231,10 @@ export default function NotificationDropdown() {
             
             {/* Footer Buttons */}
             {notifications.length > 0 && (
-              <div className="flex flex-wrap justify-between gap-3 px-4 py-3 border-t border-gray-100">
+              <div className="flex flex-wrap justify-between gap-3 px-4 py-3 border-t border-line">
                 <button 
                   onClick={markAllAsRead}
-                  className="flex h-8 min-w-[72px] items-center justify-center overflow-hidden rounded-lg bg-[#f0f3f4] px-3 text-xs font-semibold tracking-[0.015em] text-[#111518] hover:bg-gray-200 transition-colors"
+                  className="flex h-8 min-w-[72px] items-center justify-center overflow-hidden rounded-lg bg-surface-sunken px-3 text-xs font-semibold tracking-[0.015em] text-ink hover:bg-gray-200 transition-colors"
                 >
                   Mark all as read
                 </button>

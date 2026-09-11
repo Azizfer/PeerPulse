@@ -101,7 +101,7 @@ export default function ChatWindow({
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 20, scale: 0.95 }}
         transition={{ duration: 0.2 }}
-        className={`fixed bg-[#fdfcfa] shadow-2xl border-2 border-gray-300 z-50 flex flex-col ${
+        className={`fixed bg-surface shadow-2xl border border-line-strong z-50 flex flex-col ${
           isMinimized ? "rounded-full overflow-visible" : "rounded-xl overflow-hidden"
         }`}
         style={{ 
@@ -137,7 +137,7 @@ export default function ChatWindow({
             </Button>
           </div>
         ) : (
-          <div className="flex items-center justify-between p-3 border-b-2 border-gray-300">
+          <div className="flex items-center justify-between p-3 border-b-2 border-line-strong">
             <div className="flex items-center gap-2">
               <Image
                 src={partnerAvatar || "/placeholder.svg"}
@@ -147,8 +147,8 @@ export default function ChatWindow({
                 className="w-9 h-9 rounded-full object-cover"
               />
               <div>
-                <h3 className="font-semibold text-gray-900 text-sm">{partnerName}</h3>
-                <p className="text-xs text-gray-500">Active now</p>
+                <h3 className="font-semibold text-ink text-sm">{partnerName}</h3>
+                <p className="text-xs text-ink-mute">Active now</p>
               </div>
             </div>
             <div className="flex items-center gap-1">
@@ -156,7 +156,7 @@ export default function ChatWindow({
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsMinimized(true)}
-                className="h-7 w-7 p-0 text-gray-600 hover:bg-gray-100"
+                className="h-7 w-7 p-0 text-ink-soft hover:bg-surface-sunken"
               >
                 <Minus className="w-4 h-4" />
               </Button>
@@ -164,7 +164,7 @@ export default function ChatWindow({
                 variant="ghost"
                 size="sm"
                 onClick={onClose}
-                className="h-7 w-7 p-0 text-gray-600 hover:bg-gray-100"
+                className="h-7 w-7 p-0 text-ink-soft hover:bg-surface-sunken"
               >
                 <X className="w-4 h-4" />
               </Button>
@@ -184,14 +184,14 @@ export default function ChatWindow({
                   <div
                     className={`max-w-[80%] rounded-2xl px-3 py-2 ${
                       message.isOwn
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-200 text-gray-900"
+                        ? "bg-pulse text-white"
+                        : "bg-gray-200 text-ink"
                     }`}
                   >
                     <p className="text-xs">{message.text}</p>
                     <p
                       className={`text-[10px] mt-0.5 ${
-                        message.isOwn ? "text-blue-100" : "text-gray-500"
+                        message.isOwn ? "text-blue-100" : "text-ink-mute"
                       }`}
                     >
                       {message.timestamp}
@@ -203,7 +203,7 @@ export default function ChatWindow({
             </div>
 
             {/* Input Area */}
-            <div className="p-3 border-t-2 border-gray-300">
+            <div className="p-3 border-t-2 border-line-strong">
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -211,13 +211,13 @@ export default function ChatWindow({
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Type a message..."
-                  className="flex-1 px-3 py-2 border-2 border-gray-300 rounded-lg text-xs focus:outline-none focus:border-blue-500 bg-[#fdfcfa] text-gray-900 transition-all duration-200 hover:border-gray-400"
+                  className="flex-1 px-3 py-2 border border-line-strong rounded-lg text-xs focus:outline-none focus:border-pulse bg-surface text-ink transition-all duration-200 hover:border-ink-faint"
                 />
                 <Button
                   onClick={handleSendMessage}
                   disabled={!newMessage.trim()}
                   size="sm"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-3"
+                  className="bg-pulse hover:bg-pulse-dark text-white px-3"
                 >
                   <Send className="w-3 h-3" />
                 </Button>

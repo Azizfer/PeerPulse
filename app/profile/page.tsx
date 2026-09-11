@@ -122,11 +122,11 @@ export default function ProfilePage() {
             <TabsContent value="profile" className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900">Profile Details</h1>
-                  <p className="text-gray-600 mt-1">{isEditing ? "Edit your profile information" : "Your public profile information"}</p>
+                  <h1 className="text-3xl font-bold text-ink">Profile Details</h1>
+                  <p className="text-ink-soft mt-1">{isEditing ? "Edit your profile information" : "Your public profile information"}</p>
                 </div>
                 {!isEditing ? (
-                  <Button onClick={handleEdit} className="bg-blue-600 hover:bg-blue-700">
+                  <Button onClick={handleEdit} className="bg-pulse hover:bg-pulse-dark">
                     <Edit2 className="w-4 h-4 mr-2" />
                     Edit Profile
                   </Button>
@@ -146,7 +146,7 @@ export default function ProfilePage() {
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Profile Card */}
-                <Card className="lg:col-span-1 border-2 border-gray-300 hover:border-gray-400 hover:shadow-lg transition-all duration-200 shadow-sm">
+                <Card className="lg:col-span-1 border border-line-strong hover:border-ink-faint hover:shadow-lg transition-all duration-200 shadow-sm">
                   <CardHeader className="text-center">
                     <div className="w-24 h-24 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
                       <span className="text-white text-2xl font-bold">
@@ -156,20 +156,20 @@ export default function ProfilePage() {
                     <CardTitle className="text-xl">
                       {profileData.firstName} {profileData.lastName}
                     </CardTitle>
-                    <p className="text-gray-600">{profileData.major} • {getDisplayLabel('academicYear', profileData.academicYear)}</p>
-                    <p className="text-sm text-gray-500">{profileData.university}</p>
+                    <p className="text-ink-soft">{profileData.major} • {getDisplayLabel('academicYear', profileData.academicYear)}</p>
+                    <p className="text-sm text-ink-mute">{profileData.university}</p>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <div className="flex items-center gap-2 text-sm text-ink-soft">
                       <Mail className="w-4 h-4" />
                       {profileData.email}
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <div className="flex items-center gap-2 text-sm text-ink-soft">
                       <Calendar className="w-4 h-4" />
                       Joined December 2023
                     </div>
                     <div>
-                      <h4 className="font-medium text-gray-900 mb-2">Subjects</h4>
+                      <h4 className="font-medium text-ink mb-2">Subjects</h4>
                       <div className="flex flex-wrap gap-1">
                         {profileData.subjects.map((subject) => (
                           <Badge key={subject} variant="secondary" className="text-xs hover:bg-gray-200 transition-colors duration-200">
@@ -182,7 +182,7 @@ export default function ProfilePage() {
                 </Card>
 
                 {/* Details Card */}
-                <Card className="lg:col-span-2 border-2 border-gray-300 hover:border-gray-400 hover:shadow-lg transition-all duration-200 shadow-sm">
+                <Card className="lg:col-span-2 border border-line-strong hover:border-ink-faint hover:shadow-lg transition-all duration-200 shadow-sm">
                   <CardHeader>
                     <CardTitle>About</CardTitle>
                   </CardHeader>
@@ -209,7 +209,7 @@ export default function ProfilePage() {
 
                     {/* Bio */}
                     <div>
-                      <Label className="text-sm font-medium text-gray-500 mb-2">Bio</Label>
+                      <Label className="text-sm font-medium text-ink-mute mb-2">Bio</Label>
                       {isEditing ? (
                         <Textarea
                           value={profileData.bio}
@@ -218,14 +218,14 @@ export default function ProfilePage() {
                           className="mt-2"
                         />
                       ) : (
-                        <p className="text-gray-900 mt-2">{profileData.bio}</p>
+                        <p className="text-ink mt-2">{profileData.bio}</p>
                       )}
                     </div>
 
                     {/* Email & Academic Info */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <Label className="text-sm font-medium text-gray-500 mb-2">Academic Year</Label>
+                        <Label className="text-sm font-medium text-ink-mute mb-2">Academic Year</Label>
                         {isEditing ? (
                           <Input
                             value={profileData.academicYear}
@@ -233,11 +233,11 @@ export default function ProfilePage() {
                             className="mt-2"
                           />
                         ) : (
-                          <p className="text-gray-900 mt-2">{getDisplayLabel('academicYear', profileData.academicYear)}</p>
+                          <p className="text-ink mt-2">{getDisplayLabel('academicYear', profileData.academicYear)}</p>
                         )}
                       </div>
                       <div>
-                        <Label className="text-sm font-medium text-gray-500 mb-2">Email</Label>
+                        <Label className="text-sm font-medium text-ink-mute mb-2">Email</Label>
                         {isEditing ? (
                           <Input
                             type="email"
@@ -246,7 +246,7 @@ export default function ProfilePage() {
                             className="mt-2"
                           />
                         ) : (
-                          <p className="text-gray-900 mt-2">{profileData.email}</p>
+                          <p className="text-ink mt-2">{profileData.email}</p>
                         )}
                       </div>
                     </div>
@@ -273,7 +273,7 @@ export default function ProfilePage() {
 
                     {/* Study Subjects */}
                     <div>
-                      <Label className="text-sm font-medium text-gray-500 mb-3">Study Subjects</Label>
+                      <Label className="text-sm font-medium text-ink-mute mb-3">Study Subjects</Label>
                       <div className="flex flex-wrap gap-2 mt-2">
                         {profileData.subjects.map((subject) => (
                           <Badge key={subject} variant="secondary">{subject}</Badge>
@@ -283,7 +283,7 @@ export default function ProfilePage() {
 
                     {/* Study Goals */}
                     <div>
-                      <Label className="text-sm font-medium text-gray-500 mb-2">Study Goals</Label>
+                      <Label className="text-sm font-medium text-ink-mute mb-2">Study Goals</Label>
                       {isEditing ? (
                         <Textarea
                           value={profileData.studyGoal}
@@ -292,14 +292,14 @@ export default function ProfilePage() {
                           className="mt-2"
                         />
                       ) : (
-                        <p className="text-gray-900 mt-2">{profileData.studyGoal}</p>
+                        <p className="text-ink mt-2">{profileData.studyGoal}</p>
                       )}
                     </div>
 
                     {/* Study Preferences */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <Label className="text-sm font-medium text-gray-500 mb-2">Preferred Study Time</Label>
+                        <Label className="text-sm font-medium text-ink-mute mb-2">Preferred Study Time</Label>
                         {isEditing ? (
                           <Input
                             value={profileData.preferredStudyTime}
@@ -307,11 +307,11 @@ export default function ProfilePage() {
                             className="mt-2"
                           />
                         ) : (
-                          <p className="text-gray-900 mt-2">{getDisplayLabel('preferredStudyTime', profileData.preferredStudyTime)}</p>
+                          <p className="text-ink mt-2">{getDisplayLabel('preferredStudyTime', profileData.preferredStudyTime)}</p>
                         )}
                       </div>
                       <div>
-                        <Label className="text-sm font-medium text-gray-500 mb-2">Study Style</Label>
+                        <Label className="text-sm font-medium text-ink-mute mb-2">Study Style</Label>
                         {isEditing ? (
                           <Input
                             value={profileData.collaborationStyle}
@@ -319,7 +319,7 @@ export default function ProfilePage() {
                             className="mt-2"
                           />
                         ) : (
-                          <p className="text-gray-900 mt-2">{getDisplayLabel('collaborationStyle', profileData.collaborationStyle)}</p>
+                          <p className="text-ink mt-2">{getDisplayLabel('collaborationStyle', profileData.collaborationStyle)}</p>
                         )}
                       </div>
                     </div>
@@ -331,8 +331,8 @@ export default function ProfilePage() {
             {/* Statistics Tab */}
             <TabsContent value="statistics" className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Statistics & Tracking</h1>
-                <p className="text-gray-600 mt-1">Monitor your study habits and progress with detailed insights</p>
+                <h1 className="text-3xl font-bold text-ink">Statistics & Tracking</h1>
+                <p className="text-ink-soft mt-1">Monitor your study habits and progress with detailed insights</p>
               </div>
 
               {isLoadingStats ? (
@@ -351,15 +351,15 @@ export default function ProfilePage() {
                   {/* Summary Cards */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {summaryStats.map((stat, index) => (
-                      <Card key={stat.label} className="border-2 border-gray-300 hover:border-gray-400 hover:shadow-lg transition-all duration-200 shadow-sm">
+                      <Card key={stat.label} className="border border-line-strong hover:border-ink-faint hover:shadow-lg transition-all duration-200 shadow-sm">
                         <CardContent className="p-6">
                           <div className="flex items-center gap-3">
                             <div className="p-2 bg-blue-100 rounded-lg">
-                              <div className="text-blue-600">{stat.icon}</div>
+                              <div className="text-pulse-dark">{stat.icon}</div>
                             </div>
                             <div>
-                              <p className="text-sm text-gray-600">{stat.label}</p>
-                              <p className="text-3xl font-black text-gray-900 font-mono">{stat.value}</p>
+                              <p className="text-sm text-ink-soft">{stat.label}</p>
+                              <p className="text-3xl font-black text-ink font-mono">{stat.value}</p>
                             </div>
                           </div>
                         </CardContent>
@@ -368,23 +368,23 @@ export default function ProfilePage() {
                   </div>
                   
                   {/* Community Activity Stats */}
-                  <Card className="border-2 border-gray-300 hover:border-gray-400 hover:shadow-lg transition-all duration-200 shadow-sm">
+                  <Card className="border border-line-strong hover:border-ink-faint hover:shadow-lg transition-all duration-200 shadow-sm">
                     <CardHeader>
                       <CardTitle>Community Activity</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="space-y-2">
-                          <p className="text-sm text-gray-600">Communities Joined</p>
-                          <p className="text-3xl font-black text-gray-900 font-mono">3</p>
+                          <p className="text-sm text-ink-soft">Communities Joined</p>
+                          <p className="text-3xl font-black text-ink font-mono">3</p>
                         </div>
                         <div className="space-y-2">
-                          <p className="text-sm text-gray-600">Posts This Week</p>
-                          <p className="text-3xl font-black text-gray-900 font-mono">8</p>
+                          <p className="text-sm text-ink-soft">Posts This Week</p>
+                          <p className="text-3xl font-black text-ink font-mono">8</p>
                         </div>
                         <div className="space-y-2">
-                          <p className="text-sm text-gray-600">Likes Received</p>
-                          <p className="text-3xl font-black text-gray-900 font-mono">156</p>
+                          <p className="text-sm text-ink-soft">Likes Received</p>
+                          <p className="text-3xl font-black text-ink font-mono">156</p>
                         </div>
                       </div>
                     </CardContent>
@@ -393,7 +393,7 @@ export default function ProfilePage() {
                   {/* Charts */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Weekly Study Hours */}
-                    <Card className="border-2 border-gray-300 hover:border-gray-400 hover:shadow-lg transition-all duration-200 shadow-sm animate-in fade-in-0 slide-in-from-left-4 duration-700">
+                    <Card className="border border-line-strong hover:border-ink-faint hover:shadow-lg transition-all duration-200 shadow-sm animate-in fade-in-0 slide-in-from-left-4 duration-700">
                       <CardHeader>
                         <CardTitle>Weekly Study Hours</CardTitle>
                       </CardHeader>
@@ -405,8 +405,8 @@ export default function ProfilePage() {
                                 className="w-full bg-blue-200 rounded-t hover:bg-blue-300 transition-colors duration-200 cursor-pointer"
                                 style={{ height }}
                               />
-                              <span className="text-xs text-gray-600 font-medium">{label}</span>
-                              <span className="text-xs text-gray-500">{hours}h</span>
+                              <span className="text-xs text-ink-soft font-medium">{label}</span>
+                              <span className="text-xs text-ink-mute">{hours}h</span>
                             </div>
                           ))}
                         </div>
@@ -414,7 +414,7 @@ export default function ProfilePage() {
                     </Card>
 
                     {/* Study Partners by Subject */}
-                    <Card className="border-2 border-gray-300 hover:border-gray-400 hover:shadow-lg transition-all duration-200 shadow-sm animate-in fade-in-0 slide-in-from-right-4 duration-700">
+                    <Card className="border border-line-strong hover:border-ink-faint hover:shadow-lg transition-all duration-200 shadow-sm animate-in fade-in-0 slide-in-from-right-4 duration-700">
                       <CardHeader>
                         <CardTitle>Study Partners by Subject</CardTitle>
                       </CardHeader>
@@ -423,12 +423,12 @@ export default function ProfilePage() {
                           {subjectData.map(({ name, partners, percentage }, index) => (
                             <div key={name} className="space-y-2 animate-in fade-in-0 slide-in-from-left-4" style={{ animationDelay: `${index * 150}ms` }}>
                               <div className="flex justify-between text-sm">
-                                <span className="font-medium text-gray-700">{name}</span>
-                                <span className="text-gray-500">{partners} partners</span>
+                                <span className="font-medium text-ink-soft">{name}</span>
+                                <span className="text-ink-mute">{partners} partners</span>
                               </div>
                               <div className="w-full bg-gray-200 rounded-full h-2">
                                 <div
-                                  className="bg-blue-600 h-2 rounded-full transition-all duration-1000 ease-out hover:bg-blue-700"
+                                  className="bg-pulse h-2 rounded-full transition-all duration-1000 ease-out hover:bg-pulse-dark"
                                   style={{ width: `${percentage}%` }}
                                 />
                               </div>
@@ -440,7 +440,7 @@ export default function ProfilePage() {
                   </div>
 
                   {/* Study Session Streaks */}
-                  <Card className="border-2 border-gray-300 hover:border-gray-400 hover:shadow-lg transition-all duration-200 shadow-sm animate-in fade-in-0 slide-in-from-bottom-4 duration-700 delay-300">
+                  <Card className="border border-line-strong hover:border-ink-faint hover:shadow-lg transition-all duration-200 shadow-sm animate-in fade-in-0 slide-in-from-bottom-4 duration-700 delay-300">
                     <CardHeader>
                       <CardTitle>Monthly Study Streaks</CardTitle>
                     </CardHeader>
@@ -508,7 +508,7 @@ export default function ProfilePage() {
                           ))}
                         </svg>
                       </div>
-                      <div className="flex justify-between mt-4 text-sm text-gray-600">
+                      <div className="flex justify-between mt-4 text-sm text-ink-soft">
                         {["Week 1", "Week 2", "Week 3", "Week 4"].map((week, index) => (
                           <span key={week} className="animate-in fade-in-0 slide-in-from-bottom-4" style={{ animationDelay: `${1200 + index * 100}ms` }}>{week}</span>
                         ))}

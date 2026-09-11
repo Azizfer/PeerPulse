@@ -161,18 +161,18 @@ export default function MessagesPage() {
         
         <main className="flex flex-1 h-[calc(100vh-80px)]">
           {/* Left Sidebar - Conversations List */}
-          <aside className="w-80 bg-[#fdfcfa] flex flex-col border-r-2 border-gray-300">
+          <aside className="w-80 bg-surface flex flex-col border-r-2 border-line-strong">
             {/* Sidebar Header */}
-            <div className="p-4 border-b-2 border-gray-300">
-              <h1 className="text-2xl font-bold text-gray-900 mb-4">Messages</h1>
+            <div className="p-4 border-b-2 border-line-strong">
+              <h1 className="text-2xl font-bold text-ink mb-4">Messages</h1>
               
               {/* Search Bar */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-ink-faint" />
                 <input
                   type="text"
                   placeholder="Search messages"
-                  className="w-full pl-10 pr-4 py-2 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:border-transparent bg-[#fdfcfa] hover:border-gray-400 transition-all duration-200"
+                  className="w-full pl-10 pr-4 py-2 border border-line-strong rounded-lg text-sm focus:outline-none focus:border-pulse focus:border-transparent bg-surface hover:border-ink-faint transition-all duration-200"
                 />
               </div>
             </div>
@@ -183,8 +183,8 @@ export default function MessagesPage() {
                 <div
                   key={conversation.id}
                   onClick={() => setActiveConversation(conversation.id)}
-                  className={`flex items-center gap-3 p-4 cursor-pointer hover:bg-gray-100 transition-colors border-b border-gray-200 ${
-                    activeConversation === conversation.id ? 'bg-blue-50' : 'bg-[#fdfcfa]'
+                  className={`flex items-center gap-3 p-4 cursor-pointer hover:bg-surface-sunken transition-colors border-b border-line ${
+                    activeConversation === conversation.id ? 'bg-blue-50' : 'bg-surface'
                   }`}
                 >
                   <Image
@@ -197,22 +197,22 @@ export default function MessagesPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
                       <h3 className={`font-medium truncate ${
-                        conversation.unread ? 'text-gray-900' : 'text-gray-700'
+                        conversation.unread ? 'text-ink' : 'text-ink-soft'
                       }`}>
                         {conversation.name}
                       </h3>
-                      <span className="text-xs text-gray-500 flex-shrink-0">
+                      <span className="text-xs text-ink-mute flex-shrink-0">
                         {conversation.timestamp}
                       </span>
                     </div>
                     <p className={`text-sm truncate ${
-                      conversation.unread ? 'text-gray-600 font-medium' : 'text-gray-500'
+                      conversation.unread ? 'text-ink-soft font-medium' : 'text-ink-mute'
                     }`}>
                       {conversation.lastMessage}
                     </p>
                   </div>
                   {conversation.unread && (
-                    <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
+                    <div className="w-2 h-2 bg-pulse rounded-full flex-shrink-0"></div>
                   )}
                 </div>
               ))}
@@ -220,11 +220,11 @@ export default function MessagesPage() {
           </aside>
 
           {/* Right Main Area - Active Conversation */}
-          <section className="flex-1 flex flex-col bg-[#fdfcfa]">
+          <section className="flex-1 flex flex-col bg-surface">
             {currentConversation ? (
               <>
                 {/* Chat Header */}
-                <div className="p-4 bg-[#fdfcfa] border-b-2 border-gray-300">
+                <div className="p-4 bg-surface border-b-2 border-line-strong">
                   <div className="flex items-center gap-3">
                     <Image
                       src={currentConversation.avatar || "/placeholder.svg"}
@@ -234,8 +234,8 @@ export default function MessagesPage() {
                       className="w-10 h-10 rounded-full object-cover"
                     />
                     <div>
-                      <h2 className="font-semibold text-gray-900">{currentConversation.name}</h2>
-                      <p className="text-sm text-gray-500">Active now</p>
+                      <h2 className="font-semibold text-ink">{currentConversation.name}</h2>
+                      <p className="text-sm text-ink-mute">Active now</p>
                     </div>
                   </div>
                 </div>
@@ -260,8 +260,8 @@ export default function MessagesPage() {
                         <div
                           className={`px-4 py-2 rounded-2xl ${
                             message.sender === 'me'
-                              ? 'bg-blue-500 text-white rounded-br-sm'
-                              : 'bg-[#fdfcfa] text-gray-900 rounded-bl-sm border border-gray-200'
+                              ? 'bg-pulse text-white rounded-br-sm'
+                              : 'bg-surface text-ink rounded-bl-sm border border-line'
                           }`}
                         >
                           <p className="text-sm">{message.text}</p>
@@ -281,7 +281,7 @@ export default function MessagesPage() {
                 </div>
 
                 {/* Message Input */}
-                <div className="p-4 bg-[#fdfcfa] border-t-2 border-gray-300">
+                <div className="p-4 bg-surface border-t-2 border-line-strong">
                   <div className="flex items-center gap-3">
                     <Image
                       src="/diverse-user-avatars.png"
@@ -296,14 +296,14 @@ export default function MessagesPage() {
                         onChange={(e) => setMessageInput(e.target.value)}
                         onKeyPress={handleKeyPress}
                         placeholder="Write a message..."
-                        className="w-full px-4 py-2.5 pr-16 rounded-2xl text-sm bg-[#fdfcfa] border-2 border-gray-300 focus:outline-none focus:border-blue-500 focus:border-transparent resize-none max-h-32 hover:border-gray-400 transition-all duration-200"
+                        className="w-full px-4 py-2.5 pr-16 rounded-2xl text-sm bg-surface border border-line-strong focus:outline-none focus:border-pulse focus:border-transparent resize-none max-h-32 hover:border-ink-faint transition-all duration-200"
                         rows={1}
                       />
                       <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1">
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="p-1 h-8 w-8 text-gray-400 hover:text-gray-600"
+                          className="p-1 h-8 w-8 text-ink-faint hover:text-ink-soft"
                         >
                           <Paperclip className="w-4 h-4" />
                         </Button>
@@ -311,7 +311,7 @@ export default function MessagesPage() {
                           onClick={handleSendMessage}
                           disabled={!messageInput.trim()}
                           size="sm"
-                          className="flex items-center justify-center h-8 w-8 bg-blue-500 hover:bg-blue-600 disabled:opacity-50"
+                          className="flex items-center justify-center h-8 w-8 bg-pulse hover:bg-pulse disabled:opacity-50"
                         >
                           <Send className="w-4 h-4" />
                         </Button>
@@ -324,10 +324,10 @@ export default function MessagesPage() {
               <div className="flex-1 flex items-center justify-center bg-[#f5f1e8]">
                 <div className="text-center">
                   <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Search className="w-8 h-8 text-gray-400" />
+                    <Search className="w-8 h-8 text-ink-faint" />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Select a conversation</h3>
-                  <p className="text-gray-600">Choose a conversation from the sidebar to start messaging.</p>
+                  <h3 className="text-lg font-semibold text-ink mb-2">Select a conversation</h3>
+                  <p className="text-ink-soft">Choose a conversation from the sidebar to start messaging.</p>
                 </div>
               </div>
             )}

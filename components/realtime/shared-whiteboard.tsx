@@ -162,14 +162,14 @@ export function SharedWhiteboard() {
             Shared Whiteboard
           </CardTitle>
           <div className="flex items-center gap-2">
-            <Users className="w-4 h-4 text-gray-500" />
+            <Users className="w-4 h-4 text-ink-mute" />
             <Badge variant="secondary" className="text-xs">{collaborators.length + 1} active</Badge>
           </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Toolbar */}
-        <div className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+        <div className="flex items-center gap-4 p-3 bg-surface-sunken rounded-lg">
           {/* Tools */}
           <div className="flex gap-2">
             <Button
@@ -194,7 +194,7 @@ export function SharedWhiteboard() {
               <button
                 key={color}
                 className={`w-6 h-6 rounded-full border-2 transition-colors ${
-                  currentColor === color ? 'border-gray-800' : 'border-gray-300'
+                  currentColor === color ? 'border-gray-800' : 'border-line-strong'
                 }`}
                 style={{ backgroundColor: color }}
                 onClick={() => setCurrentColor(color)}
@@ -204,7 +204,7 @@ export function SharedWhiteboard() {
 
           {/* Size */}
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">Size:</span>
+            <span className="text-sm text-ink-soft">Size:</span>
             <input
               type="range"
               min="1"
@@ -213,7 +213,7 @@ export function SharedWhiteboard() {
               onChange={(e) => setCurrentSize(Number(e.target.value))}
               className="w-20"
             />
-            <span className="text-sm text-gray-600 w-6">{currentSize}</span>
+            <span className="text-sm text-ink-soft w-6">{currentSize}</span>
           </div>
 
           {/* Actions */}
@@ -228,12 +228,12 @@ export function SharedWhiteboard() {
         </div>
 
         {/* Canvas */}
-        <div className="relative border border-gray-200 rounded-lg overflow-hidden">
+        <div className="relative border border-line rounded-lg overflow-hidden">
           <canvas
             ref={canvasRef}
             width={600}
             height={400}
-            className="w-full h-auto cursor-crosshair bg-white"
+            className="w-full h-auto cursor-crosshair bg-surface"
             onMouseDown={startDrawing}
             onMouseMove={draw}
             onMouseUp={stopDrawing}
@@ -257,7 +257,7 @@ export function SharedWhiteboard() {
         </div>
 
         {/* Instructions */}
-        <div className="text-sm text-gray-500 text-center">
+        <div className="text-sm text-ink-mute text-center">
           Draw, sketch, and collaborate in real-time with your study partners
         </div>
       </CardContent>

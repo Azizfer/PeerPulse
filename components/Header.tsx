@@ -1,175 +1,262 @@
 "use client"
 
 import Link from "next/link"
-import { useState, useRef, useEffect } from "react"
-import { ChevronDown } from "lucide-react"
+import { usePathname } from "next/navigation"
+import { useEffect, useState } from "react"
+import { ChevronDown, Menu, X } from "lucide-react"
+import { cn } from "@/lib/utils"
+import Logo from "./Logo"
+import { Button } from "./ui/button"
+import { useAuth } from "./auth-provider"
 import NotificationDropdown from "./notification-dropdown"
 import MessagesDropdown from "./messages-dropdown"
-import { Button } from "@/components/ui/button"
-import { useAuth } from "./auth-provider"
 import UserDropdown from "./UserDropdown"
+
+const LOGGED_OUT_LINKS = [
+  { href: "/#features", label: "Features" },
+  { href: "/how-it-works", label: "How it works" },
+  { href: "/pricing", label: "Pricing" },
+]
+
+const STUDY_LINKS = [
+  {
+    href: "/study",
+    label: "Focus session",
+    hint: "Get matched and start a 25-minute block",
+  },
+  { href: "/schedule", label: "Schedule", hint: "Plan recurring sessions" },
+]
+
+const COMMUNITY_LINKS = [
+  { href: "/community", label: "Feed", hint: "Ask for help, share wins" },
+  { href: "/explore", label: "Explore", hint: "Find communities and resources" },
+]
 
 export default function Header() {
   const { isLoggedIn } = useAuth()
-  const [showCommunitiesDropdown, setShowCommunitiesDropdown] = useState(false)
-  const [showStudyDropdown, setShowStudyDropdown] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
-  const studyDropdownRef = useRef<HTMLDivElement>(null)
+  const pathname = usePathname()
+  const [scrolled, setScrolled] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [openMenu, setOpenMenu] = useState<"study" | "community" | null>(null)
 
-  // Close dropdown when clicking outside
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowCommunitiesDropdown(false)
-      }
-      if (studyDropdownRef.current && !studyDropdownRef.current.contains(event.target as Node)) {
-        setShowStudyDropdown(false)
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
+    const onScroll = () => setScrolled(window.scrollY > 8)
+    onScroll()
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
+  useEffect(() => {
+    setMobileOpen(false)
+    setOpenMenu(null)
+  }, [pathname])
+
+  const isActive = (href: string) =>
+    href.startsWith("/#") ? false : pathname === href || pathname.startsWith(href + "/")
+
   return (
-    <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
-      {/* Logo */}
-      <Link href="/" className="text-2xl font-extrabold text-[#0A0A0A] tracking-[-0.03em]" style={{ fontWeight: 800 }}>
-        PeerPulse
-      </Link>
-        
-      {/* Navigation */}
-      <nav className="hidden md:flex items-center gap-8">
-        {isLoggedIn ? (
-          <>
-            {/* Regular Links */}
-            <Link 
-              href="/dashboard" 
-              className="text-base font-medium text-[#0A0A0A] hover:text-gray-600 transition-colors"
-              style={{ fontWeight: 500 }}
-            >
-              Dashboard
-            </Link>
+    <header
+      className={cn(
+        "sticky top-0 z-50 w-full border-b transition-all duration-300",
+        scrolled
+          ? "border-line bg-paper/85 backdrop-blur-xl supports-[backdrop-filter]:bg-paper/70"
+          : "border-transparent bg-paper",
+      )}
+    >
+      <div className="container-page flex h-[72px] items-center justify-between gap-6">
+        <Logo />
 
-            {/* Study Dropdown */}
-            <div 
-              className="relative" 
-              ref={studyDropdownRef}
-              onMouseEnter={() => setShowStudyDropdown(true)}
-              onMouseLeave={() => setShowStudyDropdown(false)}
-            >
-              <button
-                className="text-base font-medium text-[#0A0A0A] hover:text-gray-600 transition-colors flex items-center gap-1"
-                style={{ fontWeight: 500 }}
+        {/* ---------- Desktop nav ---------- */}
+        <nav className="hidden items-center gap-1 lg:flex">
+          {isLoggedIn ? (
+            <>
+              <NavLink href="/dashboard" active={isActive("/dashboard")}>
+                Dashboard
+              </NavLink>
+
+              <Dropdown
+                label="Study"
+                open={openMenu === "study"}
+                onOpen={() => setOpenMenu("study")}
+                onClose={() => setOpenMenu(null)}
               >
-                Study
-                <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${showStudyDropdown ? 'rotate-180' : ''}`} />
-              </button>
+                {STUDY_LINKS.map((item) => (
+                  <DropdownItem key={item.href} href={item.href} hint={item.hint}>
+                    {item.label}
+                  </DropdownItem>
+                ))}
+              </Dropdown>
 
-              {/* Dropdown Menu */}
-              {showStudyDropdown && (
-                <div className="absolute top-full left-0 mt-0 pt-2 w-52 z-50">
-                  <div className="bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                  <Link 
-                    href="/study" 
-                    className="block px-4 py-3 hover:bg-gray-100 transition-colors"
-                  >
-                    <div className="font-medium text-sm text-gray-900">Study Sessions</div>
-                    <div className="text-xs text-gray-500 mt-0.5">Start a study session</div>
-                  </Link>
-                  <Link 
-                    href="/schedule" 
-                    className="block px-4 py-3 hover:bg-gray-100 transition-colors border-t border-gray-200"
-                  >
-                    <div className="font-medium text-sm text-gray-900">Schedule</div>
-                    <div className="text-xs text-gray-500 mt-0.5">Manage your calendar</div>
-                  </Link>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Communities Dropdown */}
-            <div 
-              className="relative" 
-              ref={dropdownRef}
-              onMouseEnter={() => setShowCommunitiesDropdown(true)}
-              onMouseLeave={() => setShowCommunitiesDropdown(false)}
-            >
-              <button
-                className="text-base font-medium text-[#0A0A0A] hover:text-gray-600 transition-colors flex items-center gap-1"
-                style={{ fontWeight: 500 }}
+              <Dropdown
+                label="Communities"
+                open={openMenu === "community"}
+                onOpen={() => setOpenMenu("community")}
+                onClose={() => setOpenMenu(null)}
               >
-                Communities
-                <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${showCommunitiesDropdown ? 'rotate-180' : ''}`} />
-              </button>
+                {COMMUNITY_LINKS.map((item) => (
+                  <DropdownItem key={item.href} href={item.href} hint={item.hint}>
+                    {item.label}
+                  </DropdownItem>
+                ))}
+              </Dropdown>
 
-              {/* Dropdown Menu */}
-              {showCommunitiesDropdown && (
-                <div className="absolute top-full left-0 mt-0 pt-2 w-56 z-50">
-                  <div className="bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                  <Link 
-                    href="/community" 
-                    className="block px-4 py-3 hover:bg-gray-100 transition-colors"
-                  >
-                    <div className="font-medium text-sm text-gray-900">Feed</div>
-                    <div className="text-xs text-gray-500 mt-0.5">Your community updates</div>
-                  </Link>
-                  <Link 
-                    href="/explore" 
-                    className="block px-4 py-3 hover:bg-gray-100 transition-colors border-t border-gray-200"
-                  >
-                    <div className="font-medium text-sm text-gray-900">Explore</div>
-                    <div className="text-xs text-gray-500 mt-0.5">Discover new communities</div>
-                  </Link>
-                  </div>
-                </div>
-              )}
+              <NavLink href="/messages" active={isActive("/messages")}>
+                Messages
+              </NavLink>
+            </>
+          ) : (
+            LOGGED_OUT_LINKS.map((item) => (
+              <NavLink key={item.href} href={item.href} active={isActive(item.href)}>
+                {item.label}
+              </NavLink>
+            ))
+          )}
+        </nav>
+
+        {/* ---------- Right side ---------- */}
+        <div className="flex items-center gap-2">
+          {isLoggedIn ? (
+            <div className="flex items-center gap-1.5">
+              <MessagesDropdown />
+              <NotificationDropdown />
+              <UserDropdown />
             </div>
-          </>
-        ) : (
-          // Logged out navigation
-          [
-            { href: "/#features", label: "Features" },
-            { href: "/how-it-works", label: "How it works" },
-            { href: "/pricing", label: "Pricing" },
-          ].map((item) => (
-            <Link 
-              key={item.href}
-              href={item.href} 
-              className="text-base font-medium text-[#0A0A0A] hover:text-gray-600 transition-colors"
-              style={{ fontWeight: 500 }}
-            >
-              {item.label}
-            </Link>
-          ))
-        )}
-      </nav>
+          ) : (
+            <div className="hidden items-center gap-2 sm:flex">
+              <Button asChild variant="ghost" size="sm">
+                <Link href="/login">Log in</Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link href="/signup">Start free</Link>
+              </Button>
+            </div>
+          )}
 
-      {/* Right side */}
-      <div className="flex items-center gap-3">
-        {isLoggedIn && (
-          <>
-            <MessagesDropdown />
-            <NotificationDropdown />
-            <UserDropdown />
-          </>
-        )}
-
-        {!isLoggedIn && (
-          <div className="flex items-center gap-4">
-            <Link href="/login" className="text-base font-medium text-[#0A0A0A] hover:text-gray-600 transition-colors relative group" style={{ fontWeight: 500 }}>
-              Login
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#0A0A0A] group-hover:w-full transition-all duration-300 ease-out"></span>
-            </Link>
-            <Button asChild className="relative bg-[#0A0A0A] text-white rounded-xl px-7 py-2.5 text-sm font-semibold h-auto overflow-hidden group" style={{ fontWeight: 600 }}>
-              <Link href="/signup" className="relative inline-flex items-center justify-center">
-                <span className="absolute inset-0 bg-white rounded-xl transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
-                <span className="relative z-10 group-hover:text-[#0A0A0A] transition-colors duration-300">Sign up free</span>
-              </Link>
-            </Button>
-          </div>
-        )}
+          <button
+            type="button"
+            onClick={() => setMobileOpen((v) => !v)}
+            aria-label="Toggle menu"
+            className="grid h-10 w-10 place-items-center rounded-full border border-line bg-surface text-ink transition-colors hover:bg-surface-sunken lg:hidden"
+          >
+            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
+
+      {/* ---------- Mobile panel ---------- */}
+      {mobileOpen && (
+        <div className="border-t border-line bg-paper lg:hidden">
+          <div className="container-page flex flex-col gap-1 py-4">
+            {(isLoggedIn
+              ? [
+                  { href: "/dashboard", label: "Dashboard" },
+                  { href: "/study", label: "Focus session" },
+                  { href: "/schedule", label: "Schedule" },
+                  { href: "/community", label: "Community feed" },
+                  { href: "/explore", label: "Explore" },
+                  { href: "/messages", label: "Messages" },
+                  { href: "/profile", label: "Profile" },
+                ]
+              : [
+                  ...LOGGED_OUT_LINKS,
+                  { href: "/login", label: "Log in" },
+                  { href: "/signup", label: "Start free" },
+                ]
+            ).map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="rounded-xl px-3 py-2.5 font-display text-[15px] font-semibold text-ink-soft transition-colors hover:bg-surface-sunken hover:text-ink"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </header>
+  )
+}
+
+function NavLink({
+  href,
+  active,
+  children,
+}: {
+  href: string
+  active?: boolean
+  children: React.ReactNode
+}) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "rounded-full px-3.5 py-2 font-display text-[15px] font-semibold transition-colors",
+        active ? "text-ink" : "text-ink-soft hover:text-ink",
+      )}
+    >
+      {children}
+    </Link>
+  )
+}
+
+function Dropdown({
+  label,
+  open,
+  onOpen,
+  onClose,
+  children,
+}: {
+  label: string
+  open: boolean
+  onOpen: () => void
+  onClose: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <div
+      className="relative"
+      onMouseEnter={onOpen}
+      onMouseLeave={onClose}
+    >
+      <button
+        type="button"
+        onClick={() => (open ? onClose() : onOpen())}
+        className="flex items-center gap-1 rounded-full px-3.5 py-2 font-display text-[15px] font-semibold text-ink-soft transition-colors hover:text-ink"
+      >
+        {label}
+        <ChevronDown
+          className={cn("h-3.5 w-3.5 transition-transform duration-200", open && "rotate-180")}
+        />
+      </button>
+
+      {open && (
+        <div className="absolute left-0 top-full w-64 pt-2">
+          <div className="overflow-hidden rounded-2xl border border-line bg-surface p-1.5 shadow-card">
+            {children}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function DropdownItem({
+  href,
+  hint,
+  children,
+}: {
+  href: string
+  hint?: string
+  children: React.ReactNode
+}) {
+  return (
+    <Link
+      href={href}
+      className="block rounded-xl px-3.5 py-2.5 transition-colors hover:bg-surface-sunken"
+    >
+      <span className="block font-display text-sm font-semibold text-ink">{children}</span>
+      {hint && <span className="mt-0.5 block text-[13px] leading-snug text-ink-mute">{hint}</span>}
+    </Link>
   )
 }

@@ -64,7 +64,7 @@ export function AcademicInfoFormSimple() {
     >
       {/* University */}
       <div className="px-4">
-        <Label className="text-base font-medium text-gray-900 mb-3 block">University / Institution</Label>
+        <Label className="text-base font-medium text-ink mb-3 block">University / Institution</Label>
         <Input
           placeholder="e.g., Stanford University, MIT..."
           value={formData.university}
@@ -75,7 +75,7 @@ export function AcademicInfoFormSimple() {
 
       {/* Major */}
       <div className="px-4">
-        <Label className="text-base font-medium text-gray-900 mb-3 block">Major / Field of Study</Label>
+        <Label className="text-base font-medium text-ink mb-3 block">Major / Field of Study</Label>
         <Input
           placeholder="e.g., Computer Science, Biology..."
           value={formData.major}
@@ -86,7 +86,7 @@ export function AcademicInfoFormSimple() {
 
       {/* Academic Year */}
       <div className="px-4">
-        <Label className="text-base font-medium text-gray-900 mb-3 block">Current Academic Year</Label>
+        <Label className="text-base font-medium text-ink mb-3 block">Current Academic Year</Label>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {academicYears.map((year) => (
             <label
@@ -94,7 +94,7 @@ export function AcademicInfoFormSimple() {
               className={`relative flex h-12 cursor-pointer items-center justify-center rounded-xl border px-4 text-sm font-medium transition-all ${
                 formData.academicYear === year.value
                   ? "border-blue-600 border-2 bg-blue-50 text-blue-700"
-                  : "border-gray-300 text-gray-700 hover:border-gray-400"
+                  : "border-line-strong text-ink-soft hover:border-ink-faint"
               }`}
             >
               {year.label}
@@ -126,7 +126,7 @@ export function AcademicInfoFormSimple() {
       {/* Form validation feedback */}
       {!isFormValid && (
         <div className="px-4">
-          <p className="text-sm text-gray-500 text-center">
+          <p className="text-sm text-ink-mute text-center">
             Please fill in all fields to continue
           </p>
         </div>

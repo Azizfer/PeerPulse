@@ -64,22 +64,22 @@ export default function SettingsPage() {
         <Header />
 
         <main className="max-w-4xl mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Settings</h1>
-          <p className="text-gray-600 mb-8">Manage your app preferences and account settings</p>
+          <h1 className="text-3xl font-bold text-ink mb-2">Settings</h1>
+          <p className="text-ink-soft mb-8">Manage your app preferences and account settings</p>
 
           {/* Notification Settings */}
-          <Card className="mb-6 border-2 border-gray-300 hover:border-gray-400 hover:shadow-lg transition-all duration-200">
+          <Card className="mb-6 border border-line-strong hover:border-ink-faint hover:shadow-lg transition-all duration-200">
             <CardHeader>
               <div className="flex items-center gap-3">
-                <Bell className="w-5 h-5 text-blue-600" />
-                <h2 className="text-xl font-semibold text-gray-900">Notification Preferences</h2>
+                <Bell className="w-5 h-5 text-pulse-dark" />
+                <h2 className="text-xl font-semibold text-ink">Notification Preferences</h2>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <label className="flex items-center justify-between cursor-pointer py-2">
                 <div className="flex-1">
-                  <span className="text-sm font-semibold text-gray-900">Enable Notifications</span>
-                  <p className="text-xs text-gray-500 mt-0.5">Receive updates about messages and sessions</p>
+                  <span className="text-sm font-semibold text-ink">Enable Notifications</span>
+                  <p className="text-xs text-ink-mute mt-0.5">Receive updates about messages and sessions</p>
                 </div>
                 <div className="relative inline-block w-11 h-6 ml-4">
                   <input
@@ -88,15 +88,15 @@ export default function SettingsPage() {
                     onChange={(e) => setNotifications(e.target.checked)}
                     className="peer sr-only"
                   />
-                  <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-blue-600 transition-colors duration-200"></div>
-                  <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 peer-checked:translate-x-5"></div>
+                  <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-pulse transition-colors duration-200"></div>
+                  <div className="absolute left-1 top-1 w-4 h-4 bg-surface rounded-full transition-transform duration-200 peer-checked:translate-x-5"></div>
                 </div>
               </label>
 
               <label className="flex items-center justify-between cursor-pointer py-2">
                 <div className="flex-1">
-                  <span className="text-sm font-semibold text-gray-900">Study Session Reminders</span>
-                  <p className="text-xs text-gray-500 mt-0.5">Get notified before your scheduled sessions</p>
+                  <span className="text-sm font-semibold text-ink">Study Session Reminders</span>
+                  <p className="text-xs text-ink-mute mt-0.5">Get notified before your scheduled sessions</p>
                 </div>
                 <div className="relative inline-block w-11 h-6 ml-4">
                   <input
@@ -105,8 +105,8 @@ export default function SettingsPage() {
                     onChange={(e) => setStudyReminders(e.target.checked)}
                     className="peer sr-only"
                   />
-                  <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-blue-600 transition-colors duration-200"></div>
-                  <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 peer-checked:translate-x-5"></div>
+                  <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-pulse transition-colors duration-200"></div>
+                  <div className="absolute left-1 top-1 w-4 h-4 bg-surface rounded-full transition-transform duration-200 peer-checked:translate-x-5"></div>
                 </div>
               </label>
 
@@ -117,16 +117,16 @@ export default function SettingsPage() {
           </Card>
 
           {/* Privacy Settings */}
-          <Card className="mb-6 border-2 border-gray-300 hover:border-gray-400 hover:shadow-lg transition-all duration-200">
+          <Card className="mb-6 border border-line-strong hover:border-ink-faint hover:shadow-lg transition-all duration-200">
             <CardHeader>
               <div className="flex items-center gap-3">
-                <Lock className="w-5 h-5 text-blue-600" />
-                <h2 className="text-xl font-semibold text-gray-900">Privacy Settings</h2>
+                <Lock className="w-5 h-5 text-pulse-dark" />
+                <h2 className="text-xl font-semibold text-ink">Privacy Settings</h2>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Who can see your profile</label>
+                <label className="block text-sm font-medium text-ink-soft mb-2">Who can see your profile</label>
                 <CustomSelect
                   value={profileVisibility}
                   onChange={setProfileVisibility}
@@ -140,8 +140,8 @@ export default function SettingsPage() {
 
               <label className="flex items-center justify-between cursor-pointer py-2">
                 <div className="flex-1">
-                  <span className="text-sm font-semibold text-gray-900">Show when I'm online</span>
-                  <p className="text-xs text-gray-500 mt-0.5">Let others see your online status</p>
+                  <span className="text-sm font-semibold text-ink">Show when I'm online</span>
+                  <p className="text-xs text-ink-mute mt-0.5">Let others see your online status</p>
                 </div>
                 <div className="relative inline-block w-11 h-6 ml-4">
                   <input
@@ -150,8 +150,8 @@ export default function SettingsPage() {
                     onChange={(e) => setShowOnlineStatus(e.target.checked)}
                     className="peer sr-only"
                   />
-                  <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-blue-600 transition-colors duration-200"></div>
-                  <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 peer-checked:translate-x-5"></div>
+                  <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-pulse transition-colors duration-200"></div>
+                  <div className="absolute left-1 top-1 w-4 h-4 bg-surface rounded-full transition-transform duration-200 peer-checked:translate-x-5"></div>
                 </div>
               </label>
 
@@ -162,16 +162,16 @@ export default function SettingsPage() {
           </Card>
 
           {/* Study Preferences */}
-          <Card className="mb-6 border-2 border-gray-300 hover:border-gray-400 hover:shadow-lg transition-all duration-200">
+          <Card className="mb-6 border border-line-strong hover:border-ink-faint hover:shadow-lg transition-all duration-200">
             <CardHeader>
               <div className="flex items-center gap-3">
-                <BookOpen className="w-5 h-5 text-blue-600" />
-                <h2 className="text-xl font-semibold text-gray-900">Study Preferences</h2>
+                <BookOpen className="w-5 h-5 text-pulse-dark" />
+                <h2 className="text-xl font-semibold text-ink">Study Preferences</h2>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Preferred session length</label>
+                <label className="block text-sm font-medium text-ink-soft mb-2">Preferred session length</label>
                 <CustomSelect
                   value={defaultSessionLength}
                   onChange={setDefaultSessionLength}
@@ -186,8 +186,8 @@ export default function SettingsPage() {
 
               <label className="flex items-center justify-between cursor-pointer py-2">
                 <div className="flex-1">
-                  <span className="text-sm font-semibold text-gray-900">Find study partners automatically</span>
-                  <p className="text-xs text-gray-500 mt-0.5">Match with students studying similar topics</p>
+                  <span className="text-sm font-semibold text-ink">Find study partners automatically</span>
+                  <p className="text-xs text-ink-mute mt-0.5">Match with students studying similar topics</p>
                 </div>
                 <div className="relative inline-block w-11 h-6 ml-4">
                   <input
@@ -196,8 +196,8 @@ export default function SettingsPage() {
                     onChange={(e) => setAutoMatchmaking(e.target.checked)}
                     className="peer sr-only"
                   />
-                  <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-blue-600 transition-colors duration-200"></div>
-                  <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 peer-checked:translate-x-5"></div>
+                  <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-pulse transition-colors duration-200"></div>
+                  <div className="absolute left-1 top-1 w-4 h-4 bg-surface rounded-full transition-transform duration-200 peer-checked:translate-x-5"></div>
                 </div>
               </label>
 
@@ -216,7 +216,7 @@ export default function SettingsPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-ink-soft mb-4">
                 Once you delete your account, there is no going back. Please be certain.
               </p>
               <Button variant="destructive" onClick={handleDeleteAccount}>

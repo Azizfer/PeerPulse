@@ -15,7 +15,7 @@ export function Skeleton({ className, ...props }: SkeletonProps) {
 
 export function CardSkeleton() {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div className="bg-surface rounded-xl shadow-sm border border-line p-6">
       <div className="space-y-4">
         <Skeleton className="h-4 w-3/4" />
         <Skeleton className="h-4 w-1/2" />
@@ -32,7 +32,7 @@ export function StatsSkeleton() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div key={i} className="bg-surface rounded-xl shadow-sm border border-line p-6">
           <div className="flex items-center gap-3">
             <Skeleton className="w-10 h-10 rounded-lg" />
             <div className="space-y-2">
@@ -48,7 +48,7 @@ export function StatsSkeleton() {
 
 export function ChartSkeleton() {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div className="bg-surface rounded-xl shadow-sm border border-line p-6">
       <Skeleton className="h-4 w-32 mb-4" />
       <div className="space-y-3">
         {Array.from({ length: 5 }).map((_, i) => (

@@ -6,6 +6,10 @@ import { X, ZoomIn, ZoomOut, Download } from "lucide-react"
 import { FileText } from "lucide-react"
 import { Document, Page } from 'react-pdf'
 
+// pdf.js needs its worker; these modules are only ever loaded client-side.
+import { pdfjs } from 'react-pdf'
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`
+
 interface PDFViewerModalProps {
   isOpen: boolean
   pdfUrl: string
@@ -42,15 +46,15 @@ export function PDFViewerModal({ isOpen, pdfUrl, pdfName, initialPage, numPages,
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="fixed inset-4 md:inset-8 bg-white rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden"
+        className="fixed inset-4 md:inset-8 bg-surface rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden"
       >
         {/* Modal Header */}
-        <div className="flex items-center justify-between p-4 border-b-2 border-gray-300 bg-gray-50">
+        <div className="flex items-center justify-between p-4 border-b-2 border-line-strong bg-surface-sunken">
           <div className="flex items-center gap-3">
-            <FileText className="w-5 h-5 text-blue-600" />
+            <FileText className="w-5 h-5 text-pulse-dark" />
             <div>
-              <h3 className="font-bold text-gray-900">{pdfName}</h3>
-              <p className="text-xs text-gray-600">Page {currentPage}</p>
+              <h3 className="font-bold text-ink">{pdfName}</h3>
+              <p className="text-xs text-ink-soft">Page {currentPage}</p>
             </div>
           </div>
           <button
@@ -98,7 +102,7 @@ export function PDFViewerModal({ isOpen, pdfUrl, pdfName, initialPage, numPages,
               <a
                 href={pdfUrl}
                 download={pdfName}
-                className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-medium"
+                className="flex items-center gap-2 px-3 py-2 bg-pulse hover:bg-pulse-dark text-white rounded-lg transition-colors text-sm font-medium"
               >
                 <Download className="w-4 h-4" />
                 Download
@@ -119,7 +123,7 @@ export function PDFViewerModal({ isOpen, pdfUrl, pdfName, initialPage, numPages,
                 }
               >
                 {/* Current Page */}
-                <div className="bg-white shadow-2xl rounded">
+                <div className="bg-surface shadow-2xl rounded">
                   <Page
                     pageNumber={currentPage}
                     scale={zoom}

@@ -165,32 +165,32 @@ export default function SchedulePage() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-surface">
         <Header />
 
         <main className="max-w-[1400px] mx-auto px-6 py-16">
           <div className="mb-12">
-            <h1 className="text-6xl font-bold text-gray-900 mb-4">Schedule</h1>
-            <p className="text-xl text-gray-600">Plan your study sessions with friends</p>
+            <h1 className="text-6xl font-bold text-ink mb-4">Schedule</h1>
+            <p className="text-xl text-ink-soft">Plan your study sessions with friends</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-3xl p-6 border-2 border-gray-300">
+              <div className="bg-surface rounded-3xl p-6 border border-line-strong">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">
+                  <h2 className="text-2xl font-bold text-ink">
                     {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
                   </h2>
                   <div className="flex gap-2">
                     <button
                       onClick={previousMonth}
-                      className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                      className="p-1.5 hover:bg-surface-sunken rounded-lg transition-colors"
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </button>
                     <button
                       onClick={nextMonth}
-                      className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                      className="p-1.5 hover:bg-surface-sunken rounded-lg transition-colors"
                     >
                       <ChevronRight className="w-5 h-5" />
                     </button>
@@ -199,7 +199,7 @@ export default function SchedulePage() {
 
                 <div className="grid grid-cols-7 gap-1.5">
                   {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
-                    <div key={day} className="text-center text-xs font-semibold text-gray-600 py-1.5">
+                    <div key={day} className="text-center text-xs font-semibold text-ink-soft py-1.5">
                       {day}
                     </div>
                   ))}
@@ -220,14 +220,14 @@ export default function SchedulePage() {
                         className={`
                           aspect-square rounded-lg p-1 text-sm text-center relative
                           transition-all hover:scale-105
-                          ${today ? "bg-[#2a2622] text-white font-bold" : "hover:bg-gray-100"}
+                          ${today ? "bg-ink text-white font-bold" : "hover:bg-surface-sunken"}
                           ${hasSessionDay && !today ? "bg-[#e8dcc8] font-semibold" : ""}
                         `}
                       >
                         <span>{day}</span>
                         {hasSessionDay && (
                           <div className="absolute bottom-0.5 left-1/2 transform -translate-x-1/2">
-                            <div className="w-1 h-1 bg-blue-500 rounded-full" />
+                            <div className="w-1 h-1 bg-pulse rounded-full" />
                           </div>
                         )}
                       </button>
@@ -238,15 +238,15 @@ export default function SchedulePage() {
             </div>
 
             <div>
-              <div className="bg-white rounded-3xl p-8 border-2 border-gray-300 sticky top-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">Upcoming Sessions</h3>
+              <div className="bg-surface rounded-3xl p-8 border border-line-strong sticky top-8">
+                <h3 className="text-2xl font-bold text-ink mb-6">Upcoming Sessions</h3>
                 
                 <div className="space-y-4">
                   {upcomingSessions.length === 0 ? (
                     <div className="text-center py-8">
                       <CalendarIcon className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                      <p className="text-gray-500">No sessions scheduled</p>
-                      <p className="text-sm text-gray-400 mt-1">Click a date to create one</p>
+                      <p className="text-ink-mute">No sessions scheduled</p>
+                      <p className="text-sm text-ink-faint mt-1">Click a date to create one</p>
                     </div>
                   ) : (
                     upcomingSessions.map(session => (
@@ -256,17 +256,17 @@ export default function SchedulePage() {
                       >
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex items-center gap-2">
-                            <div className="w-10 h-10 rounded-full bg-[#2a2622] text-white flex items-center justify-center text-sm font-bold">
+                            <div className="w-10 h-10 rounded-full bg-ink text-white flex items-center justify-center text-sm font-bold">
                               {session.friend.avatar}
                             </div>
                             <div>
-                              <div className="font-semibold text-gray-900">{session.friend.name}</div>
-                              <div className="text-xs text-gray-600">{session.time}</div>
+                              <div className="font-semibold text-ink">{session.friend.name}</div>
+                              <div className="text-xs text-ink-soft">{session.time}</div>
                             </div>
                           </div>
                         </div>
-                        <div className="text-sm text-gray-700 mb-1">{session.topic}</div>
-                        <div className="flex items-center gap-3 text-xs text-gray-500">
+                        <div className="text-sm text-ink-soft mb-1">{session.topic}</div>
+                        <div className="flex items-center gap-3 text-xs text-ink-mute">
                           <span className="flex items-center gap-1">
                             <CalendarIcon className="w-3 h-3" />
                             {session.date.toLocaleDateString()}
@@ -299,13 +299,13 @@ export default function SchedulePage() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-white rounded-3xl p-8 z-50 max-h-[90vh] overflow-y-auto"
+                className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-surface rounded-3xl p-8 z-50 max-h-[90vh] overflow-y-auto"
               >
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-3xl font-bold text-gray-900">Schedule Session</h2>
+                  <h2 className="text-3xl font-bold text-ink">Schedule Session</h2>
                   <button
                     onClick={() => setIsModalOpen(false)}
-                    className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+                    className="p-2 hover:bg-surface-sunken rounded-xl transition-colors"
                   >
                     <X className="w-6 h-6" />
                   </button>
@@ -313,8 +313,8 @@ export default function SchedulePage() {
 
                 <div className="space-y-6">
                   <div className="p-4 bg-[#f5f1e8] rounded-xl">
-                    <div className="text-sm text-gray-600 mb-1">Selected Date</div>
-                    <div className="text-xl font-semibold text-gray-900">
+                    <div className="text-sm text-ink-soft mb-1">Selected Date</div>
+                    <div className="text-xl font-semibold text-ink">
                       {selectedDate?.toLocaleDateString("en-US", {
                         weekday: "long",
                         year: "numeric",
@@ -325,17 +325,17 @@ export default function SchedulePage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-3">
+                    <label className="block text-sm font-semibold text-ink mb-3">
                       Select Friend
                     </label>
                     <div className="relative mb-3">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-ink-faint" />
                       <Input
                         type="text"
                         placeholder="Search friends..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10 h-12 rounded-xl border-2 border-gray-300"
+                        className="pl-10 h-12 rounded-xl border border-line-strong"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto">
@@ -347,17 +347,17 @@ export default function SchedulePage() {
                             p-4 rounded-xl border-2 transition-all text-left
                             ${selectedFriend?.id === friend.id
                               ? "border-[#2a2622] bg-[#f5f1e8]"
-                              : "border-gray-300 hover:border-gray-400"
+                              : "border-line-strong hover:border-ink-faint"
                             }
                           `}
                         >
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-[#2a2622] text-white flex items-center justify-center font-bold">
+                            <div className="w-10 h-10 rounded-full bg-ink text-white flex items-center justify-center font-bold">
                               {friend.avatar}
                             </div>
                             <div>
-                              <div className="font-semibold text-gray-900">{friend.name}</div>
-                              <div className="text-xs text-gray-600 flex items-center gap-1">
+                              <div className="font-semibold text-ink">{friend.name}</div>
+                              <div className="text-xs text-ink-soft flex items-center gap-1">
                                 <div className={`w-2 h-2 rounded-full ${friend.status === "online" ? "bg-green-500" : "bg-gray-400"}`} />
                                 {friend.status}
                               </div>
@@ -370,7 +370,7 @@ export default function SchedulePage() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-900 mb-2">
+                      <label className="block text-sm font-semibold text-ink mb-2">
                         Time
                       </label>
                       <TimeInput
@@ -380,7 +380,7 @@ export default function SchedulePage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-900 mb-2">
+                      <label className="block text-sm font-semibold text-ink mb-2">
                         Duration
                       </label>
                       <div className="h-12">
@@ -396,27 +396,27 @@ export default function SchedulePage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">
+                    <label className="block text-sm font-semibold text-ink mb-2">
                       Session Topic
                     </label>
                     <Textarea
                       placeholder="What will you be studying?"
                       value={sessionTopic}
                       onChange={(e) => setSessionTopic(e.target.value)}
-                      className="min-h-24 rounded-xl border-2 border-gray-300"
+                      className="min-h-24 rounded-xl border border-line-strong"
                     />
                   </div>
 
                   <div className="flex gap-3 pt-4">
                     <Button
                       onClick={() => setIsModalOpen(false)}
-                      className="flex-1 h-12 rounded-xl bg-gray-200 text-gray-900 hover:bg-gray-300"
+                      className="flex-1 h-12 rounded-xl bg-gray-200 text-ink hover:bg-gray-300"
                     >
                       Cancel
                     </Button>
                     <Button
                       onClick={handleCreateSession}
-                      className="flex-1 h-12 rounded-xl bg-[#2a2622] text-white hover:bg-[#1a1612]"
+                      className="flex-1 h-12 rounded-xl bg-ink text-white hover:bg-[#1a1612]"
                     >
                       Schedule Session
                     </Button>
