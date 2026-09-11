@@ -1,10 +1,29 @@
 "use client"
 
-import { MicOff, Pause, Maximize2, Video, VideoOff, Radio } from "lucide-react"
+import { useEffect, useState } from "react"
+import { MicOff, Pause, Maximize2, Video, Radio } from "lucide-react"
 import { Avatar } from "@/components/avatar"
 
-/** A static, high-fidelity mock of the live focus room (no media APIs involved). */
+const SESSION_LENGTH = 25 * 60 // 25:00 sessions, matches the real focus-room default
+
+/** A high-fidelity mock of the live focus room. Timer and progress are live so it
+ *  reads as an actual in-progress session rather than a static screenshot. */
 export function FocusRoomMock() {
+  // Starts already well into the session (~5:30 left) so the card reads as "mid-flow"
+  // rather than just-started — matches the mostly-full progress bar.
+  const [secondsLeft, setSecondsLeft] = useState(5 * 60 + 30)
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setSecondsLeft((prev) => (prev <= 0 ? SESSION_LENGTH : prev - 1))
+    }, 1000)
+    return () => clearInterval(id)
+  }, [])
+
+  const minutes = String(Math.floor(secondsLeft / 60)).padStart(2, "0")
+  const seconds = String(secondsLeft % 60).padStart(2, "0")
+  const progressPct = ((SESSION_LENGTH - secondsLeft) / SESSION_LENGTH) * 100
+
   return (
     <div className="relative">
       {/* soft glows behind the card */}
@@ -23,7 +42,10 @@ export function FocusRoomMock() {
             Calculus II · Focus room
           </p>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-rose/60 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-rose-deep">
-            <Radio className="h-3 w-3" />
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-deep/60" />
+              <Radio className="relative h-2.5 w-2.5" />
+            </span>
             Live
           </span>
         </div>
@@ -39,26 +61,29 @@ export function FocusRoomMock() {
           <div className="rounded-2xl bg-surface-sunken p-4">
             <div className="flex items-baseline justify-between">
               <p className="font-display text-3xl font-extrabold tabular-nums tracking-tight text-ink">
-                24:07
+                {minutes}:{seconds}
               </p>
               <span className="rounded-full bg-surface px-2.5 py-1 text-[11px] font-semibold text-ink-mute">
                 Deep work
               </span>
             </div>
             <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-line">
-              <div className="h-full w-[78%] rounded-full bg-ink" />
+              <div
+                className="h-full rounded-full bg-ink transition-[width] duration-1000 ease-linear"
+                style={{ width: `${progressPct}%` }}
+              />
             </div>
             <div className="mt-4 flex items-center gap-2">
-              <button className="grid h-9 w-9 place-items-center rounded-full bg-ink text-white">
+              <button className="grid h-9 w-9 place-items-center rounded-full bg-ink text-white transition-colors hover:bg-ink/85">
                 <Pause className="h-4 w-4" />
               </button>
-              <button className="grid h-9 w-9 place-items-center rounded-full border border-line bg-surface text-ink-soft">
+              <button className="grid h-9 w-9 place-items-center rounded-full border border-line bg-surface text-ink-soft transition-colors hover:border-line-strong hover:bg-surface-sunken">
                 <Video className="h-4 w-4" />
               </button>
-              <button className="grid h-9 w-9 place-items-center rounded-full border border-line bg-surface text-ink-soft">
+              <button className="grid h-9 w-9 place-items-center rounded-full border border-line bg-surface text-ink-soft transition-colors hover:border-line-strong hover:bg-surface-sunken">
                 <MicOff className="h-4 w-4" />
               </button>
-              <button className="ml-auto grid h-9 w-9 place-items-center rounded-full border border-line bg-surface text-ink-soft">
+              <button className="ml-auto grid h-9 w-9 place-items-center rounded-full border border-line bg-surface text-ink-soft transition-colors hover:border-line-strong hover:bg-surface-sunken">
                 <Maximize2 className="h-4 w-4" />
               </button>
             </div>
@@ -101,20 +126,6 @@ export function FocusRoomMock() {
           </div>
         </div>
       </div>
-
-      {/* floating chips */}
-      <FloatingChip className="-left-6 bottom-16 hidden sm:block">
-        <span className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-pulse-ring rounded-full bg-pulse" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-pulse" />
-        </span>
-        Matched in 8 seconds
-      </FloatingChip>
-
-      <FloatingChip className="-right-4 top-1/2 hidden md:block">
-        <span className="text-base leading-none">🔥</span>
-        12-day streak
-      </FloatingChip>
     </div>
   )
 }
@@ -157,31 +168,11 @@ function VideoTile({
           {name}
           {you && " (you)"}
         </span>
-        {muted ? (
-          <MicOff className="h-3.5 w-3.5 text-white/80" />
-        ) : (
-          <VideoOff className="h-3.5 w-3.5 text-white/40" />
-        )}
+        {muted && <MicOff className="h-3.5 w-3.5 text-white/80" />}
       </div>
       <span className="absolute left-2.5 top-2.5 rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white/90 backdrop-blur-sm">
         {subject}
       </span>
-    </div>
-  )
-}
-
-function FloatingChip({
-  children,
-  className,
-}: {
-  children: React.ReactNode
-  className?: string
-}) {
-  return (
-    <div
-      className={`absolute z-10 inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3.5 py-2 font-display text-[13px] font-semibold text-ink shadow-card ${className ?? ""}`}
-    >
-      {children}
     </div>
   )
 }

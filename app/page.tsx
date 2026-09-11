@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRight, CalendarCheck, Mic, Play, ShieldCheck, Sparkles, Users, Video, Timer } from "lucide-react"
+import { ArrowRight, Play, Activity, Hourglass, Users, Video, Timer } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
@@ -50,28 +50,30 @@ const STEPS = [
   },
 ]
 
+// No box, no shadow, no colored chip — same bare "icon / rule / heading / body" language
+// as the numbered steps section right below, so the two read as one system.
 const FEATURES = [
   {
     icon: Users,
-    tint: "bg-lilac text-lilac-deep",
+    iconColor: "text-lilac-deep",
     title: "Matching that actually matches",
     body: "We pair on subject, topic and availability — not vibes. Filter by course, level or language before you join.",
   },
   {
     icon: Video,
-    tint: "bg-sky text-sky-deep",
+    iconColor: "text-sky-deep",
     title: "Camera and mic, your call",
     body: "Join with video, audio or neither. Toggle either one mid-session without dropping the call.",
   },
   {
-    icon: Timer,
-    tint: "bg-apricot text-apricot-deep",
+    icon: Hourglass,
+    iconColor: "text-apricot-deep",
     title: "Pomodoro built in",
     body: "25-minute deep work blocks with short breaks, and a debrief at the end so the session feels finished.",
   },
   {
-    icon: Sparkles,
-    tint: "bg-pulse-soft text-pulse-dark",
+    icon: Activity,
+    iconColor: "text-pulse-dark",
     title: "Pulse, your study assistant",
     body: "Turns your syllabus into a plan, quizzes you on weak topics, and finds the resource someone already shared.",
   },
@@ -154,7 +156,7 @@ export function LandingPage() {
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Button asChild size="lg" className="group">
                   <Link href="/signup">
-                    Get started — it’s free
+                    Get started — it's free
                     <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
                   </Link>
                 </Button>
@@ -164,16 +166,6 @@ export function LandingPage() {
                     See how it works
                   </Link>
                 </Button>
-              </div>
-            </Reveal>
-
-            <Reveal delay={0.24}>
-              <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-[13.5px] text-ink-mute">
-                <span className="inline-flex items-center gap-1.5">
-                  <ShieldCheck className="h-4 w-4 text-pulse" /> Verified university email
-                </span>
-                <span>No credit card</span>
-                <span>Camera optional, always</span>
               </div>
             </Reveal>
           </div>
@@ -235,15 +227,12 @@ export function LandingPage() {
             />
           </Reveal>
 
-          <RevealGroup className="mt-14 grid gap-5 sm:grid-cols-2">
+          <RevealGroup className="mt-14 grid gap-x-10 gap-y-12 sm:grid-cols-2">
             {FEATURES.map((feature) => (
               <RevealItem key={feature.title}>
-                <div className="group h-full rounded-3xl border border-line bg-surface p-7 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-line-strong hover:shadow-card">
-                  <span
-                    className={`grid h-12 w-12 place-items-center rounded-2xl ${feature.tint}`}
-                  >
-                    <feature.icon className="h-5.5 w-5.5" />
-                  </span>
+                <div className="h-full">
+                  <feature.icon className={`h-6 w-6 ${feature.iconColor}`} strokeWidth={1.5} />
+                  <div className="mt-4 h-px w-full bg-line-strong" />
                   <h3 className="mt-5 font-display text-xl font-bold tracking-[-0.02em] text-ink">
                     {feature.title}
                   </h3>
@@ -323,7 +312,7 @@ export function LandingPage() {
                       tone: "bg-pulse-soft text-pulse-dark",
                     },
                     {
-                      icon: Mic,
+                      icon: undefined,
                       label: "Microphone",
                       value: "Muted during deep work, unmuted at debrief",
                       tone: "bg-surface-sunken text-ink-soft",
@@ -340,7 +329,7 @@ export function LandingPage() {
                       className="flex items-center gap-3.5 rounded-2xl border border-line bg-surface px-4 py-3.5"
                     >
                       <span className={`grid h-9 w-9 place-items-center rounded-xl ${row.tone}`}>
-                        <row.icon className="h-4 w-4" />
+                        {row.icon ? <row.icon className="h-4 w-4" /> : null}
                       </span>
                       <div className="min-w-0">
                         <p className="font-display text-sm font-bold text-ink">{row.label}</p>
@@ -473,7 +462,7 @@ export function LandingPage() {
               <RevealItem key={t.name}>
                 <figure className="flex h-full flex-col justify-between rounded-3xl border border-line bg-surface p-7 shadow-soft">
                   <blockquote className="text-[15px] leading-relaxed text-ink-soft">
-                    “{t.quote}”
+                    "{t.quote}"
                   </blockquote>
                   <figcaption className="mt-6 flex items-center gap-3">
                     <Avatar name={t.name} size="sm" />
@@ -498,10 +487,6 @@ export function LandingPage() {
               <div className="pointer-events-none absolute -bottom-24 -right-10 h-72 w-72 rounded-full bg-lilac-deep/30 blur-3xl" />
 
               <div className="relative mx-auto max-w-2xl">
-                <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3.5 py-1.5 text-[13px] font-semibold text-white/85">
-                  <CalendarCheck className="h-4 w-4" />
-                  Free for 30 days
-                </span>
                 <h2 className="mt-6 text-h2 font-extrabold text-white">
                   Your next exam just got less lonely.
                 </h2>

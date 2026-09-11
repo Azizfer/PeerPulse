@@ -1,183 +1,270 @@
-import type { Metadata } from "next"
+"use client"
+
 import Link from "next/link"
-import { ArrowRight, Check, MessageSquare, Video } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import Header from "@/components/Header"
-import Footer from "@/components/Footer"
-import { Reveal, RevealGroup, RevealItem } from "@/components/reveal"
-import { Section, SectionHeading } from "@/components/section"
+import { Button } from "@/components/ui/button"
+import { motion } from "framer-motion"
+import { useState } from "react"
+import { ArrowRight, ChevronDown, Zap, Search, Timer, Video, VideoOff } from "lucide-react"
 
-export const metadata: Metadata = {
-  title: "How it works",
-  description:
-    "From signing up to finishing a 55-minute focus session with someone in your subject.",
-}
+const PAPER = "#F3F4F6"
+const INK = "#12151C"
+const TEAL = "#20C4B0"
+const SLATE = "#3F6F7A"
+const CARD = "#E7E9ED"
 
-const STEPS = [
+const steps = [
   {
-    n: "01",
-    title: "Set up your subjects",
-    body: "Add your university, the subjects you're taking this term, and the topics you find hard. It takes about two minutes and it's the only setup we ask for.",
-    points: ["University and programme", "Subjects and current topics", "When you usually study"],
+    title: "Click \"Get Paired\"",
+    description:
+      "When you're ready to study, hit the button on your dashboard. We start looking for another student online right now, studying something close to what you're working on.",
+    icon: Zap,
+    visual: "start",
   },
   {
-    n: "02",
-    title: "Get matched",
-    body: "Press start and we look for someone online in the same subject, at a similar level, in a compatible time zone. Most matches take under a minute.",
-    points: ["Matched on course overlap first", "Filter by language or level", "Skip a match, no explanations needed"],
+    title: "Get matched in seconds",
+    description:
+      "Matching runs on subject, university, and study level. Most pairings land in under a minute — you'll see who you've been paired with before you even finish getting comfortable.",
+    icon: Search,
+    visual: "match",
   },
   {
-    n: "03",
-    title: "Work in the room",
-    body: "Two or three other people, a shared 25-minute timer, and your camera and mic under your control. Mics are muted during deep work by default.",
-    points: ["Camera optional, toggle anytime", "Shared goal list", "Chat and whiteboard if you need them"],
+    title: "Land in a shared session",
+    description:
+      "You and your partner drop straight into a room with a synced Pomodoro timer, chat, and video — already running, nothing to configure.",
+    icon: Timer,
+    visual: "timer",
   },
   {
-    n: "04",
-    title: "Debrief and repeat",
-    body: "At the end, everyone says what they got done. Tick your goals, save the session, and book the next one before you close the tab.",
-    points: ["Session summary saved", "Streaks and stats", "Re-book the same partner"],
+    title: "Study, your way",
+    description:
+      "Camera on, camera off, voice only, or just text — toggle anything mid-session without breaking your partner's focus. Work the problems, compare notes, keep each other honest.",
+    icon: Video,
+    visual: "camera",
   },
 ]
 
-const RULES = [
+const faqs = [
   {
-    icon: Video,
-    title: "Camera on if you can",
-    body: "It's what makes the room feel like a room. But a third of members stay off camera and that's completely fine.",
+    question: "How long does it take to get paired?",
+    answer: "Most pairings happen within 30 seconds. Our system looks for online students studying similar subjects right now.",
   },
   {
-    icon: MessageSquare,
-    title: "Talk at the edges",
-    body: "Goals at the start, a debrief at the end, silence in between. Nobody wants a conversation at minute twelve.",
+    question: "Do I need to turn on my camera?",
+    answer: "No, camera use is entirely optional. You can study on video, voice only, or text chat depending on what you're in the mood for.",
   },
   {
-    icon: Check,
-    title: "One thing at a time",
-    body: "Pick the smallest concrete task you can finish in a block. 'Revise biology' never works; 'finish problem set 7' does.",
+    question: "Can I schedule sessions in advance?",
+    answer: "Yes. Once you've studied with someone a few times, you can set up a standing session at a time that works for both of you instead of relying on the queue.",
+  },
+  {
+    question: "What if my match isn't a good fit?",
+    answer: "You can end a session at any time, no explanation needed. It won't affect how you're matched going forward.",
   },
 ]
 
 export default function HowItWorksPage() {
   return (
-    <div className="min-h-screen bg-paper">
+    <div className="min-h-screen" style={{ backgroundColor: PAPER }}>
       <Header />
 
-      {/* ---------------- Hero ---------------- */}
-      <section className="relative overflow-hidden border-b border-line">
-        <div className="pointer-events-none absolute inset-0">
-          <div className="glow-soft -left-16 top-4 h-[340px] w-[340px] bg-pulse/15" />
-          <div className="glow-soft -right-10 top-0 h-[300px] w-[300px] bg-lilac-deep/12" />
-        </div>
-        <div className="container-page relative py-20 sm:py-24">
-          <Reveal>
-            <SectionHeading
-              align="left"
-              eyebrow="How it works"
-              title="Four steps, about two minutes each"
-              description="The whole thing is designed so that the gap between deciding to study and actually studying is as small as possible."
-            />
-          </Reveal>
+      {/* Hero */}
+      <section className="px-6 pt-16 pb-20 md:pt-20 md:pb-24">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="max-w-3xl mx-auto text-center"
+        >
+          <h1
+            className="text-4xl md:text-5xl mb-6 leading-tight"
+            style={{ fontFamily: "var(--font-lexend)", fontWeight: 600, color: INK, letterSpacing: "-0.02em" }}
+          >
+            From "I should study" to studying, in four steps.
+          </h1>
+          <p className="text-lg mb-9 max-w-xl mx-auto" style={{ color: "#4A5568" }}>
+            No scheduling, no waiting on friends to be free. Open the app, get paired,
+            and someone's working alongside you within a minute.
+          </p>
+          <Button asChild className="h-[52px] px-7 text-base rounded-xl relative overflow-hidden group" style={{ backgroundColor: INK, color: PAPER, fontWeight: 600 }}>
+            <Link href="/signup" className="relative inline-flex items-center gap-2">
+              <span className="absolute inset-0 rounded-xl transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out" style={{ backgroundColor: TEAL }} />
+              <span className="relative z-10 group-hover:text-[#12151C] transition-colors duration-300">Get started</span>
+              <ArrowRight className="relative z-10 w-4 h-4 group-hover:text-[#12151C] transition-colors duration-300" />
+            </Link>
+          </Button>
+        </motion.div>
+      </section>
+
+      {/* Steps timeline */}
+      <section className="px-6 pb-24">
+        <div className="max-w-3xl mx-auto relative">
+          {/* Connecting line — the one signature animation on this page: the path drawing itself in */}
+          <motion.div
+            className="absolute left-[27px] top-3 bottom-3 w-0.5 origin-top"
+            style={{ backgroundColor: "#D6DBE0" }}
+            initial={{ scaleY: 0 }}
+            whileInView={{ scaleY: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.1, ease: "easeInOut" }}
+          />
+
+          <div className="space-y-16">
+            {steps.map((step, index) => {
+              const Icon = step.icon
+              return (
+                <motion.div
+                  key={step.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.5, delay: 0.05 }}
+                  className="relative flex gap-6"
+                >
+                  <div
+                    className="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 relative z-10"
+                    style={{ backgroundColor: INK }}
+                  >
+                    <Icon className="w-6 h-6" style={{ color: TEAL }} />
+                  </div>
+
+                  <div className="flex-1 pt-1">
+                    <p className="text-sm font-medium mb-1" style={{ color: SLATE }}>Step {index + 1}</p>
+                    <h3
+                      className="text-xl md:text-2xl mb-2"
+                      style={{ fontFamily: "var(--font-lexend)", fontWeight: 600, color: INK }}
+                    >
+                      {step.title}
+                    </h3>
+                    <p className="text-base leading-relaxed mb-5 max-w-lg" style={{ color: "#4A5568" }}>
+                      {step.description}
+                    </p>
+
+                    <StepVisual variant={step.visual} />
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
         </div>
       </section>
 
-      {/* ---------------- Steps ---------------- */}
-      <Section>
-        <div className="container-page">
-          <RevealGroup className="grid gap-6 md:grid-cols-2">
-            {STEPS.map((step) => (
-              <RevealItem key={step.n} className="h-full">
-                <div className="flex h-full flex-col rounded-[32px] border border-line bg-surface p-8 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-card">
-                  <span className="font-display text-[13px] font-bold tracking-[0.1em] text-pulse-dark">
-                    {step.n}
-                  </span>
-                  <h2 className="mt-3 font-display text-2xl font-extrabold tracking-[-0.025em] text-ink">
-                    {step.title}
-                  </h2>
-                  <p className="mt-3 text-[15px] leading-relaxed text-ink-soft">{step.body}</p>
-
-                  <ul className="mt-6 space-y-2.5 border-t border-line pt-6">
-                    {step.points.map((point) => (
-                      <li key={point} className="flex items-start gap-2.5">
-                        <span className="mt-0.5 grid h-4.5 w-4.5 shrink-0 place-items-center rounded-full bg-pulse-soft text-pulse-dark">
-                          <Check className="h-2.5 w-2.5" strokeWidth={4} />
-                        </span>
-                        <span className="text-[14px] text-ink-soft">{point}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </RevealItem>
+      {/* FAQ */}
+      <section className="px-6 py-24" style={{ backgroundColor: INK }}>
+        <div className="max-w-2xl mx-auto">
+          <h2
+            className="text-3xl md:text-4xl mb-12 text-center"
+            style={{ fontFamily: "var(--font-lexend)", fontWeight: 600, color: PAPER }}
+          >
+            Questions people actually ask
+          </h2>
+          <div className="space-y-3">
+            {faqs.map((faq, i) => (
+              <FaqItem key={i} question={faq.question} answer={faq.answer} />
             ))}
-          </RevealGroup>
+          </div>
         </div>
-      </Section>
+      </section>
 
-      {/* ---------------- Rules ---------------- */}
-      <Section className="border-y border-line bg-surface-sunken">
-        <div className="container-page">
-          <Reveal>
-            <SectionHeading
-              eyebrow="House rules"
-              title="Three things that make a session work"
-            />
-          </Reveal>
-
-          <RevealGroup className="mt-12 grid gap-5 md:grid-cols-3">
-            {RULES.map((rule) => (
-              <RevealItem key={rule.title}>
-                <div className="h-full rounded-3xl border border-line bg-surface p-7 shadow-soft">
-                  <span className="grid h-11 w-11 place-items-center rounded-2xl bg-lilac text-lilac-deep">
-                    <rule.icon className="h-5 w-5" />
-                  </span>
-                  <h3 className="mt-5 font-display text-lg font-bold tracking-[-0.02em] text-ink">
-                    {rule.title}
-                  </h3>
-                  <p className="mt-2.5 text-[14.5px] leading-relaxed text-ink-soft">{rule.body}</p>
-                </div>
-              </RevealItem>
-            ))}
-          </RevealGroup>
+      {/* Footer */}
+      <footer className="py-8 px-6" style={{ backgroundColor: INK, borderTop: "1px solid #2A2F3A" }}>
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+          <p className="text-sm" style={{ color: "#8A93A0" }}>
+            © {new Date().getFullYear()} PeerPulse. All rights reserved.
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-6">
+            <Link href="/terms" className="text-sm hover:text-white transition-colors" style={{ color: "#9AA5B1" }}>Terms</Link>
+            <Link href="/privacy" className="text-sm hover:text-white transition-colors" style={{ color: "#9AA5B1" }}>Privacy</Link>
+            <Link href="/contact" className="text-sm hover:text-white transition-colors" style={{ color: "#9AA5B1" }}>Contact</Link>
+          </div>
         </div>
-      </Section>
+      </footer>
+    </div>
+  )
+}
 
-      {/* ---------------- CTA ---------------- */}
-      <Section>
-        <div className="container-page">
-          <Reveal>
-            <div className="relative overflow-hidden rounded-[36px] bg-ink px-8 py-16 text-center sm:px-16">
-              <div className="pointer-events-none absolute -left-10 -top-16 h-72 w-72 rounded-full bg-pulse/25 blur-3xl" />
-              <div className="pointer-events-none absolute -bottom-24 -right-10 h-72 w-72 rounded-full bg-lilac-deep/30 blur-3xl" />
-              <div className="relative mx-auto max-w-xl">
-                <h2 className="text-h2 font-extrabold text-white">
-                  Your next session is 30 seconds away.
-                </h2>
-                <p className="mt-4 text-lead text-white/70">
-                  Set up your subjects once, then get matched whenever you sit down to work.
-                </p>
-                <div className="mt-9 flex flex-wrap justify-center gap-3">
-                  <Button asChild size="lg" variant="subtle" className="bg-white text-ink hover:bg-white/90">
-                    <Link href="/signup">
-                      Create your free account
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                  <Button
-                    asChild
-                    size="lg"
-                    variant="ghost"
-                    className="text-white/75 hover:bg-white/10 hover:text-white"
-                  >
-                    <Link href="/pricing">See pricing</Link>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </Reveal>
+function StepVisual({ variant }: { variant: string }) {
+  if (variant === "start") {
+    return (
+      <div className="rounded-2xl p-5 inline-flex items-center gap-3" style={{ backgroundColor: CARD }}>
+        <div className="relative flex items-center justify-center">
+          <motion.span
+            className="absolute rounded-full"
+            style={{ width: 44, height: 44, backgroundColor: TEAL, opacity: 0.3 }}
+            animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0, 0.3] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <div className="px-5 py-2.5 rounded-lg relative text-sm font-semibold" style={{ backgroundColor: INK, color: PAPER }}>
+            Get Paired
+          </div>
         </div>
-      </Section>
+      </div>
+    )
+  }
 
-      <Footer />
+  if (variant === "match") {
+    return (
+      <div className="rounded-2xl p-4 inline-flex items-center gap-3" style={{ backgroundColor: CARD }}>
+        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0" style={{ backgroundColor: SLATE }}>
+          A
+        </div>
+        <div>
+          <p className="text-sm font-semibold" style={{ color: INK }}>Matched with Alex</p>
+          <p className="text-xs text-gray-500">Computer Science · Studying Data Structures</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (variant === "timer") {
+    return (
+      <div className="rounded-2xl p-4 inline-flex items-center gap-4" style={{ backgroundColor: CARD }}>
+        <span className="text-2xl font-bold tabular-nums" style={{ color: INK }}>25:00</span>
+        <div className="w-32 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "#D6DBE0" }}>
+          <div className="h-1.5 rounded-full w-[10%]" style={{ backgroundColor: TEAL }} />
+        </div>
+        <span className="text-xs" style={{ color: SLATE }}>Just started</span>
+      </div>
+    )
+  }
+
+  // camera
+  return (
+    <div className="rounded-2xl p-3 inline-flex items-center gap-2" style={{ backgroundColor: CARD }}>
+      <div className="w-16 h-11 rounded-lg flex items-center justify-center" style={{ backgroundColor: "#D6DBE0" }}>
+        <Video className="w-4 h-4" style={{ color: SLATE }} />
+      </div>
+      <div className="w-16 h-11 rounded-lg flex items-center justify-center" style={{ backgroundColor: "#D6DBE0" }}>
+        <VideoOff className="w-4 h-4 text-gray-400" />
+      </div>
+    </div>
+  )
+}
+
+function FaqItem({ question, answer }: { question: string; answer: string }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="rounded-xl overflow-hidden" style={{ backgroundColor: "#1B1F27" }}>
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left"
+      >
+        <span className="text-base font-medium text-white">{question}</span>
+        <ChevronDown
+          className="w-4 h-4 flex-shrink-0 transition-transform duration-300"
+          style={{ color: TEAL, transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
+        />
+      </button>
+      <motion.div
+        initial={false}
+        animate={{ height: open ? "auto" : 0, opacity: open ? 1 : 0 }}
+        transition={{ duration: 0.25, ease: "easeInOut" }}
+        className="overflow-hidden"
+      >
+        <p className="px-5 pb-4 text-sm leading-relaxed" style={{ color: "#9AA5B1" }}>
+          {answer}
+        </p>
+      </motion.div>
     </div>
   )
 }

@@ -5,22 +5,25 @@ import { cn } from "@/lib/utils"
 import { Loader2 } from "lucide-react"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-display font-semibold tracking-[-0.01em] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pulse focus-visible:ring-offset-2 focus-visible:ring-offset-paper disabled:pointer-events-none disabled:opacity-50 disabled:translate-y-0 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl font-display font-semibold tracking-[-0.01em] transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pulse focus-visible:ring-offset-2 focus-visible:ring-offset-paper disabled:pointer-events-none disabled:opacity-50 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
+        // Solid fill that inverts to a same-color outline on hover — background disappears,
+        // border + text pick up the brand color. Border is present in both states at the
+        // same width so the button doesn't change size when it inverts.
         default:
-          "bg-ink text-white shadow-soft hover:bg-ink/90 hover:shadow-card hover:-translate-y-0.5 active:translate-y-0",
+          "border-2 border-ink bg-ink text-white hover:bg-transparent hover:text-ink",
         accent:
-          "bg-pulse text-white shadow-soft hover:bg-pulse-dark hover:shadow-card hover:-translate-y-0.5 active:translate-y-0",
+          "border-2 border-pulse bg-pulse text-white hover:bg-transparent hover:text-pulse-dark hover:border-pulse-dark",
         subtle:
-          "bg-pulse-soft text-pulse-dark hover:bg-pulse-soft/70 hover:-translate-y-0.5 active:translate-y-0",
+          "border-2 border-transparent bg-pulse-soft text-pulse-dark hover:bg-transparent hover:border-pulse-dark",
         secondary:
-          "border border-line bg-surface text-ink shadow-soft hover:bg-surface-sunken hover:border-line-strong hover:-translate-y-0.5 active:translate-y-0",
+          "border-2 border-line bg-surface text-ink shadow-soft hover:bg-surface-sunken hover:border-line-strong",
         outline:
-          "border border-line-strong bg-transparent text-ink hover:bg-surface hover:border-line-strong/80 hover:-translate-y-0.5 active:translate-y-0",
+          "border-2 border-line-strong bg-transparent text-ink hover:bg-ink hover:text-white hover:border-ink",
         ghost: "text-ink-soft hover:bg-surface-sunken hover:text-ink",
-        destructive: "bg-rose-deep text-white hover:bg-rose-deep/90 shadow-soft",
+        destructive: "border-2 border-rose-deep bg-rose-deep text-white hover:bg-transparent hover:text-rose-deep",
         link: "text-ink underline-offset-4 hover:underline hover:text-ink-soft",
       },
       size: {

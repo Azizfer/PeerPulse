@@ -1,7 +1,6 @@
 import Link from "next/link"
 import Logo from "./Logo"
 import { Button } from "./ui/button"
-
 const COLUMNS = [
   {
     title: "Platform",
@@ -42,48 +41,40 @@ const COLUMNS = [
     ],
   },
 ]
-
 export default function Footer() {
   return (
-    <footer className="relative overflow-hidden bg-ink text-white">
-      <div className="pointer-events-none absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-pulse/20 blur-3xl" />
-      <div className="pointer-events-none absolute -right-16 -top-24 h-72 w-72 rounded-full bg-lilac-deep/20 blur-3xl" />
-
-      <div className="container-page relative py-16 sm:py-20">
+    <footer className="bg-ink text-white">
+      <div className="mx-auto w-full max-w-[1200px] px-5 py-10 sm:px-8 sm:py-12">
         {/* ---------------- Top ---------------- */}
-        <div className="flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <Logo size="xl" tone="light" />
-            <p className="mt-5 max-w-sm text-[15px] leading-relaxed text-white/55">
+            <Logo size="lg" tone="light" />
+            <p className="mt-3 max-w-sm text-[13.5px] leading-relaxed text-white/60">
               Focus rooms matched by subject. Show up, say what you&apos;ll do, then do it
               next to someone doing the same.
             </p>
           </div>
-
           <Button
             asChild
-            size="lg"
+            size="default"
             className="shrink-0 bg-white text-ink hover:bg-white/90"
           >
             <Link href="/signup">Get started — it&apos;s free</Link>
           </Button>
         </div>
-
-        <div className="mt-14 h-px w-full bg-white/10" />
-
         {/* ---------------- Columns ---------------- */}
-        <div className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-9 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {COLUMNS.map((col) => (
             <div key={col.title}>
-              <h3 className="text-[11.5px] font-bold uppercase tracking-[0.16em] text-white/40">
+              <h3 className="text-[11px] font-bold uppercase tracking-[0.16em] text-white/50">
                 {col.title}
               </h3>
-              <ul className="mt-5 space-y-3">
+              <ul className="mt-3.5 space-y-2">
                 {col.links.map((link) => (
                   <li key={link.href + link.label}>
                     <Link
                       href={link.href}
-                      className="text-[14.5px] text-white/70 transition-colors hover:text-white"
+                      className="text-[13.5px] text-white/75 transition-colors hover:text-white"
                     >
                       {link.label}
                     </Link>
@@ -93,11 +84,10 @@ export default function Footer() {
             </div>
           ))}
         </div>
-
         {/* ---------------- Bottom ---------------- */}
-        <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 sm:flex-row">
-          <p className="text-[13.5px] text-white/45">Made in PeerPulse</p>
-          <p className="text-[13.5px] text-white/45">
+        <div className="mt-9 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-5 sm:flex-row">
+          <p className="text-[12.5px] text-white/55">Made in PeerPulse</p>
+          <p className="text-[12.5px] text-white/55">
             © {new Date().getFullYear()} PeerPulse. All rights reserved.
           </p>
         </div>
@@ -105,3 +95,4 @@ export default function Footer() {
     </footer>
   )
 }
+

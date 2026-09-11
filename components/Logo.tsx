@@ -1,64 +1,42 @@
+"use client"
+
 import Link from "next/link"
-import { cn } from "@/lib/utils"
+import { Fraunces } from "next/font/google"
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  style: ["normal"],
+})
 
 interface LogoProps {
   className?: string
-  /** "light" for use on dark backgrounds */
-  tone?: "default" | "light"
-  size?: "sm" | "md" | "lg" | "xl"
-  /** Show the pulse badge. Off by default — the wordmark is the brand. */
-  mark?: boolean
+  size?: "sm" | "md" | "lg"
+  tone?: "dark" | "light"
 }
 
-const SIZES = {
-  sm: "text-[20px]",
-  md: "text-[22px]",
-  lg: "text-[34px]",
-  xl: "text-[42px]",
-}
+export default function Logo({ className, size = "md", tone = "dark" }: LogoProps) {
+  const sizeClasses = {
+    sm: "text-lg",
+    md: "text-xl",
+    lg: "text-2xl",
+  }
 
-export default function Logo({
-  className,
-  tone = "default",
-  size = "sm",
-  mark = false,
-}: LogoProps) {
+  const toneClasses = {
+    dark: "text-[#111518]",
+    light: "text-white",
+  }
+
   return (
     <Link
       href="/"
-      className={cn("group inline-flex items-center gap-2.5", className)}
-      aria-label="PeerPulse home"
+      className={`inline-flex items-center ${toneClasses[tone]} ${className ?? ""}`}
     >
-      {mark && (
-        <span
-          className={cn(
-            "relative grid h-9 w-9 place-items-center rounded-[11px] shadow-soft transition-transform duration-300 group-hover:-rotate-6",
-            tone === "light" ? "bg-white" : "bg-ink",
-          )}
-        >
-          <svg
-            viewBox="0 0 24 24"
-            className={cn("h-[19px] w-[19px]", tone === "light" ? "text-ink" : "text-white")}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M2 12h3.5l2-5 3 11 2.5-7 1.5 3H22" />
-          </svg>
-        </span>
-      )}
-      <span
-        className={cn(
-          "font-display font-extrabold leading-none tracking-[-0.045em]",
-          SIZES[size],
-          tone === "light" ? "text-white" : "text-ink",
-        )}
+      <h2
+        className={`${fraunces.className} font-bold tracking-[-0.01em] ${sizeClasses[size]}`}
       >
         PeerPulse
-      </span>
+      </h2>
     </Link>
   )
 }
