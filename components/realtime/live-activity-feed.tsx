@@ -110,7 +110,7 @@ export function LiveActivityFeed({ roomId }: LiveActivityFeedProps) {
           <motion.div
             animate={{ scale: [1, 1.2, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="w-2 h-2 bg-green-500 rounded-full"
+            className="w-2 h-2 bg-pulse rounded-full"
           />
           <h3 className="font-semibold text-ink">Live Activity</h3>
         </div>

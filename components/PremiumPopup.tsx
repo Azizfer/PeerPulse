@@ -41,19 +41,19 @@ export default function PremiumPopup({ isOpen, onClose, feature }: PremiumPopupP
         {/* Premium benefits */}
         <div className="space-y-3 mb-6">
           <div className="flex items-center gap-3">
-            <Check className="w-5 h-5 text-green-500" />
+            <Check className="w-5 h-5 text-pulse" />
             <span className="text-sm text-ink-soft">Create and manage study communities</span>
           </div>
           <div className="flex items-center gap-3">
-            <Check className="w-5 h-5 text-green-500" />
+            <Check className="w-5 h-5 text-pulse" />
             <span className="text-sm text-ink-soft">Advanced matching algorithm</span>
           </div>
           <div className="flex items-center gap-3">
-            <Check className="w-5 h-5 text-green-500" />
+            <Check className="w-5 h-5 text-pulse" />
             <span className="text-sm text-ink-soft">Unlimited study sessions</span>
           </div>
           <div className="flex items-center gap-3">
-            <Check className="w-5 h-5 text-green-500" />
+            <Check className="w-5 h-5 text-pulse" />
             <span className="text-sm text-ink-soft">Priority support</span>
           </div>
         </div>

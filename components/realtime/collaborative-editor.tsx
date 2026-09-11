@@ -119,7 +119,7 @@ export function CollaborativeEditor({
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="flex items-center gap-2 text-xs text-pulse-dark bg-blue-50 px-2 py-1 rounded-full"
+            className="flex items-center gap-2 text-xs text-pulse-dark bg-pulse-soft px-2 py-1 rounded-full"
           >
             <MessageCircle className="w-3 h-3" />
             <span>You are typing...</span>

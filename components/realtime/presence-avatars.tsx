@@ -90,13 +90,13 @@ export function PresenceAvatars({ roomId, maxVisible = 5 }: PresenceAvatarsProps
   const getStatusColor = (status: User['status']) => {
     switch (status) {
       case 'active':
-        return 'bg-green-500'
+        return 'bg-pulse'
       case 'idle':
-        return 'bg-yellow-500'
+        return 'bg-lemon-deep'
       case 'away':
-        return 'bg-gray-400'
+        return 'bg-line-strong'
       default:
-        return 'bg-gray-400'
+        return 'bg-line-strong'
     }
   }
 
@@ -139,7 +139,7 @@ export function PresenceAvatars({ roomId, maxVisible = 5 }: PresenceAvatarsProps
                 {/* Hover tooltip */}
                 <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10">
                   <div className="font-medium">{user.name}</div>
-                  <div className="text-gray-300 capitalize">{user.status}</div>
+                  <div className="text-ink-mute capitalize">{user.status}</div>
                   <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-black"></div>
                 </div>
               </div>
@@ -152,7 +152,7 @@ export function PresenceAvatars({ roomId, maxVisible = 5 }: PresenceAvatarsProps
           <motion.div
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs font-medium text-ink-soft hover:bg-gray-300 transition-colors duration-200 cursor-pointer"
+            className="w-8 h-8 rounded-full bg-line border-2 border-white flex items-center justify-center text-xs font-medium text-ink-soft hover:bg-line-strong transition-colors duration-200 cursor-pointer"
           >
             +{hiddenCount}
           </motion.div>

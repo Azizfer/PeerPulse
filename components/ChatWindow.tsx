@@ -185,13 +185,13 @@ export default function ChatWindow({
                     className={`max-w-[80%] rounded-2xl px-3 py-2 ${
                       message.isOwn
                         ? "bg-pulse text-white"
-                        : "bg-gray-200 text-ink"
+                        : "bg-line text-ink"
                     }`}
                   >
                     <p className="text-xs">{message.text}</p>
                     <p
                       className={`text-[10px] mt-0.5 ${
-                        message.isOwn ? "text-blue-100" : "text-ink-mute"
+                        message.isOwn ? "text-pulse-soft" : "text-ink-mute"
                       }`}
                     >
                       {message.timestamp}

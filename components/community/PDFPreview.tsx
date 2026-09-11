@@ -55,7 +55,7 @@ export function PDFPreview({ pdf, postId, pdfIndex, onPageClick }: PDFPreviewPro
               {/* Current Page Preview */}
               <button
                 onClick={() => onPageClick(currentPage, numPages)}
-                className="relative group cursor-pointer rounded-lg overflow-hidden border border-line-strong hover:border-blue-500 transition-all bg-surface w-full"
+                className="relative group cursor-pointer rounded-lg overflow-hidden border border-line-strong hover:border-pulse transition-all bg-surface w-full"
               >
                 <div className="flex items-center justify-center bg-surface-sunken p-4">
                   <Page

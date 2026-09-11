@@ -204,7 +204,7 @@ export default function NotificationDropdown() {
                               e.stopPropagation()
                               markAsRead(notification.id)
                             }}
-                            className="p-1 h-6 w-6 text-ink-faint hover:text-green-600"
+                            className="p-1 h-6 w-6 text-ink-faint hover:text-pulse-dark"
                             title="Mark as read"
                           >
                             <Check className="w-3 h-3" />
@@ -234,7 +234,7 @@ export default function NotificationDropdown() {
               <div className="flex flex-wrap justify-between gap-3 px-4 py-3 border-t border-line">
                 <button 
                   onClick={markAllAsRead}
-                  className="flex h-8 min-w-[72px] items-center justify-center overflow-hidden rounded-lg bg-surface-sunken px-3 text-xs font-semibold tracking-[0.015em] text-ink hover:bg-gray-200 transition-colors"
+                  className="flex h-8 min-w-[72px] items-center justify-center overflow-hidden rounded-lg bg-surface-sunken px-3 text-xs font-semibold tracking-[0.015em] text-ink hover:bg-line transition-colors"
                 >
                   Mark all as read
                 </button>

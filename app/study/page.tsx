@@ -868,7 +868,7 @@ export default function StudyPage() {
                     <div className="text-white font-mono text-2xl font-bold">
                       {minutes}:{seconds}
                     </div>
-                    <div className="text-gray-300 text-sm">
+                    <div className="text-ink-mute text-sm">
                       Studying {subject} with {partner.name}
                     </div>
                   </div>

@@ -111,7 +111,7 @@ export function OnboardingTooltip({ steps, onComplete, isVisible }: OnboardingTo
                 <div
                   key={index}
                   className={`w-2 h-2 rounded-full ${
-                    index === currentStep ? 'bg-pulse' : 'bg-gray-300'
+                    index === currentStep ? 'bg-pulse' : 'bg-line-strong'
                   }`}
                 />
               ))}

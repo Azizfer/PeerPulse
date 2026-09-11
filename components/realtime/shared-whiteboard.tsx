@@ -194,7 +194,7 @@ export function SharedWhiteboard() {
               <button
                 key={color}
                 className={`w-6 h-6 rounded-full border-2 transition-colors ${
-                  currentColor === color ? 'border-gray-800' : 'border-line-strong'
+                  currentColor === color ? 'border-ink' : 'border-line-strong'
                 }`}
                 style={{ backgroundColor: color }}
                 onClick={() => setCurrentColor(color)}
