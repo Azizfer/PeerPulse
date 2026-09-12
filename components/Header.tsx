@@ -11,6 +11,7 @@ import { useAuth } from "./auth-provider"
 import NotificationDropdown from "./notification-dropdown"
 import MessagesDropdown from "./messages-dropdown"
 import UserDropdown from "./UserDropdown"
+import { ModeToggle } from "./mode-toggle"
 
 const LOGGED_OUT_LINKS = [
   { href: "/#features", label: "Features" },
@@ -118,12 +119,14 @@ export default function Header() {
         <div className="flex items-center gap-2">
           {isLoggedIn ? (
             <div className="flex items-center gap-1.5">
+              <ModeToggle className="mr-0.5 hidden sm:flex" />
               <MessagesDropdown />
               <NotificationDropdown />
               <UserDropdown />
             </div>
           ) : (
             <div className="hidden items-center gap-2.5 sm:flex">
+              <ModeToggle />
               <Button asChild variant="ghost" size="default">
                 <Link href="/login">Log in</Link>
               </Button>

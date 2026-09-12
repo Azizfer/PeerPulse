@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react"
 import { LogOut, Settings, User } from "lucide-react"
 import MenuItem from "./MenuItem"
-import { Avatar } from "./avatar"
+import { Avatar, AvatarBadge, AvatarFallback } from "@/components/ui/avatar"
 import { useAuth } from "./auth-provider"
 import { useRouter } from "next/navigation"
 
@@ -29,6 +29,13 @@ export default function UserDropdown() {
     setIsOpen(false)
   }
 
+  const initials = (user?.name || "Sarah")
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("")
+
   return (
     <div className="relative" ref={dropdownRef}>
       <button
@@ -37,7 +44,10 @@ export default function UserDropdown() {
         aria-label="Account menu"
         className="rounded-full outline-none transition-transform hover:scale-105"
       >
-        <Avatar name={user?.name || "Sarah"} size="sm" status="online" />
+        <Avatar className="size-9">
+          <AvatarFallback>{initials}</AvatarFallback>
+          <AvatarBadge className="bg-emerald-500" />
+        </Avatar>
       </button>
 
       {isOpen && (

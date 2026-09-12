@@ -1,6 +1,7 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { AuthProvider } from "@/components/auth-provider"
+import { ThemeProvider } from "@/components/theme-provider"
 import { PiPProvider } from "@/contexts/pip-context"
 import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
@@ -45,11 +46,18 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen bg-paper text-ink antialiased">
-        <AuthProvider>
-          <PiPProvider>{children}</PiPProvider>
-        </AuthProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          <AuthProvider>
+            <PiPProvider>{children}</PiPProvider>
+          </AuthProvider>
+        </ThemeProvider>
         <Toaster />
       </body>
     </html>
