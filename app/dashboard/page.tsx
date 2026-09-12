@@ -2,7 +2,6 @@
 
 import Link from "next/link"
 import { ArrowRight, CalendarPlus, Clock, Flame, Sparkles, TrendingUp, Video } from "lucide-react"
-import Header from "@/components/Header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar } from "@/components/avatar"
@@ -48,10 +47,8 @@ const STATS = [
 
 export default function DashboardPage() {
   return (
-    <div className="min-h-screen bg-paper">
-      <Header />
-
-      <main className="container-page py-10 sm:py-14">
+    <div className="w-full">
+      <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
         {/* ---------------- Greeting ---------------- */}
         <Reveal>
           <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
@@ -299,7 +296,7 @@ export default function DashboardPage() {
             </Reveal>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   )
 }
