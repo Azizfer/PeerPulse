@@ -6,6 +6,10 @@ import { X, ZoomIn, ZoomOut, Download } from "lucide-react"
 import { FileText } from "lucide-react"
 import { Document, Page } from 'react-pdf'
 
+// pdf.js needs its worker; these modules are only ever loaded client-side.
+import { pdfjs } from 'react-pdf'
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`
+
 interface PDFViewerModalProps {
   isOpen: boolean
   pdfUrl: string
@@ -42,63 +46,63 @@ export function PDFViewerModal({ isOpen, pdfUrl, pdfName, initialPage, numPages,
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="fixed inset-4 md:inset-8 bg-white rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden"
+        className="fixed inset-4 md:inset-8 bg-surface rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden"
       >
         {/* Modal Header */}
-        <div className="flex items-center justify-between p-4 border-b-2 border-gray-300 bg-gray-50">
+        <div className="flex items-center justify-between p-4 border-b-2 border-line-strong bg-surface-sunken">
           <div className="flex items-center gap-3">
-            <FileText className="w-5 h-5 text-blue-600" />
+            <FileText className="w-5 h-5 text-pulse-dark" />
             <div>
-              <h3 className="font-bold text-gray-900">{pdfName}</h3>
-              <p className="text-xs text-gray-600">Page {currentPage}</p>
+              <h3 className="font-bold text-ink">{pdfName}</h3>
+              <p className="text-xs text-ink-soft">Page {currentPage}</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+            className="p-2 hover:bg-line rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* PDF Viewer with Zoom */}
-        <div className="flex-1 overflow-hidden bg-gray-900 flex flex-col relative">
+        <div className="flex-1 overflow-hidden bg-ink flex flex-col relative">
           {/* Zoom Controls Bar */}
-          <div className="flex items-center justify-between gap-3 px-6 py-3 bg-gray-800 border-b border-gray-700">
+          <div className="flex items-center justify-between gap-3 px-6 py-3 border-b border-white/10 bg-ink/90">
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setZoom(Math.max(0.5, zoom - 0.25))}
-                className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+                className="p-2 hover:bg-ink/70 rounded-lg transition-colors"
                 title="Zoom Out"
               >
-                <ZoomOut className="w-4 h-4 text-gray-300" />
+                <ZoomOut className="w-4 h-4 text-ink-mute" />
               </button>
-              <span className="text-gray-300 text-sm font-medium min-w-[50px] text-center">
+              <span className="text-ink-mute text-sm font-medium min-w-[50px] text-center">
                 {Math.round(zoom * 100)}%
               </span>
               <button
                 onClick={() => setZoom(Math.min(3, zoom + 0.25))}
-                className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+                className="p-2 hover:bg-ink/70 rounded-lg transition-colors"
                 title="Zoom In"
               >
-                <ZoomIn className="w-4 h-4 text-gray-300" />
+                <ZoomIn className="w-4 h-4 text-ink-mute" />
               </button>
               <button
                 onClick={() => setZoom(1)}
-                className="px-2 py-1 hover:bg-gray-700 rounded text-gray-300 text-xs transition-colors"
+                className="px-2 py-1 hover:bg-ink/70 rounded text-ink-mute text-xs transition-colors"
               >
                 Reset
               </button>
             </div>
             
             <div className="flex items-center gap-4">
-              <div className="text-gray-300 text-sm font-medium">
+              <div className="text-ink-mute text-sm font-medium">
                 Page {currentPage} / {numPages}
               </div>
               <a
                 href={pdfUrl}
                 download={pdfName}
-                className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-medium"
+                className="flex items-center gap-2 px-3 py-2 bg-pulse hover:bg-pulse-dark text-white rounded-lg transition-colors text-sm font-medium"
               >
                 <Download className="w-4 h-4" />
                 Download
@@ -119,7 +123,7 @@ export function PDFViewerModal({ isOpen, pdfUrl, pdfName, initialPage, numPages,
                 }
               >
                 {/* Current Page */}
-                <div className="bg-white shadow-2xl rounded">
+                <div className="bg-surface shadow-2xl rounded">
                   <Page
                     pageNumber={currentPage}
                     scale={zoom}

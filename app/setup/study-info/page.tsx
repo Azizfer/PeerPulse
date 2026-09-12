@@ -1,48 +1,21 @@
-"use client"
-
-import { PageTransition } from "@/components/page-transition"
+import type { Metadata } from "next"
+import OnboardingLayout from "@/components/OnboardingLayout"
 import { StudyInfoForm } from "./study-info-form"
-import { ArrowLeft } from "lucide-react"
-import Link from "next/link"
+
+export const metadata: Metadata = {
+  title: "What are you studying?",
+  description: "Set up the subjects and goals PeerPulse will match you on.",
+}
 
 export default function StudyInfoPage() {
   return (
-    <PageTransition>
-      <div className="flex min-h-screen items-center justify-center bg-[#f5f1e8] px-4 py-12 font-[Lexend,_'Noto_Sans',_sans-serif]">
-        <div className="w-full max-w-md">
-          {/* Back Button */}
-          <Link 
-            href="/signup" 
-            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm">Back</span>
-          </Link>
-
-          <div className="mb-6 text-center">
-            <div className="mb-4 flex justify-center gap-2">
-              {[1, 2, 3].map((step) => (
-                <div
-                  key={step}
-                  className={`h-2 w-12 rounded-full transition-all ${
-                    step <= 1 ? "bg-[#2a2622]" : "bg-gray-300"
-                  }`}
-                />
-              ))}
-            </div>
-            <p className="text-sm text-gray-600">Step 1 of 3</p>
-          </div>
-
-          <div className="rounded-3xl bg-white border-2 border-gray-300 p-8 shadow-lg">
-            <div className="mb-6">
-              <h1 className="text-2xl font-bold text-gray-900">What are you studying?</h1>
-              <p className="text-gray-600 mt-2">Tell us about your study goals</p>
-            </div>
-
-            <StudyInfoForm />
-          </div>
-        </div>
-      </div>
-    </PageTransition>
+    <OnboardingLayout
+      step={1}
+      title="What are you studying?"
+      subtitle="This is what we match you on — the more specific, the better the pairing."
+      backHref="/signup"
+    >
+      <StudyInfoForm />
+    </OnboardingLayout>
   )
 }

@@ -18,21 +18,21 @@ interface EmptyStateProps {
 
 export function EmptyState({ icon, title, description, action }: EmptyStateProps) {
   return (
-    <Card className="border-dashed border-2 border-gray-200">
+    <Card className="border-dashed border border-line">
       <CardContent className="flex flex-col items-center justify-center py-12 px-6 text-center">
-        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-          <div className="text-gray-400">{icon}</div>
+        <div className="w-16 h-16 bg-surface-sunken rounded-full flex items-center justify-center mb-4">
+          <div className="text-ink-faint">{icon}</div>
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
-        <p className="text-gray-600 mb-6 max-w-sm">{description}</p>
+        <h3 className="text-lg font-semibold text-ink mb-2">{title}</h3>
+        <p className="text-ink-soft mb-6 max-w-sm">{description}</p>
         {action && (
           <>
             {action.href ? (
-              <Button asChild className="bg-blue-600 hover:bg-blue-700">
+              <Button asChild className="bg-pulse hover:bg-pulse-dark">
                 <Link href={action.href}>{action.label}</Link>
               </Button>
             ) : (
-              <Button onClick={action.onClick} className="bg-blue-600 hover:bg-blue-700">
+              <Button onClick={action.onClick} className="bg-pulse hover:bg-pulse-dark">
                 {action.label}
               </Button>
             )}

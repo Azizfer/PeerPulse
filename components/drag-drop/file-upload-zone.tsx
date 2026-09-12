@@ -59,10 +59,10 @@ export function FileUploadZone({
         className={`
           border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-300
           ${isDragActive && !isDragReject 
-            ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20 scale-105 shadow-lg' 
+            ? 'border-pulse bg-pulse-soft scale-105 shadow-lg' 
             : isDragReject 
-            ? 'border-red-500 bg-red-50 dark:bg-red-950/20' 
-            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800/50'
+            ? 'border-rose-deep bg-rose' 
+            : 'border-line-strong hover:border-ink-faint hover:bg-surface-sunken'
           }
         `}
       >
@@ -71,31 +71,31 @@ export function FileUploadZone({
         <div className={`transition-all duration-300 ${isDragActive ? 'scale-110' : ''}`}>
           <Upload className={`w-12 h-12 mx-auto mb-4 transition-colors duration-300 ${
             isDragActive && !isDragReject 
-              ? 'text-blue-500' 
+              ? 'text-pulse' 
               : isDragReject 
-              ? 'text-red-500' 
-              : 'text-gray-400'
+              ? 'text-rose-deep' 
+              : 'text-ink-faint'
           }`} />
           
           {isDragActive ? (
             isDragReject ? (
-              <p className="text-red-600 dark:text-red-400 font-medium">
+              <p className="font-medium text-rose-deep">
                 Some files are not supported
               </p>
             ) : (
-              <p className="text-blue-600 dark:text-blue-400 font-medium">
+              <p className="font-medium text-pulse-dark">
                 Drop your files here! ✨
               </p>
             )
           ) : (
             <div>
-              <p className="text-gray-600 dark:text-gray-300 font-medium mb-2">
+              <p className="text-ink-soft font-medium mb-2">
                 Drag & drop your study materials here
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+              <p className="text-sm text-ink-mute mb-4">
                 or click to browse files
               </p>
-              <p className="text-xs text-gray-400 dark:text-gray-500">
+              <p className="text-xs text-ink-faint">
                 Supports: {acceptedFileTypes.join(', ')} • Max {maxFiles} files • {Math.round(maxSize / 1024 / 1024)}MB each
               </p>
             </div>
@@ -106,26 +106,26 @@ export function FileUploadZone({
       {/* Uploaded Files List */}
       {uploadedFiles.length > 0 && (
         <div className="space-y-2">
-          <h4 className="font-medium text-gray-900 dark:text-gray-100">Uploaded Files</h4>
+          <h4 className="font-medium text-ink">Uploaded files</h4>
           {uploadedFiles.map((file, index) => (
             <div
               key={index}
-              className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 animate-in fade-in-0 slide-in-from-left-4"
+              className="flex items-center gap-3 rounded-lg bg-surface-sunken p-3 transition-colors duration-200 hover:bg-line animate-in fade-in-0 slide-in-from-left-4"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <CheckCircle className="w-4 h-4 text-green-500" />
-              <File className="w-4 h-4 text-gray-500" />
-              <span className="flex-1 text-sm text-gray-700 dark:text-gray-300 truncate">
+              <CheckCircle className="h-4 w-4 text-pulse" />
+              <File className="w-4 h-4 text-ink-mute" />
+              <span className="flex-1 text-sm text-ink-soft truncate">
                 {file.name}
               </span>
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-ink-mute">
                 {Math.round(file.size / 1024)}KB
               </span>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => removeFile(index)}
-                className="h-6 w-6 p-0 hover:bg-red-100 dark:hover:bg-red-900/20"
+                className="h-6 w-6 p-0 hover:bg-red-100"
               >
                 <X className="w-3 h-3 text-red-500" />
               </Button>

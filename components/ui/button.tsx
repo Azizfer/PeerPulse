@@ -2,25 +2,33 @@ import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
-import { Loader2 } from 'lucide-react'
+import { Loader2 } from "lucide-react"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-xl text-base font-semibold ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-display font-semibold tracking-[-0.01em] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pulse focus-visible:ring-offset-2 focus-visible:ring-offset-paper disabled:pointer-events-none disabled:opacity-50 disabled:translate-y-0 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-blue-600 text-white hover:bg-blue-700",
-        destructive: "bg-red-500 text-white hover:bg-red-600",
-        outline: "border-2 border-gray-300 bg-white hover:bg-gray-50 hover:text-gray-900",
-        secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200",
-        ghost: "hover:bg-gray-100 hover:text-gray-900",
-        link: "text-blue-600 underline-offset-4 hover:underline",
+        default:
+          "bg-ink text-white shadow-soft hover:bg-ink/90 hover:shadow-card hover:-translate-y-0.5 active:translate-y-0",
+        accent:
+          "bg-pulse text-white shadow-soft hover:bg-pulse-dark hover:shadow-card hover:-translate-y-0.5 active:translate-y-0",
+        subtle:
+          "bg-pulse-soft text-pulse-dark hover:bg-pulse-soft/70 hover:-translate-y-0.5 active:translate-y-0",
+        secondary:
+          "border border-line bg-surface text-ink shadow-soft hover:bg-surface-sunken hover:border-line-strong hover:-translate-y-0.5 active:translate-y-0",
+        outline:
+          "border border-line-strong bg-transparent text-ink hover:bg-surface hover:border-line-strong/80 hover:-translate-y-0.5 active:translate-y-0",
+        ghost: "text-ink-soft hover:bg-surface-sunken hover:text-ink",
+        destructive: "bg-rose-deep text-white hover:bg-rose-deep/90 shadow-soft",
+        link: "text-ink underline-offset-4 hover:underline hover:text-ink-soft",
       },
       size: {
-        default: "h-12 px-6 py-3",
-        sm: "h-10 rounded-lg px-4 text-sm",
-        lg: "h-14 rounded-xl px-8 text-lg",
-        icon: "h-12 w-12",
+        default: "h-11 px-5 text-sm",
+        sm: "h-9 px-4 text-[13px]",
+        lg: "h-[52px] px-7 text-[15px]",
+        icon: "h-11 w-11",
+        "icon-sm": "h-9 w-9",
       },
     },
     defaultVariants: {
@@ -38,11 +46,13 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, loading = false, children, disabled, ...props }, ref) => {
-    // Custom handling: when asChild is true, ensure exactly one non-empty child and clone it
+  (
+    { className, variant, size, asChild = false, loading = false, children, disabled, ...props },
+    ref,
+  ) => {
     if (asChild) {
       const validChildren = React.Children.toArray(children).filter(
-        (child) => !(typeof child === "string" && child.trim() === "")
+        (child) => !(typeof child === "string" && child.trim() === ""),
       )
       if (validChildren.length !== 1) {
         if (process.env.NODE_ENV !== "production") {
@@ -58,22 +68,22 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ...props,
         children: (
           <>
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} {childEl.props.children}
+            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {childEl.props.children}
           </>
         ),
       })
     }
-    const Comp = "button"
     return (
-      <Comp 
-        className={cn(buttonVariants({ variant, size, className }))} 
-        ref={ref} 
+      <button
+        className={cn(buttonVariants({ variant, size }), className)}
+        ref={ref}
         disabled={disabled || loading}
         {...props}
       >
-        {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        {loading && <Loader2 className="h-4 w-4 animate-spin" />}
         {children}
-      </Comp>
+      </button>
     )
   },
 )

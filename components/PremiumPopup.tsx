@@ -14,11 +14,11 @@ export default function PremiumPopup({ isOpen, onClose, feature }: PremiumPopupP
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-md w-full p-6 relative">
+      <div className="bg-surface rounded-xl max-w-md w-full p-6 relative">
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+          className="absolute top-4 right-4 text-ink-faint hover:text-ink-soft transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
@@ -32,8 +32,8 @@ export default function PremiumPopup({ isOpen, onClose, feature }: PremiumPopupP
 
         {/* Content */}
         <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Premium Feature</h2>
-          <p className="text-gray-600">
+          <h2 className="text-2xl font-bold text-ink mb-2">Premium Feature</h2>
+          <p className="text-ink-soft">
             {feature} is available for Premium users only. Upgrade to unlock this feature and many more!
           </p>
         </div>
@@ -41,20 +41,20 @@ export default function PremiumPopup({ isOpen, onClose, feature }: PremiumPopupP
         {/* Premium benefits */}
         <div className="space-y-3 mb-6">
           <div className="flex items-center gap-3">
-            <Check className="w-5 h-5 text-green-500" />
-            <span className="text-sm text-gray-700">Create and manage study communities</span>
+            <Check className="w-5 h-5 text-pulse" />
+            <span className="text-sm text-ink-soft">Create and manage study communities</span>
           </div>
           <div className="flex items-center gap-3">
-            <Check className="w-5 h-5 text-green-500" />
-            <span className="text-sm text-gray-700">Advanced matching algorithm</span>
+            <Check className="w-5 h-5 text-pulse" />
+            <span className="text-sm text-ink-soft">Advanced matching algorithm</span>
           </div>
           <div className="flex items-center gap-3">
-            <Check className="w-5 h-5 text-green-500" />
-            <span className="text-sm text-gray-700">Unlimited study sessions</span>
+            <Check className="w-5 h-5 text-pulse" />
+            <span className="text-sm text-ink-soft">Unlimited study sessions</span>
           </div>
           <div className="flex items-center gap-3">
-            <Check className="w-5 h-5 text-green-500" />
-            <span className="text-sm text-gray-700">Priority support</span>
+            <Check className="w-5 h-5 text-pulse" />
+            <span className="text-sm text-ink-soft">Priority support</span>
           </div>
         </div>
 

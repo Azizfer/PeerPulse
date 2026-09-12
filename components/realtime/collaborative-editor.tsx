@@ -102,7 +102,7 @@ export function CollaborativeEditor({
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="flex items-center gap-2 text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded-full"
+            className="flex items-center gap-2 text-xs text-ink-soft bg-surface-sunken px-2 py-1 rounded-full"
           >
             <Edit3 className="w-3 h-3" />
             <span>{editingUsers[0].name} is editing...</span>
@@ -119,7 +119,7 @@ export function CollaborativeEditor({
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="flex items-center gap-2 text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full"
+            className="flex items-center gap-2 text-xs text-pulse-dark bg-pulse-soft px-2 py-1 rounded-full"
           >
             <MessageCircle className="w-3 h-3" />
             <span>You are typing...</span>
@@ -134,7 +134,7 @@ export function CollaborativeEditor({
           value={content}
           onChange={handleContentChange}
           placeholder={placeholder}
-          className="w-full min-h-[100px] resize-none rounded-xl border-2 border-gray-300 bg-[#fdfcfa] px-4 py-3 text-base font-normal text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-blue-500 transition-all duration-200 hover:border-gray-400"
+          className="w-full min-h-[100px] resize-none rounded-xl border border-line-strong bg-surface px-4 py-3 text-base font-normal text-ink placeholder:text-ink-mute focus:outline-none focus:border-pulse transition-all duration-200 hover:border-ink-faint"
         />
         
         {/* Live editing cursors within text */}
@@ -154,7 +154,7 @@ export function CollaborativeEditor({
       </div>
 
       {/* Character count and collaboration status */}
-      <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
+      <div className="flex justify-between items-center mt-2 text-xs text-ink-mute">
         <span>{content.length} characters</span>
         <div className="flex items-center gap-2">
           <Users className="w-3 h-3" />
