@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation"
 import {
   CalendarClock,
   ChevronsUpDown,
-  CircleDot,
   LayoutDashboard,
   LogOut,
   MessagesSquare,
@@ -14,7 +13,6 @@ import {
   Radio,
   Search,
   Settings2,
-  Sparkles,
   Users,
   BookMarked,
   ListChecks,
@@ -49,6 +47,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   SidebarRail,
+  SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { Avatar, AvatarBadge, AvatarFallback } from "@/components/ui/avatar"
 import { ModeToggle } from "@/components/mode-toggle"
@@ -101,45 +100,14 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        {/* Workspace switcher */}
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent">
-                  <div className="bg-brand text-brand-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                    <Sparkles className="size-4" />
-                  </div>
-                  <div className="grid flex-1 text-left leading-tight">
-                    <span className="truncate font-medium">PeerPulse</span>
-                    <span className="text-sidebar-foreground/70 truncate text-xs">
-                      Study workspace
-                    </span>
-                  </div>
-                  <ChevronsUpDown className="ml-auto size-4" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-(--radix-dropdown-menu-trigger-width)">
-                <DropdownMenuLabel>Workspaces</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Sparkles className="size-4" /> PeerPulse
-                </DropdownMenuItem>
-                <DropdownMenuItem disabled>
-                  <CircleDot className="size-4" /> Add workspace
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
-
-        {/* Search */}
-        <SidebarMenu>
-          <SidebarMenuItem className="relative">
-            <Search className="text-sidebar-foreground/60 pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2" />
-            <SidebarInput placeholder="Search…" className="pl-8" />
-          </SidebarMenuItem>
-        </SidebarMenu>
+        {/* Trigger + search */}
+        <div className="flex items-center gap-1 px-1">
+          <SidebarTrigger />
+          <SidebarInput
+            placeholder="Search…"
+            className="group-data-[collapsible=icon]:hidden h-8 flex-1"
+          />
+        </div>
 
         {/* Primary action */}
         <SidebarMenu>
