@@ -6,7 +6,7 @@ import { Avatar } from "@/components/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Video, VideoOff, Mic, MicOff, Users, Clock, Search, CheckCircle, Loader2, Plus, X, Maximize2, Target } from 'lucide-react'
+import { Video, VideoOff, Mic, MicOff, Users, Clock, Search, CheckCircle, Loader2, Plus, X, Maximize2, Target, Sparkles } from 'lucide-react'
 import { showToast } from "@/lib/toast-helper"
 import { EmptyState } from "@/components/empty-states"
 import { SortableItem } from "@/components/drag-drop/sortable-item"
@@ -408,7 +408,12 @@ export default function StudyPage() {
                   <div className="space-y-6">
                     {/* Subject Selection */}
                     <div className="px-4">
-                      <label className="block text-sm font-medium text-ink-soft mb-2">Subject</label>
+                      <label className="mb-2 flex items-center gap-2 text-sm font-medium text-ink-soft">
+                        <span className="grid h-6 w-6 place-items-center rounded-lg bg-sky text-sky-deep">
+                          <Search className="h-3.5 w-3.5" />
+                        </span>
+                        Subject
+                      </label>
                       <CustomSelect
                         value={subject}
                         onChange={setSubject}
@@ -427,7 +432,12 @@ export default function StudyPage() {
 
                     {/* Duration Selection */}
                     <div className="px-4">
-                      <label className="block text-sm font-medium text-ink-soft mb-2">Duration</label>
+                      <label className="mb-2 flex items-center gap-2 text-sm font-medium text-ink-soft">
+                        <span className="grid h-6 w-6 place-items-center rounded-lg bg-apricot text-apricot-deep">
+                          <Clock className="h-3.5 w-3.5" />
+                        </span>
+                        Duration
+                      </label>
                       <CustomSelect
                         value={duration}
                         onChange={setDuration}
@@ -444,7 +454,10 @@ export default function StudyPage() {
 
                     {/* Draggable Study Goals */}
                     <div className="px-4">
-                      <label className="block text-sm font-medium text-ink-soft mb-3">
+                      <label className="mb-3 flex items-center gap-2 text-sm font-medium text-ink-soft">
+                        <span className="grid h-6 w-6 place-items-center rounded-lg bg-lilac text-lilac-deep">
+                          <Target className="h-3.5 w-3.5" />
+                        </span>
                         Study Goals (Drag to reorder, shared with partners)
                       </label>
                       
@@ -514,7 +527,12 @@ export default function StudyPage() {
 
                     {/* Camera and Mic Controls */}
                     <div className="px-4">
-                      <label className="block text-sm font-medium text-ink-soft mb-3">Media Settings</label>
+                      <label className="mb-3 flex items-center gap-2 text-sm font-medium text-ink-soft">
+                        <span className="grid h-6 w-6 place-items-center rounded-lg bg-pulse-soft text-pulse-dark">
+                          <Video className="h-3.5 w-3.5" />
+                        </span>
+                        Media Settings
+                      </label>
                       <div className="flex gap-3">
                         <Button
                             onClick={handleCameraToggle}

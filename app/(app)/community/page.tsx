@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import Link from "next/link"
 import {
   Award,
@@ -13,10 +13,10 @@ import {
   Send,
   ThumbsUp,
   TrendingUp,
-  Users,
   X,
 } from "lucide-react"
 import { AnimatePresence, motion } from "framer-motion"
+import Header from "@/components/Header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar } from "@/components/avatar"
@@ -25,6 +25,16 @@ import { CustomSelect } from "@/components/ui/custom-select"
 import { useToast } from "@/hooks/use-toast"
 import { ImageCarousel } from "@/components/community/ImageCarousel"
 import { PDFPreview, PDFViewerModal } from "@/components/community/pdf-lazy"
+
+type Comment = {
+  id: number
+  author: string
+  authorAvatar: string
+  content: string
+  timestamp: string
+  likes: number
+  replies: Comment[]
+}
 
 const myCommunitiesData = [
   { id: 1, name: "Advanced Calculus Study Group", subject: "Mathematics", members: 24, unreadPosts: 5 },
@@ -41,11 +51,37 @@ const communityPostsData = [
     content:
       "Hey everyone! I found this great resource for understanding derivatives. Who wants to do a group study session this weekend? #MidtermPrep",
     timestamp: "2 hours ago",
-    likes: 12,
+    reactionCounts: { like: 8, insightful: 3, supportive: 1, helpful: 0 },
     comments: [
-      { id: 1, author: "John Doe", authorAvatar: "JD", content: "This is super helpful! Thanks for sharing.", timestamp: "1 hour ago" },
-      { id: 2, author: "Jane Smith", authorAvatar: "JS", content: "I'd love to join the study session!", timestamp: "30 mins ago" },
-    ],
+      {
+        id: 1,
+        author: "John Doe",
+        authorAvatar: "JD",
+        content: "This is super helpful! Thanks for sharing.",
+        timestamp: "1 hour ago",
+        likes: 3,
+        replies: [
+          {
+            id: 1001,
+            author: "Sarah Chen",
+            authorAvatar: "SC",
+            content: "Glad it helped!",
+            timestamp: "50 mins ago",
+            likes: 1,
+            replies: [],
+          },
+        ],
+      },
+      {
+        id: 2,
+        author: "Jane Smith",
+        authorAvatar: "JS",
+        content: "I'd love to join the study session!",
+        timestamp: "30 mins ago",
+        likes: 0,
+        replies: [],
+      },
+    ] as Comment[],
     isLiked: false,
     files: [] as { name: string; type: string; url: string }[],
   },
@@ -58,14 +94,31 @@ const communityPostsData = [
     content:
       "Just finished implementing a binary search tree! Happy to help anyone struggling with tree structures. #StudyTips",
     timestamp: "5 hours ago",
-    likes: 18,
+    reactionCounts: { like: 14, insightful: 2, supportive: 1, helpful: 1 },
     comments: [
-      { id: 1, author: "Alex Brown", authorAvatar: "AB", content: "How did you handle the balancing?", timestamp: "4 hours ago" },
-    ],
+      {
+        id: 1,
+        author: "Alex Brown",
+        authorAvatar: "AB",
+        content: "How did you handle the balancing?",
+        timestamp: "4 hours ago",
+        likes: 2,
+        replies: [],
+      },
+    ] as Comment[],
     isLiked: true,
     files: [] as { name: string; type: string; url: string }[],
   },
 ]
+
+const REACTIONS = [
+  { id: "like", icon: ThumbsUp, label: "Like", color: "text-pulse-dark", bg: "bg-pulse-soft" },
+  { id: "insightful", icon: Lightbulb, label: "Insightful", color: "text-lemon-deep", bg: "bg-lemon-soft" },
+  { id: "supportive", icon: Heart, label: "Supportive", color: "text-rose-deep", bg: "bg-rose" },
+  { id: "helpful", icon: Award, label: "Helpful", color: "text-pulse", bg: "bg-pulse-soft" },
+] as const
+
+type ReactionId = (typeof REACTIONS)[number]["id"]
 
 export default function CommunityPage() {
   const { toast } = useToast()
@@ -78,7 +131,7 @@ export default function CommunityPage() {
   const [showComments, setShowComments] = useState<{ [key: number]: boolean }>({})
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
   const [showReactionPicker, setShowReactionPicker] = useState<number | null>(null)
-  const [postReactions, setPostReactions] = useState<{ [key: number]: string }>({})
+  const [postReactions, setPostReactions] = useState<{ [key: number]: ReactionId }>({})
   const [pdfModal, setPdfModal] = useState<{
     isOpen: boolean
     pdfUrl: string
@@ -86,6 +139,16 @@ export default function CommunityPage() {
     page: number
     numPages: number
   } | null>(null)
+
+  // Which comment (identified by "postId:commentId") currently has its inline reply
+  // box open, Instagram/Facebook style — replies render nested right under that comment.
+  const [replyingTo, setReplyingTo] = useState<string | null>(null)
+  const [replyInputs, setReplyInputs] = useState<{ [key: string]: string }>({})
+  const replyInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({})
+
+  // Per-comment/reply like state, keyed by "postId:commentId" or "postId:commentId:replyId"
+  // so ids don't collide across posts/comments.
+  const [likedComments, setLikedComments] = useState<{ [key: string]: boolean }>({})
 
   const [suggestedCommunities, setSuggestedCommunities] = useState([
     { id: 1, name: "Physics Study Hub", members: 156, subject: "Physics", icon: "⚛️", isPublic: false, membershipStatus: null as "member" | "pending" | null },
@@ -115,13 +178,6 @@ export default function CommunityPage() {
     { tag: "#ExamSeason", posts: 24 },
     { tag: "#MathHelp", posts: 19 },
   ])
-
-  const reactions = [
-    { id: "like", icon: ThumbsUp, label: "Like", color: "text-pulse-dark" },
-    { id: "insightful", icon: Lightbulb, label: "Insightful", color: "text-lemon-deep" },
-    { id: "supportive", icon: Heart, label: "Supportive", color: "text-rose-deep" },
-    { id: "helpful", icon: Award, label: "Helpful", color: "text-pulse" },
-  ]
 
   const handleJoinSuggestedCommunity = (communityId: number) => {
     setSuggestedCommunities((prev) =>
@@ -181,15 +237,40 @@ export default function CommunityPage() {
     }
   }
 
-  const handleReaction = (postId: number, reactionType: string) => {
-    if (postReactions[postId] === reactionType) {
-      const updatedReactions = { ...postReactions }
-      delete updatedReactions[postId]
-      setPostReactions(updatedReactions)
-    } else {
-      setPostReactions({ ...postReactions, [postId]: reactionType })
-    }
+  // Picking a reaction updates that post's aggregate counts (swap the old pick's count
+  // out, the new pick's count in) so the top-reactions summary stays accurate.
+  const handleReaction = (postId: number, reactionType: ReactionId) => {
+    const previous = postReactions[postId]
+
+    setPosts((prev) =>
+      prev.map((post) => {
+        if (post.id !== postId) return post
+        const counts = { ...post.reactionCounts }
+        if (previous) counts[previous] = Math.max(0, counts[previous] - 1)
+        if (previous !== reactionType) counts[reactionType] = (counts[reactionType] || 0) + 1
+        return { ...post, reactionCounts: counts }
+      }),
+    )
+
+    setPostReactions((prev) => {
+      const next = { ...prev }
+      if (previous === reactionType) {
+        delete next[postId]
+      } else {
+        next[postId] = reactionType
+      }
+      return next
+    })
     setShowReactionPicker(null)
+  }
+
+  const getReactionSummary = (post: (typeof communityPostsData)[number]) => {
+    const total = Object.values(post.reactionCounts).reduce((a, b) => a + b, 0)
+    const top = REACTIONS.map((r) => ({ ...r, count: post.reactionCounts[r.id as ReactionId] || 0 }))
+      .filter((r) => r.count > 0)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 3)
+    return { total, top }
   }
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -263,7 +344,7 @@ export default function CommunityPage() {
           authorAvatar: "YU",
           content: newPost.trim(),
           timestamp: "Just now",
-          likes: 0,
+          reactionCounts: { like: 0, insightful: 0, supportive: 0, helpful: 0 },
           comments: [],
           isLiked: false,
           files: fileUrls,
@@ -289,11 +370,13 @@ export default function CommunityPage() {
                 comments: [
                   ...post.comments,
                   {
-                    id: post.comments.length + 1,
+                    id: Date.now(),
                     author: "You",
                     authorAvatar: "AJ",
                     content: commentText,
                     timestamp: "Just now",
+                    likes: 0,
+                    replies: [],
                   },
                 ],
               }
@@ -304,11 +387,61 @@ export default function CommunityPage() {
     }
   }
 
+  const openReplyBox = (postId: number, commentId: number) => {
+    const key = `${postId}:${commentId}`
+    setShowComments((prev) => ({ ...prev, [postId]: true }))
+    setReplyingTo(key)
+    setReplyInputs((prev) => ({ ...prev, [key]: prev[key] || "" }))
+    requestAnimationFrame(() => replyInputRefs.current[key]?.focus())
+  }
+
+  const handleAddReply = (postId: number, commentId: number) => {
+    const key = `${postId}:${commentId}`
+    const text = replyInputs[key]?.trim()
+    if (!text) return
+
+    setPosts((prev) =>
+      prev.map((post) => {
+        if (post.id !== postId) return post
+        return {
+          ...post,
+          comments: post.comments.map((comment) =>
+            comment.id === commentId
+              ? {
+                  ...comment,
+                  replies: [
+                    ...comment.replies,
+                    {
+                      id: Date.now(),
+                      author: "You",
+                      authorAvatar: "AJ",
+                      content: text,
+                      timestamp: "Just now",
+                      likes: 0,
+                      replies: [],
+                    },
+                  ],
+                }
+              : comment,
+          ),
+        }
+      }),
+    )
+    setReplyInputs((prev) => ({ ...prev, [key]: "" }))
+    setReplyingTo(null)
+  }
+
+  const toggleCommentLike = (key: string) => {
+    setLikedComments((prev) => ({ ...prev, [key]: !prev[key] }))
+  }
+
   const filteredPosts = feedFilter === "all" ? posts : posts.filter((p) => p.communityId === feedFilter)
 
   return (
     <div className="min-h-screen bg-paper">
-      <main className="container-page py-10 sm:py-14">
+      <Header />
+
+      <main className="mx-auto w-full max-w-[1440px] px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
@@ -327,29 +460,29 @@ export default function CommunityPage() {
           </div>
         </Reveal>
 
-        <div className="mt-10 grid gap-6 lg:grid-cols-12">
+        <div className="mt-10 grid gap-8 lg:grid-cols-12">
           {/* ===================== Feed ===================== */}
           <div className="space-y-5 lg:col-span-8">
             {/* ---------- Composer ---------- */}
             <Reveal>
-              <div className="rounded-3xl border border-line bg-surface p-5 shadow-soft sm:p-6">
-                <div className="flex gap-4">
-                  <Avatar name="Alex Johnson" size="md" />
+              <div className="rounded-2xl border border-line bg-surface p-4 shadow-soft sm:p-5">
+                <div className="flex gap-3">
+                  <Avatar name="Alex Johnson" size="sm" />
                   <div className="min-w-0 flex-1">
                     <textarea
                       value={newPost}
                       onChange={(e) => setNewPost(e.target.value)}
                       placeholder="Ask a question, or share something that finally clicked…"
-                      rows={3}
-                      className="w-full resize-none rounded-2xl border border-line-strong bg-surface px-4 py-3 text-[15px] leading-relaxed text-ink transition-all duration-200 placeholder:text-ink-faint hover:border-ink-faint focus:border-pulse focus:outline-none focus:ring-4 focus:ring-pulse/10"
+                      rows={2}
+                      className="w-full resize-none rounded-xl border border-line-strong bg-surface px-3.5 py-2.5 text-[14.5px] leading-relaxed text-ink transition-all duration-200 placeholder:text-ink-faint hover:border-ink-faint focus:border-pulse focus:outline-none focus:ring-4 focus:ring-pulse/10"
                     />
 
                     {uploadedFiles.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-2">
+                      <div className="mt-2.5 flex flex-wrap gap-2">
                         {uploadedFiles.map((file, index) => (
                           <span
                             key={index}
-                            className="relative inline-flex items-center gap-2 rounded-xl bg-surface-sunken py-2 pl-3 pr-8 text-[13px] text-ink-soft"
+                            className="relative inline-flex items-center gap-2 rounded-xl bg-surface-sunken py-1.5 pl-3 pr-8 text-[13px] text-ink-soft"
                           >
                             {file.type.startsWith("image/") ? (
                               <ImageIcon className="h-4 w-4" />
@@ -370,10 +503,10 @@ export default function CommunityPage() {
                       </div>
                     )}
 
-                    <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-                      <div className="flex items-center gap-2">
+                    <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                      <div className="flex items-center gap-1.5">
                         <label
-                          className="grid h-10 w-10 cursor-pointer place-items-center rounded-full text-ink-mute transition-colors hover:bg-surface-sunken hover:text-ink"
+                          className="grid h-9 w-9 cursor-pointer place-items-center rounded-full text-ink-mute transition-colors hover:bg-surface-sunken hover:text-ink"
                           title="Add images"
                         >
                           <input
@@ -383,10 +516,10 @@ export default function CommunityPage() {
                             onChange={handleFileUpload}
                             className="hidden"
                           />
-                          <ImageIcon className="h-5 w-5" />
+                          <ImageIcon className="h-[18px] w-[18px]" />
                         </label>
                         <label
-                          className="grid h-10 w-10 cursor-pointer place-items-center rounded-full text-ink-mute transition-colors hover:bg-surface-sunken hover:text-ink"
+                          className="grid h-9 w-9 cursor-pointer place-items-center rounded-full text-ink-mute transition-colors hover:bg-surface-sunken hover:text-ink"
                           title="Add documents"
                         >
                           <input
@@ -396,10 +529,10 @@ export default function CommunityPage() {
                             onChange={handleFileUpload}
                             className="hidden"
                           />
-                          <FileText className="h-5 w-5" />
+                          <FileText className="h-[18px] w-[18px]" />
                         </label>
 
-                        <div className="w-[220px]">
+                        <div className="w-[200px]">
                           <CustomSelect
                             value={selectedCommunity?.toString() || ""}
                             onChange={(value) => setSelectedCommunity(value ? Number(value) : null)}
@@ -413,6 +546,7 @@ export default function CommunityPage() {
                       </div>
 
                       <Button
+                        size="sm"
                         onClick={handleCreatePost}
                         disabled={!newPost.trim() || !selectedCommunity}
                       >
@@ -464,175 +598,259 @@ export default function CommunityPage() {
             </div>
 
             {/* ---------- Posts ---------- */}
-            {filteredPosts.map((post) => (
-              <article
-                key={post.id}
-                className="rounded-3xl border border-line bg-surface p-6 shadow-soft transition-all duration-300 hover:border-line-strong hover:shadow-card"
-              >
-                <div className="flex items-start gap-3.5">
-                  <Avatar name={post.author} size="md" />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                      <span className="font-display text-[15px] font-bold text-ink">
-                        {post.author}
-                      </span>
-                      <span className="text-ink-faint">·</span>
-                      <span className="text-[13px] text-ink-mute">{post.timestamp}</span>
+            {filteredPosts.map((post) => {
+              const { total, top } = getReactionSummary(post)
+              const userReaction = postReactions[post.id]
+
+              return (
+                <article
+                  key={post.id}
+                  className="rounded-3xl border border-line bg-surface p-6 shadow-soft transition-all duration-300 hover:border-line-strong hover:shadow-card"
+                >
+                  <div className="flex items-start gap-3.5">
+                    <Avatar name={post.author} size="md" />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                        <span className="font-display text-[15px] font-bold text-ink">
+                          {post.author}
+                        </span>
+                        <span className="text-ink-faint">·</span>
+                        <span className="text-[13px] text-ink-mute">{post.timestamp}</span>
+                      </div>
+                      <Badge variant="lilac" className="mt-1.5">
+                        {post.communityName}
+                      </Badge>
                     </div>
-                    <Badge variant="lilac" className="mt-1.5">
-                      {post.communityName}
-                    </Badge>
                   </div>
-                </div>
 
-                <p className="mt-4 whitespace-pre-line text-[15px] leading-relaxed text-ink-soft">
-                  {renderContentWithHashtags(post.content)}
-                </p>
+                  <p className="mt-4 whitespace-pre-line text-[15px] leading-relaxed text-ink-soft">
+                    {renderContentWithHashtags(post.content)}
+                  </p>
 
-                {post.files && post.files.length > 0 && (
-                  <div className="mt-4 space-y-3">
-                    {(() => {
-                      const images = post.files.filter((f) => f.type.startsWith("image/"))
-                      const pdfs = post.files.filter((f) => f.type === "application/pdf")
-                      return (
-                        <>
-                          {images.length > 0 && <ImageCarousel images={images} postId={post.id} />}
-                          {pdfs.map((pdf, pdfIndex) => (
-                            <PDFPreview
-                              key={pdfIndex}
-                              pdf={pdf}
-                              postId={post.id}
-                              pdfIndex={pdfIndex}
-                              onPageClick={(page, numPages) =>
-                                setPdfModal({
-                                  isOpen: true,
-                                  pdfUrl: pdf.url,
-                                  pdfName: pdf.name,
-                                  page,
-                                  numPages,
-                                })
-                              }
-                            />
-                          ))}
-                        </>
-                      )
-                    })()}
-                  </div>
-                )}
+                  {post.files && post.files.length > 0 && (
+                    <div className="mt-4 space-y-3">
+                      {(() => {
+                        const images = post.files.filter((f) => f.type.startsWith("image/"))
+                        const pdfs = post.files.filter((f) => f.type === "application/pdf")
+                        return (
+                          <>
+                            {images.length > 0 && <ImageCarousel images={images} postId={post.id} />}
+                            {pdfs.map((pdf, pdfIndex) => (
+                              <PDFPreview
+                                key={pdfIndex}
+                                pdf={pdf}
+                                postId={post.id}
+                                pdfIndex={pdfIndex}
+                                onPageClick={(page, numPages) =>
+                                  setPdfModal({
+                                    isOpen: true,
+                                    pdfUrl: pdf.url,
+                                    pdfName: pdf.name,
+                                    page,
+                                    numPages,
+                                  })
+                                }
+                              />
+                            ))}
+                          </>
+                        )
+                      })()}
+                    </div>
+                  )}
 
-                {/* ---------- Actions ---------- */}
-                <div className="mt-5 flex items-center gap-1 border-t border-line pt-4">
-                  <div className="relative">
+                  {/* ---------- Reaction summary — top 3 reaction types as stacked icons
+                       + total, same idea as Facebook/Instagram's reaction cluster ---------- */}
+                  {total > 0 && (
+                    <div className="mt-4 flex items-center gap-1.5">
+                      <div className="flex -space-x-1.5">
+                        {top.map((r) => (
+                          <span
+                            key={r.id}
+                            className={`grid h-5 w-5 place-items-center rounded-full border-2 border-surface ${r.bg}`}
+                          >
+                            <r.icon className={`h-3 w-3 ${r.color}`} />
+                          </span>
+                        ))}
+                      </div>
+                      <span className="text-[13px] text-ink-mute">{total}</span>
+                    </div>
+                  )}
+
+                  {/* ---------- Actions ---------- */}
+                  <div className="mt-3 flex items-center gap-1 border-t border-line pt-4">
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowReactionPicker(showReactionPicker === post.id ? null : post.id)
+                        }
+                        className={`flex items-center gap-2 rounded-full px-3 py-2 text-[13.5px] font-medium transition-colors hover:bg-surface-sunken ${
+                          userReaction ? (REACTIONS.find((r) => r.id === userReaction)?.color ?? "text-ink-soft") : "text-ink-soft hover:text-ink"
+                        }`}
+                      >
+                        {(() => {
+                          const reaction = REACTIONS.find((r) => r.id === userReaction)
+                          const Icon = reaction?.icon || ThumbsUp
+                          return <Icon className="h-4 w-4" />
+                        })()}
+                        <span>{userReaction ? REACTIONS.find((r) => r.id === userReaction)?.label : "React"}</span>
+                      </button>
+
+                      {showReactionPicker === post.id && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="absolute bottom-full left-0 z-10 mb-2 flex gap-1 rounded-2xl border border-line bg-surface p-2 shadow-card"
+                        >
+                          {REACTIONS.map((reaction) => {
+                            const Icon = reaction.icon
+                            return (
+                              <button
+                                key={reaction.id}
+                                type="button"
+                                onClick={() => handleReaction(post.id, reaction.id)}
+                                title={reaction.label}
+                                className="grid h-9 w-9 place-items-center rounded-xl transition-colors hover:bg-surface-sunken"
+                              >
+                                <Icon className={`h-5 w-5 ${reaction.color}`} />
+                              </button>
+                            )
+                          })}
+                        </motion.div>
+                      )}
+                    </div>
+
                     <button
                       type="button"
                       onClick={() =>
-                        setShowReactionPicker(showReactionPicker === post.id ? null : post.id)
+                        setShowComments({ ...showComments, [post.id]: !showComments[post.id] })
                       }
                       className="flex items-center gap-2 rounded-full px-3 py-2 text-[13.5px] font-medium text-ink-soft transition-colors hover:bg-surface-sunken hover:text-ink"
                     >
-                      {(() => {
-                        const reaction = reactions.find((r) => r.id === postReactions[post.id])
-                        const Icon = reaction?.icon || ThumbsUp
-                        return <Icon className={`h-4 w-4 ${reaction?.color || ""}`} />
-                      })()}
-                      <span>{post.likes}</span>
+                      <MessageCircle className="h-4 w-4" />
+                      <span>{post.comments?.length || 0}</span>
                     </button>
-
-                    {showReactionPicker === post.id && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="absolute bottom-full left-0 z-10 mb-2 flex gap-1 rounded-2xl border border-line bg-surface p-2 shadow-card"
-                      >
-                        {reactions.map((reaction) => {
-                          const Icon = reaction.icon
-                          return (
-                            <button
-                              key={reaction.id}
-                              type="button"
-                              onClick={() => handleReaction(post.id, reaction.id)}
-                              title={reaction.label}
-                              className="grid h-9 w-9 place-items-center rounded-xl transition-colors hover:bg-surface-sunken"
-                            >
-                              <Icon className={`h-5 w-5 ${reaction.color}`} />
-                            </button>
-                          )
-                        })}
-                      </motion.div>
-                    )}
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setShowComments({ ...showComments, [post.id]: !showComments[post.id] })
-                    }
-                    className="flex items-center gap-2 rounded-full px-3 py-2 text-[13.5px] font-medium text-ink-soft transition-colors hover:bg-surface-sunken hover:text-ink"
-                  >
-                    <MessageCircle className="h-4 w-4" />
-                    <span>{post.comments?.length || 0}</span>
-                  </button>
-                </div>
+                  {/* ---------- Comments ---------- */}
+                  <AnimatePresence>
+                    {showComments[post.id] && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.25, ease: "easeInOut" }}
+                        className="overflow-hidden"
+                      >
+                        <div className="mt-4 space-y-4 border-t border-line pt-4">
+                          {post.comments.map((comment) => {
+                            const commentKey = `${post.id}:${comment.id}`
+                            const commentLiked = !!likedComments[commentKey]
+                            const commentLikeCount = comment.likes + (commentLiked ? 1 : 0)
 
-                {/* ---------- Comments ---------- */}
-                <AnimatePresence>
-                  {showComments[post.id] && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.25, ease: "easeInOut" }}
-                      className="overflow-hidden"
-                    >
-                      <div className="mt-4 space-y-4 border-t border-line pt-4">
-                        {post.comments.map((comment) => (
-                          <div key={comment.id} className="flex gap-3">
-                            <Avatar name={comment.author} size="sm" />
-                            <div className="flex-1 rounded-2xl bg-surface-sunken px-4 py-3">
-                              <div className="flex flex-wrap items-center gap-2">
-                                <span className="text-[13.5px] font-semibold text-ink">
-                                  {comment.author}
-                                </span>
-                                <span className="text-[12.5px] text-ink-mute">
-                                  {comment.timestamp}
-                                </span>
+                            return (
+                              <div key={comment.id}>
+                                <CommentRow
+                                  author={comment.author}
+                                  content={comment.content}
+                                  timestamp={comment.timestamp}
+                                  liked={commentLiked}
+                                  likeCount={commentLikeCount}
+                                  onLike={() => toggleCommentLike(commentKey)}
+                                  onReply={() => openReplyBox(post.id, comment.id)}
+                                />
+
+                                {/* ---------- Nested replies ---------- */}
+                                {comment.replies.length > 0 && (
+                                  <div className="ml-11 mt-2 space-y-3 border-l-2 border-line pl-4">
+                                    {comment.replies.map((reply) => {
+                                      const replyKey = `${post.id}:${comment.id}:${reply.id}`
+                                      const replyLiked = !!likedComments[replyKey]
+                                      const replyLikeCount = reply.likes + (replyLiked ? 1 : 0)
+                                      return (
+                                        <CommentRow
+                                          key={reply.id}
+                                          author={reply.author}
+                                          content={reply.content}
+                                          timestamp={reply.timestamp}
+                                          liked={replyLiked}
+                                          likeCount={replyLikeCount}
+                                          onLike={() => toggleCommentLike(replyKey)}
+                                          onReply={() => openReplyBox(post.id, comment.id)}
+                                          small
+                                        />
+                                      )
+                                    })}
+                                  </div>
+                                )}
+
+                                {/* ---------- Inline reply box, right under this comment ---------- */}
+                                {replyingTo === commentKey && (
+                                  <div className="ml-11 mt-2 flex gap-2">
+                                    <Avatar name="Alex Johnson" size="sm" />
+                                    <div className="flex flex-1 gap-2">
+                                      <input
+                                        type="text"
+                                        placeholder={`Reply to ${comment.author}…`}
+                                        value={replyInputs[commentKey] || ""}
+                                        ref={(el) => {
+                                          replyInputRefs.current[commentKey] = el
+                                        }}
+                                        onChange={(e) =>
+                                          setReplyInputs((prev) => ({ ...prev, [commentKey]: e.target.value }))
+                                        }
+                                        onKeyDown={(e) => {
+                                          if (e.key === "Enter") handleAddReply(post.id, comment.id)
+                                          if (e.key === "Escape") setReplyingTo(null)
+                                        }}
+                                        className="h-9 flex-1 rounded-full border border-line-strong bg-surface px-4 text-[13.5px] text-ink transition-all duration-200 placeholder:text-ink-faint hover:border-ink-faint focus:border-pulse focus:outline-none focus:ring-4 focus:ring-pulse/10"
+                                      />
+                                      <Button
+                                        size="icon-sm"
+                                        onClick={() => handleAddReply(post.id, comment.id)}
+                                        disabled={!replyInputs[commentKey]?.trim()}
+                                        aria-label="Send reply"
+                                      >
+                                        <Send className="h-4 w-4" />
+                                      </Button>
+                                    </div>
+                                  </div>
+                                )}
                               </div>
-                              <p className="mt-1 text-[14px] leading-relaxed text-ink-soft">
-                                {comment.content}
-                              </p>
+                            )
+                          })}
+
+                          {/* ---------- Top-level comment box ---------- */}
+                          <div className="flex gap-3">
+                            <Avatar name="Alex Johnson" size="sm" />
+                            <div className="flex flex-1 gap-2">
+                              <input
+                                type="text"
+                                placeholder="Write a comment…"
+                                value={commentInputs[post.id] || ""}
+                                onChange={(e) =>
+                                  setCommentInputs({ ...commentInputs, [post.id]: e.target.value })
+                                }
+                                onKeyDown={(e) => e.key === "Enter" && handleAddComment(post.id)}
+                                className="h-10 flex-1 rounded-full border border-line-strong bg-surface px-4 text-[14px] text-ink transition-all duration-200 placeholder:text-ink-faint hover:border-ink-faint focus:border-pulse focus:outline-none focus:ring-4 focus:ring-pulse/10"
+                              />
+                              <Button
+                                size="icon-sm"
+                                onClick={() => handleAddComment(post.id)}
+                                disabled={!commentInputs[post.id]?.trim()}
+                                aria-label="Send comment"
+                              >
+                                <Send className="h-4 w-4" />
+                              </Button>
                             </div>
                           </div>
-                        ))}
-
-                        <div className="flex gap-3">
-                          <Avatar name="Alex Johnson" size="sm" />
-                          <div className="flex flex-1 gap-2">
-                            <input
-                              type="text"
-                              placeholder="Write a comment…"
-                              value={commentInputs[post.id] || ""}
-                              onChange={(e) =>
-                                setCommentInputs({ ...commentInputs, [post.id]: e.target.value })
-                              }
-                              onKeyDown={(e) => e.key === "Enter" && handleAddComment(post.id)}
-                              className="h-10 flex-1 rounded-full border border-line-strong bg-surface px-4 text-[14px] text-ink transition-all duration-200 placeholder:text-ink-faint hover:border-ink-faint focus:border-pulse focus:outline-none focus:ring-4 focus:ring-pulse/10"
-                            />
-                            <Button
-                              size="icon-sm"
-                              onClick={() => handleAddComment(post.id)}
-                              disabled={!commentInputs[post.id]?.trim()}
-                              aria-label="Send comment"
-                            >
-                              <Send className="h-4 w-4" />
-                            </Button>
-                          </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </article>
-            ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </article>
+              )
+            })}
           </div>
 
           {/* ===================== Sidebar ===================== */}
@@ -740,20 +958,6 @@ export default function CommunityPage() {
                     </button>
                   ))}
                 </div>
-              </section>
-            </Reveal>
-
-            {/* ---------- Pulse ---------- */}
-            <Reveal delay={0.18}>
-              <section className="rounded-3xl border border-pulse/25 bg-pulse-soft/60 p-6">
-                <h2 className="font-display text-[16px] font-bold text-pulse-dark">
-                  Stuck on something?
-                </h2>
-                <p className="mt-2 text-[14px] leading-relaxed text-pulse-dark/80">
-                  Pulse can search every resource your communities have shared and answer with
-                  the sources it used.
-                </p>
-                <Users className="mt-4 h-5 w-5 text-pulse-dark/50" />
               </section>
             </Reveal>
           </aside>
@@ -945,8 +1149,8 @@ export default function CommunityPage() {
 
               <p className="mt-3 text-[14.5px] leading-relaxed text-ink-soft">
                 {confirmAction.action === "cancel"
-                  ? `Are you sure you want to cancel your request to join “${confirmAction.name}”?`
-                  : `Are you sure you want to leave “${confirmAction.name}”?`}
+                  ? `Are you sure you want to cancel your request to join "${confirmAction.name}"?`
+                  : `Are you sure you want to leave "${confirmAction.name}"?`}
               </p>
 
               <div className="mt-6 flex gap-2">
@@ -977,6 +1181,60 @@ export default function CommunityPage() {
           onClose={() => setPdfModal(null)}
         />
       )}
+    </div>
+  )
+}
+
+function CommentRow({
+  author,
+  content,
+  timestamp,
+  liked,
+  likeCount,
+  onLike,
+  onReply,
+  small,
+}: {
+  author: string
+  content: string
+  timestamp: string
+  liked: boolean
+  likeCount: number
+  onLike: () => void
+  onReply: () => void
+  small?: boolean
+}) {
+  return (
+    <div className="flex gap-3">
+      <Avatar name={author} size="sm" />
+      <div className="flex-1">
+        <div className={`rounded-2xl bg-surface-sunken px-4 ${small ? "py-2" : "py-3"}`}>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[13.5px] font-semibold text-ink">{author}</span>
+            <span className="text-[12.5px] text-ink-mute">{timestamp}</span>
+          </div>
+          <p className="mt-1 text-[14px] leading-relaxed text-ink-soft">{content}</p>
+        </div>
+        <div className="mt-1 ml-1 flex items-center gap-3">
+          <button
+            type="button"
+            onClick={onLike}
+            className={`flex items-center gap-1 text-[12.5px] font-semibold transition-colors ${
+              liked ? "text-pulse-dark" : "text-ink-mute hover:text-ink"
+            }`}
+          >
+            <ThumbsUp className={`h-3 w-3 ${liked ? "fill-current" : ""}`} />
+            Like{likeCount > 0 ? ` · ${likeCount}` : ""}
+          </button>
+          <button
+            type="button"
+            onClick={onReply}
+            className="text-[12.5px] font-semibold text-ink-mute transition-colors hover:text-ink"
+          >
+            Reply
+          </button>
+        </div>
+      </div>
     </div>
   )
 }

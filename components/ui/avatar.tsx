@@ -1,10 +1,8 @@
 "use client"
-
 import * as React from "react"
 import * as AvatarPrimitive from "@radix-ui/react-avatar"
-
+import * as AvatarGroupPrimitive from "@radix-ui/react-avatar"
 import { cn } from "@/lib/utils"
-
 /**
  * shadcn-style Avatar, extended with the extra compound parts PeerPulse needs:
  * AvatarBadge (presence dot), AvatarGroup and AvatarGroupCount.
@@ -12,11 +10,9 @@ import { cn } from "@/lib/utils"
  * The older wordmark-era avatar lives at `@/components/avatar` and is still used
  * by legacy pages; this one is the standard component going forward.
  */
-
 /* -------------------------------------------------------------------------- */
 /*  Avatar                                                                     */
 /* -------------------------------------------------------------------------- */
-
 function Avatar({
   className,
   ...props
@@ -32,7 +28,6 @@ function Avatar({
     />
   )
 }
-
 function AvatarImage({
   className,
   ...props
@@ -45,7 +40,6 @@ function AvatarImage({
     />
   )
 }
-
 function AvatarFallback({
   className,
   ...props
@@ -61,11 +55,9 @@ function AvatarFallback({
     />
   )
 }
-
 /* -------------------------------------------------------------------------- */
 /*  AvatarBadge — presence dot                                                 */
 /* -------------------------------------------------------------------------- */
-
 function AvatarBadge({ className, ...props }: React.ComponentProps<"span">) {
   return (
     <span
@@ -78,11 +70,9 @@ function AvatarBadge({ className, ...props }: React.ComponentProps<"span">) {
     />
   )
 }
-
 /* -------------------------------------------------------------------------- */
 /*  AvatarGroup — overlapping stack                                            */
 /* -------------------------------------------------------------------------- */
-
 function AvatarGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -95,7 +85,6 @@ function AvatarGroup({ className, ...props }: React.ComponentProps<"div">) {
     />
   )
 }
-
 function AvatarGroupCount({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -108,7 +97,6 @@ function AvatarGroupCount({ className, ...props }: React.ComponentProps<"div">) 
     />
   )
 }
-
 export {
   Avatar,
   AvatarBadge,
@@ -116,4 +104,5 @@ export {
   AvatarGroup,
   AvatarGroupCount,
   AvatarImage,
+  AvatarGroupPrimitive,
 }

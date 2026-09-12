@@ -1,7 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { AuthProvider } from "@/components/auth-provider"
-import { ThemeProvider } from "@/components/theme-provider"
 import { PiPProvider } from "@/contexts/pip-context"
 import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
@@ -10,10 +9,6 @@ import "./globals.css"
 // font CDN at build or run time.
 import "@fontsource-variable/inter"
 import "@fontsource-variable/plus-jakarta-sans"
-// Brand wordmark face (see app/globals.css -> --font-brand)
-import "@fontsource/poppins/600.css"
-import "@fontsource/poppins/700.css"
-import "@fontsource/poppins/800.css"
 import "@fontsource/instrument-serif/400.css"
 import "@fontsource/instrument-serif/400-italic.css"
 
@@ -47,17 +42,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-paper text-ink antialiased">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem={false}
-          disableTransitionOnChange
-        >
-          <AuthProvider>
-            <PiPProvider>{children}</PiPProvider>
-          </AuthProvider>
-        </ThemeProvider>
+      <body className="min-h-screen bg-paper text-ink antialiased" suppressHydrationWarning>
+        <AuthProvider>
+          <PiPProvider>{children}</PiPProvider>
+        </AuthProvider>
         <Toaster />
       </body>
     </html>

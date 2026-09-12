@@ -1,302 +1,134 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRight, CalendarPlus, Clock, Flame, Sparkles, TrendingUp, Video } from "lucide-react"
+import { CheckCircle2, Clock, Flame, Video } from "lucide-react"
+import Header from "@/components/Header"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Avatar } from "@/components/avatar"
 import { Reveal, RevealGroup, RevealItem } from "@/components/reveal"
 
-const UPCOMING = [
-  {
-    id: 1,
-    partner: "Alex Chen",
-    subject: "Calculus II",
-    topic: "Integration by parts",
-    time: "Today · 3:00 PM",
-    duration: "50 min",
-  },
-  {
-    id: 2,
-    partner: "Emma Wilson",
-    subject: "Biology",
-    topic: "Cell respiration",
-    time: "Tomorrow · 10:00 AM",
-    duration: "25 min",
-  },
-]
-
-const RECENT = [
-  { id: 1, partner: "Noah Brown", subject: "Physics problems", duration: "1h 15m", when: "2 hours ago" },
-  { id: 2, partner: "Sophie Taylor", subject: "Chemistry review", duration: "45m", when: "Yesterday" },
-  { id: 3, partner: "Liam Davis", subject: "Math practice", duration: "1h", when: "2 days ago" },
-]
-
-const PARTNERS = [
-  { name: "Alex Chen", sessions: 12, status: "online" as const },
-  { name: "Emma Wilson", sessions: 8, status: "online" as const },
-  { name: "Noah Brown", sessions: 6, status: "offline" as const },
-  { name: "Sana Benali", sessions: 4, status: "online" as const },
-]
-
-const STATS = [
-  { label: "Study time", value: "8.5h", hint: "+2h vs last week", icon: Clock },
-  { label: "Sessions", value: "6", hint: "4 focus · 2 group", icon: Video },
-  { label: "Day streak", value: "4", hint: "Best: 12 days", icon: Flame },
+// The people currently in open, joinable rooms. In production this comes from
+// whatever realtime source tracks active sessions (websocket/polling).
+const LIVE_NOW = [
+  { name: "Alex Chen", subject: "Calculus II" },
+  { name: "Emma Wilson", subject: "Biology" },
+  { name: "Noah Brown", subject: "Physics" },
+  { name: "Sana Benali", subject: "Statistics" },
+  { name: "Yassine Trabelsi", subject: "Computer Science" },
+  { name: "Nour Hadded", subject: "Organic Chemistry" },
 ]
 
 export default function DashboardPage() {
   return (
-    <div className="w-full">
-      <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
+    <div className="min-h-screen bg-paper">
+      <Header />
+
+      <main className="container-page py-10 sm:py-14">
         {/* ---------------- Greeting ---------------- */}
         <Reveal>
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+          <p className="eyebrow">Thursday, 11 September</p>
+          <h1 className="mt-2 font-display text-[34px] font-extrabold leading-tight tracking-[-0.03em] text-ink sm:text-[40px]">
+            Welcome back, Sarah
+          </h1>
+          <p className="mt-2 text-[15px] text-ink-soft">
+            {LIVE_NOW.length} people in your subjects are focused right now.
+          </p>
+        </Reveal>
+
+        {/* ---------------- Hero action — the one thing on this page that's allowed
+             to be big. Everything else is secondary to "get into a session." ---------------- */}
+        <Reveal delay={0.06}>
+          <div className="mt-8 flex flex-col items-start gap-6 rounded-3xl bg-ink p-8 shadow-card sm:flex-row sm:items-center sm:justify-between sm:p-10">
             <div>
-              <p className="eyebrow">Thursday, 11 September</p>
-              <h1 className="mt-2 font-display text-[34px] font-extrabold leading-tight tracking-[-0.03em] text-ink sm:text-[40px]">
-                Welcome back, Sarah
-              </h1>
-              <p className="mt-2 text-[15px] text-ink-soft">
-                Three people in your subjects are in a focus room right now.
+              <p className="font-display text-2xl font-bold text-white sm:text-[28px]">
+                Ready when you are.
+              </p>
+              <p className="mt-2 max-w-sm text-[14.5px] leading-relaxed text-white/60">
+                Get paired instantly, or drop straight into a room where someone's
+                already working on your subject.
               </p>
             </div>
-
-            <div className="flex flex-wrap items-center gap-3">
-              <Button asChild size="lg">
-                <Link href="/study">
-                  <Video className="h-4 w-4" />
-                  Start a focus session
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="secondary">
-                <Link href="/schedule">
-                  <CalendarPlus className="h-4 w-4" />
-                  Schedule
-                </Link>
-              </Button>
-            </div>
+            <Button asChild size="lg" className="shrink-0 border-white bg-white text-ink hover:bg-white/90">
+              <Link href="/study">
+                <Video className="h-4 w-4" />
+                Start a session
+              </Link>
+            </Button>
           </div>
         </Reveal>
 
-        {/* ---------------- Stats ---------------- */}
-        <RevealGroup className="mt-10 grid gap-4 sm:grid-cols-3">
-          {STATS.map((stat) => (
-            <RevealItem key={stat.label}>
-              <div className="rounded-3xl border border-line bg-surface p-6 shadow-soft">
-                <div className="flex items-start justify-between">
-                  <p className="text-[13.5px] font-medium text-ink-mute">{stat.label}</p>
-                  <span className="grid h-8 w-8 place-items-center rounded-xl bg-surface-sunken text-ink-soft">
-                    <stat.icon className="h-4 w-4" />
-                  </span>
+        {/* ---------------- Studying right now — the lobby. This is the actual home
+             screen of the app; everything above just points here. ---------------- */}
+        <Reveal delay={0.1}>
+          <div className="mt-12 flex items-center justify-between">
+            <h2 className="font-display text-lg font-bold tracking-[-0.02em] text-ink">
+              Studying right now
+            </h2>
+            <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-pulse-dark">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-pulse/50" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-pulse" />
+              </span>
+              {LIVE_NOW.length} live
+            </span>
+          </div>
+          <div className="mt-3 h-px w-full bg-line-strong" />
+        </Reveal>
+
+        <RevealGroup className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {LIVE_NOW.map((person) => (
+            <RevealItem key={person.name}>
+              <div className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-line-strong hover:shadow-soft">
+                <Avatar name={person.name} size="md" status="online" />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-display text-[14.5px] font-bold text-ink">
+                    {person.name}
+                  </p>
+                  <p className="truncate text-[13px] text-ink-mute">{person.subject}</p>
                 </div>
-                <p className="mt-3 font-display text-[32px] font-extrabold leading-none tracking-tight text-ink">
-                  {stat.value}
-                </p>
-                <p className="mt-2 text-[12.5px] text-ink-mute">{stat.hint}</p>
+                <Button asChild size="sm" variant="secondary">
+                  <Link href="/study">Join</Link>
+                </Button>
               </div>
             </RevealItem>
           ))}
         </RevealGroup>
 
-        {/* ---------------- Pulse suggestion ---------------- */}
-        <Reveal delay={0.08}>
-          <div className="mt-4 flex flex-col gap-4 rounded-3xl border border-pulse/25 bg-pulse-soft/60 p-6 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-start gap-3.5">
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-surface text-pulse-dark shadow-soft">
-                <Sparkles className="h-5 w-5" />
-              </span>
-              <div>
-                <p className="font-display text-[15px] font-bold text-pulse-dark">
-                  You struggle most with series convergence
-                </p>
-                <p className="mt-1 text-[14px] leading-relaxed text-pulse-dark/80">
-                  Pulse built a 30-minute plan and found two peers working on the same topic
-                  today. Want the room booked for 3 PM?
-                </p>
-              </div>
-            </div>
-            <div className="flex shrink-0 gap-2">
-              <Button size="sm" variant="accent">
-                Book it
-              </Button>
-              <Button asChild size="sm" variant="ghost" className="text-pulse-dark hover:bg-pulse/10">
-                <Link href="/study">Not now</Link>
-              </Button>
-            </div>
+        {/* ---------------- Your week — demoted to a quiet one-line strip. This is
+             data you check occasionally, not something you need the second you
+             log in, so it doesn't compete with the lobby above. ---------------- */}
+        <Reveal delay={0.18}>
+          <div className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-3 rounded-2xl bg-paper-warm px-6 py-4">
+            <StripStat icon={Clock} value="8.5h" label="this week" />
+            <StripStat icon={Flame} value="4-day" label="streak" />
+            <StripStat icon={CheckCircle2} value="2/4" label="goals done" />
+            <Link
+              href="/schedule"
+              className="ml-auto text-[13px] font-semibold text-ink-mute transition-colors hover:text-ink"
+            >
+              Full history →
+            </Link>
           </div>
         </Reveal>
+      </main>
+    </div>
+  )
+}
 
-        {/* ---------------- Main grid ---------------- */}
-        <div className="mt-6 grid gap-6 lg:grid-cols-[1.6fr_1fr]">
-          {/* -------- Left -------- */}
-          <div className="space-y-6">
-            <Reveal>
-              <section className="rounded-3xl border border-line bg-surface p-6 shadow-soft sm:p-7">
-                <div className="flex items-center justify-between">
-                  <h2 className="font-display text-lg font-bold tracking-[-0.02em] text-ink">
-                    Upcoming sessions
-                  </h2>
-                  <Link
-                    href="/schedule"
-                    className="text-[13.5px] font-semibold text-ink-mute transition-colors hover:text-ink"
-                  >
-                    View all
-                  </Link>
-                </div>
-
-                <div className="mt-5 space-y-3">
-                  {UPCOMING.map((session) => (
-                    <div
-                      key={session.id}
-                      className="group flex items-center gap-4 rounded-2xl border border-line bg-surface p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-line-strong hover:shadow-soft"
-                    >
-                      <Avatar name={session.partner} size="md" />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate font-display text-[15px] font-bold text-ink">
-                          {session.partner}
-                        </p>
-                        <p className="truncate text-[13.5px] text-ink-mute">
-                          {session.subject} · {session.topic}
-                        </p>
-                      </div>
-                      <div className="hidden text-right sm:block">
-                        <p className="text-[13.5px] font-semibold text-ink">{session.time}</p>
-                        <p className="text-[12.5px] text-ink-mute">{session.duration}</p>
-                      </div>
-                      <Button asChild size="sm" variant="secondary">
-                        <Link href="/study">Join</Link>
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            </Reveal>
-
-            <Reveal delay={0.06}>
-              <section className="rounded-3xl border border-line bg-surface p-6 shadow-soft sm:p-7">
-                <div className="flex items-center justify-between">
-                  <h2 className="font-display text-lg font-bold tracking-[-0.02em] text-ink">
-                    Recent sessions
-                  </h2>
-                  <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-pulse-dark">
-                    <TrendingUp className="h-3.5 w-3.5" />
-                    +18% this week
-                  </span>
-                </div>
-
-                <div className="mt-5 divide-y divide-line">
-                  {RECENT.map((session) => (
-                    <div key={session.id} className="flex items-center gap-4 py-3.5 first:pt-0 last:pb-0">
-                      <Avatar name={session.partner} size="sm" />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-[14.5px] font-semibold text-ink">
-                          {session.partner}
-                        </p>
-                        <p className="truncate text-[13px] text-ink-mute">{session.subject}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-[13.5px] font-semibold text-ink">{session.duration}</p>
-                        <p className="text-[12.5px] text-ink-mute">{session.when}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            </Reveal>
-          </div>
-
-          {/* -------- Right -------- */}
-          <div className="space-y-6">
-            <Reveal delay={0.1}>
-              <section className="rounded-3xl border border-line bg-surface p-6 shadow-soft">
-                <div className="flex items-center justify-between">
-                  <h2 className="font-display text-lg font-bold tracking-[-0.02em] text-ink">
-                    Study partners
-                  </h2>
-                  <Link
-                    href="/explore"
-                    className="text-[13.5px] font-semibold text-ink-mute transition-colors hover:text-ink"
-                  >
-                    Find more
-                  </Link>
-                </div>
-
-                <div className="mt-5 space-y-1">
-                  {PARTNERS.map((partner) => (
-                    <div
-                      key={partner.name}
-                      className="flex items-center gap-3 rounded-2xl px-2 py-2.5 transition-colors hover:bg-surface-sunken"
-                    >
-                      <Avatar name={partner.name} size="sm" status={partner.status} />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-[14.5px] font-semibold text-ink">
-                          {partner.name}
-                        </p>
-                        <p className="text-[12.5px] text-ink-mute">{partner.sessions} sessions</p>
-                      </div>
-                      {partner.status === "online" && (
-                        <Badge variant="accent" className="hidden sm:inline-flex">
-                          Available
-                        </Badge>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </section>
-            </Reveal>
-
-            <Reveal delay={0.14}>
-              <section className="rounded-3xl border border-line bg-surface-sunken p-6">
-                <h2 className="font-display text-lg font-bold tracking-[-0.02em] text-ink">
-                  This week&apos;s goals
-                </h2>
-                <ul className="mt-4 space-y-3">
-                  {[
-                    { text: "Finish problem set 7", done: true },
-                    { text: "Review integration by parts", done: true },
-                    { text: "Two past-paper sections", done: false },
-                    { text: "Book a room with Alex", done: false },
-                  ].map((goal) => (
-                    <li key={goal.text} className="flex items-center gap-3">
-                      <span
-                        className={
-                          goal.done
-                            ? "grid h-5 w-5 shrink-0 place-items-center rounded-[7px] bg-ink text-white"
-                            : "h-5 w-5 shrink-0 rounded-[7px] border border-line-strong bg-surface"
-                        }
-                      >
-                        {goal.done && (
-                          <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M20 6 9 17l-5-5" />
-                          </svg>
-                        )}
-                      </span>
-                      <span
-                        className={
-                          goal.done
-                            ? "text-[14px] text-ink-mute line-through"
-                            : "text-[14px] font-medium text-ink"
-                        }
-                      >
-                        {goal.text}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Link
-                  href="/community"
-                  className="mt-6 inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-ink transition-colors hover:text-ink-soft"
-                >
-                  Open community feed
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </section>
-            </Reveal>
-          </div>
-        </div>
-      </div>
+function StripStat({
+  icon: Icon,
+  value,
+  label,
+}: {
+  icon: React.ComponentType<{ className?: string }>
+  value: string
+  label: string
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <Icon className="h-4 w-4 text-ink-soft" />
+      <span className="text-[13.5px] font-semibold text-ink">{value}</span>
+      <span className="text-[13px] text-ink-mute">{label}</span>
     </div>
   )
 }

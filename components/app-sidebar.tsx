@@ -1,11 +1,11 @@
 "use client"
-
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
   CalendarClock,
   ChevronsUpDown,
+  CircleDot,
   LayoutDashboard,
   LogOut,
   MessagesSquare,
@@ -13,11 +13,11 @@ import {
   Radio,
   Search,
   Settings2,
+  Sparkles,
   Users,
   BookMarked,
   ListChecks,
 } from "lucide-react"
-
 import {
   Collapsible,
   CollapsibleContent,
@@ -47,12 +47,10 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   SidebarRail,
-  SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { Avatar, AvatarBadge, AvatarFallback } from "@/components/ui/avatar"
 import { ModeToggle } from "@/components/mode-toggle"
 import { useAuth } from "@/components/auth-provider"
-
 /** Collapsed-by-default groups, with nested children — Linear-style. */
 const NAV: {
   title: string
@@ -79,16 +77,13 @@ const NAV: {
     ],
   },
 ]
-
 const TOP_LINKS = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Messages", url: "/messages", icon: MessagesSquare },
 ]
-
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
   const { user, logout } = useAuth()
-
   const name = user?.name || "Sarah"
   const initials = name
     .split(" ")
@@ -96,19 +91,47 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
     .slice(0, 2)
     .map((p) => p[0]?.toUpperCase())
     .join("")
-
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        {/* Trigger + search */}
-        <div className="flex items-center gap-1 px-1">
-          <SidebarTrigger />
-          <SidebarInput
-            placeholder="Search…"
-            className="group-data-[collapsible=icon]:hidden h-8 flex-1"
-          />
-        </div>
-
+        {/* Workspace switcher */}
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent">
+                  <div className="bg-brand text-brand-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                    <Sparkles className="size-4" />
+                  </div>
+                  <div className="grid flex-1 text-left leading-tight">
+                    <span className="truncate font-medium">PeerPulse</span>
+                    <span className="text-sidebar-foreground/70 truncate text-xs">
+                      Study workspace
+                    </span>
+                  </div>
+                  <ChevronsUpDown className="ml-auto size-4" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-(--radix-dropdown-menu-trigger-width)">
+                <DropdownMenuLabel>Workspaces</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <Sparkles className="size-4" /> PeerPulse
+                </DropdownMenuItem>
+                <DropdownMenuItem disabled>
+                  <CircleDot className="size-4" /> Add workspace
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+        {/* Search */}
+        <SidebarMenu>
+          <SidebarMenuItem className="relative">
+            <Search className="text-sidebar-foreground/60 pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2" />
+            <SidebarInput placeholder="Search…" className="pl-8" />
+          </SidebarMenuItem>
+        </SidebarMenu>
         {/* Primary action */}
         <SidebarMenu>
           <SidebarMenuItem>
@@ -125,7 +148,6 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-
       <SidebarContent>
         {/* Top-level links */}
         <SidebarGroup>
@@ -142,7 +164,6 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
             ))}
           </SidebarMenu>
         </SidebarGroup>
-
         {/* Collapsible groups with sub-items */}
         {NAV.map((group) => (
           <Collapsible
@@ -178,7 +199,6 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
             </SidebarGroup>
           </Collapsible>
         ))}
-
         {/* Example of a nested sub-level (kept for structure) */}
         <SidebarGroup className="group-data-[collapsible=icon]:hidden">
           <SidebarGroupLabel>Sessions</SidebarGroupLabel>
@@ -206,7 +226,6 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2 px-1">
@@ -251,12 +270,10 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
-
       <SidebarRail />
     </Sidebar>
   )
 }
-
 function ChevronIcon({ className }: { className?: string }) {
   return (
     <svg

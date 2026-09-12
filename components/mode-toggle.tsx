@@ -1,12 +1,9 @@
 "use client"
-
 import { useTheme } from "next-themes"
 import { Moon, Sun } from "lucide-react"
 import { useCallback, useEffect, useId, useState } from "react"
-
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-
 /**
  * Light / dark switch.
  *
@@ -23,12 +20,10 @@ export function ModeToggle({ className }: { className?: string }) {
   const id = useId()
   const { setTheme } = useTheme()
   const [dark, setDark] = useState<boolean | null>(null)
-
   // Seed from what next-themes applied before hydration.
   useEffect(() => {
     setDark(document.documentElement.classList.contains("dark"))
   }, [])
-
   const apply = useCallback(
     (next: boolean) => {
       setDark(next)
@@ -39,7 +34,6 @@ export function ModeToggle({ className }: { className?: string }) {
     },
     [setTheme],
   )
-
   return (
     <div className={`flex items-center gap-2 ${className ?? ""}`}>
       <Switch
