@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import Header from "@/components/Header"
 import { PageTransition } from "@/components/page-transition"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -110,8 +109,6 @@ export default function ProfilePage() {
   return (
     <PageTransition>
       <div className="min-h-screen bg-paper">
-        <Header />
-
         <main className="container-page max-w-5xl py-10 sm:py-14">
           <Tabs defaultValue="profile" className="space-y-6">
             <TabsList className="w-full max-w-md">

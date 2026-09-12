@@ -17,7 +17,6 @@ import {
   X,
 } from "lucide-react"
 import { AnimatePresence, motion } from "framer-motion"
-import Header from "@/components/Header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar } from "@/components/avatar"
@@ -309,8 +308,6 @@ export default function CommunityPage() {
 
   return (
     <div className="min-h-screen bg-paper">
-      <Header />
-
       <main className="container-page py-10 sm:py-14">
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-4">

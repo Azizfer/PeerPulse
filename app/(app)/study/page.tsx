@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
-import Header from "@/components/Header"
 import { Avatar } from "@/components/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -378,7 +377,6 @@ export default function StudyPage() {
 
   return (
     <div className="relative flex min-h-screen flex-col bg-paper overflow-x-hidden">
-        <Header />
         
         {/* Live Cursors for real-time collaboration */}
         

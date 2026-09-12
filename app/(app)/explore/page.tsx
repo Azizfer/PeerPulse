@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { Clock, Globe, Lock, Search, Users, X } from "lucide-react"
-import Header from "@/components/Header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar } from "@/components/avatar"
@@ -200,8 +199,6 @@ export default function ExplorePage() {
 
   return (
     <div className="min-h-screen bg-paper">
-      <Header />
-
       <main className="container-page py-10 sm:py-14">
         <Reveal>
           <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">

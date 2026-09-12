@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import Header from "@/components/Header"
 import { Avatar } from "@/components/avatar"
 import { Button } from "@/components/ui/button"
 import { Paperclip, Search, Send } from "lucide-react"
@@ -116,8 +115,6 @@ export default function MessagesPage() {
 
   return (
     <div className="min-h-screen bg-paper">
-      <Header />
-
       <main className="container-page py-8 sm:py-10">
         <div className="grid overflow-hidden rounded-[28px] border border-line bg-surface shadow-soft lg:grid-cols-[320px_1fr]">
           {/* ---------------- Sidebar ---------------- */}

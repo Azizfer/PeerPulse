@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import Header from "@/components/Header"
 import { Avatar } from "@/components/avatar"
 import { X, Search, ChevronLeft, ChevronRight } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -166,8 +165,6 @@ export default function SchedulePage() {
   return (
     <>
       <div className="min-h-screen bg-paper">
-        <Header />
-
         <main className="container-page max-w-6xl py-10 sm:py-14">
           <div className="mb-10">
             <span className="eyebrow">Plan ahead</span>

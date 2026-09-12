@@ -1,6 +1,8 @@
 "use client"
 
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useEffect } from "react"
 import { ArrowRight, CalendarCheck, Mic, Play, ShieldCheck, Sparkles, Users, Video, Timer } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Header from "@/components/Header"
@@ -11,13 +13,20 @@ import { FocusRoomMock } from "@/components/marketing/focus-room-mock"
 import { CommunityMock } from "@/components/marketing/community-mock"
 import { AiMock } from "@/components/marketing/ai-mock"
 import { Avatar } from "@/components/avatar"
-import DashboardPage from "./dashboard/page"
 import { useAuth } from "@/components/auth-provider"
 
 export default function Home() {
   const { isLoggedIn } = useAuth()
-  // Signed-in members land straight on their dashboard; everyone else sees marketing.
-  return isLoggedIn ? <DashboardPage /> : <LandingPage />
+  const router = useRouter()
+
+  // Signed-in members belong in the app shell, so send them to /dashboard.
+  useEffect(() => {
+    if (isLoggedIn) router.replace("/dashboard")
+  }, [isLoggedIn, router])
+
+  if (isLoggedIn) return <div className="min-h-screen bg-paper" />
+
+  return <LandingPage />
 }
 
 const STATS = [

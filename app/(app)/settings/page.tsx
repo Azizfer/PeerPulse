@@ -3,7 +3,6 @@
 import { useState } from "react"
 import type { ReactNode } from "react"
 import { Bell, BookOpen, Lock, Trash2 } from "lucide-react"
-import Header from "@/components/Header"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { CustomSelect } from "@/components/ui/custom-select"
@@ -34,8 +33,6 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-paper">
-      <Header />
-
       <main className="container-page max-w-3xl py-10 sm:py-14">
         <Reveal>
           <p className="eyebrow">Account</p>
