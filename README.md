@@ -16,6 +16,10 @@ Explore study partners, focus sessions, communities, and a shared learning works
 
 </div>
 
+![PeerPulse landing page — study together](docs/screenshots/landing-page.png)
+
+> **Prototype preview:** Screenshots show the UI with illustrative content. Peer matching, live video and persistent shared services are not connected yet.
+
 ---
 
 ## The idea
@@ -50,9 +54,17 @@ These features are represented in the source, but several use **sample data or l
 - Community discovery, search, filters, and membership-state interactions.
 - Accessible labels and interaction states across several screens.
 
-### Screenshots
+## Interface gallery
 
-Real screenshots of the latest dashboard, study workspace, and community directory will be added here. The repository does not yet include an up-to-date screenshot set.
+| Student dashboard | Study room setup |
+| :---: | :---: |
+| ![PeerPulse dashboard with goals, subjects and study tools](docs/screenshots/dashboard.png) | ![PeerPulse study room setup with subject selection, timer and camera controls](docs/screenshots/study-room.png) |
+
+**Community feed — dark theme**
+
+![PeerPulse community feed in dark mode with posts and suggested communities](docs/screenshots/community-feed.png)
+
+*Screenshots were captured from the local frontend prototype and include sample profiles, posts, and session information.*
 
 ## Tech stack
 
