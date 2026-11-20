@@ -110,9 +110,9 @@ export function LiveActivityFeed({ roomId }: LiveActivityFeedProps) {
           <motion.div
             animate={{ scale: [1, 1.2, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="w-2 h-2 bg-green-500 rounded-full"
+            className="w-2 h-2 bg-pulse rounded-full"
           />
-          <h3 className="font-semibold text-gray-900">Live Activity</h3>
+          <h3 className="font-semibold text-ink">Live Activity</h3>
         </div>
 
         <div className="space-y-3 max-h-80 overflow-y-auto">
@@ -124,7 +124,7 @@ export function LiveActivityFeed({ roomId }: LiveActivityFeedProps) {
                 animate={{ opacity: 1, x: 0, scale: 1 }}
                 exit={{ opacity: 0, x: 20, scale: 0.95 }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
-                className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+                className="flex items-start gap-3 p-3 bg-surface-sunken rounded-lg hover:bg-surface-sunken transition-colors duration-200"
               >
                 <div 
                   className="p-1.5 rounded-full flex-shrink-0"
@@ -134,10 +134,10 @@ export function LiveActivityFeed({ roomId }: LiveActivityFeedProps) {
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-900 font-medium">
+                  <p className="text-sm text-ink font-medium">
                     {activity.message}
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-ink-mute mt-1">
                     {formatTime(activity.timestamp)}
                   </p>
                 </div>
@@ -146,7 +146,7 @@ export function LiveActivityFeed({ roomId }: LiveActivityFeedProps) {
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"
+                    className="w-2 h-2 bg-pulse rounded-full flex-shrink-0"
                   />
                 )}
               </motion.div>
@@ -155,7 +155,7 @@ export function LiveActivityFeed({ roomId }: LiveActivityFeedProps) {
         </div>
 
         {activities.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-ink-mute">
             <Target className="w-8 h-8 mx-auto mb-2 opacity-50" />
             <p className="text-sm">No recent activity</p>
           </div>

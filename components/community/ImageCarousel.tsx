@@ -30,7 +30,7 @@ export function ImageCarousel({ images, postId }: ImageCarouselProps) {
   }
 
   return (
-    <div className="relative rounded-lg overflow-hidden border-2 border-gray-300 bg-gray-50">
+    <div className="relative rounded-lg overflow-hidden border border-line-strong bg-surface-sunken">
       <img 
         src={currentImage.url} 
         alt={currentImage.name} 

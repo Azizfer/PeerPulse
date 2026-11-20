@@ -40,9 +40,9 @@ export function SortableItem({ id, children, className = "" }: SortableItemProps
       <div className="flex items-center gap-3">
         <button
           {...listeners}
-          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded cursor-grab active:cursor-grabbing"
+          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 hover:bg-surface-sunken rounded cursor-grab active:cursor-grabbing"
         >
-          <GripVertical className="w-4 h-4 text-gray-400" />
+          <GripVertical className="w-4 h-4 text-ink-faint" />
         </button>
         <div className="flex-1">{children}</div>
       </div>

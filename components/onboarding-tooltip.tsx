@@ -88,10 +88,10 @@ export function OnboardingTooltip({ steps, onComplete, isVisible }: OnboardingTo
         <CardContent className="p-4">
           <div className="flex items-start justify-between mb-3">
             <div className="flex-1">
-              <h3 className="font-semibold text-gray-900 mb-1">
+              <h3 className="font-semibold text-ink mb-1">
                 {steps[currentStep].title}
               </h3>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-ink-soft">
                 {steps[currentStep].description}
               </p>
             </div>
@@ -111,7 +111,7 @@ export function OnboardingTooltip({ steps, onComplete, isVisible }: OnboardingTo
                 <div
                   key={index}
                   className={`w-2 h-2 rounded-full ${
-                    index === currentStep ? 'bg-blue-600' : 'bg-gray-300'
+                    index === currentStep ? 'bg-pulse' : 'bg-line-strong'
                   }`}
                 />
               ))}
@@ -121,7 +121,7 @@ export function OnboardingTooltip({ steps, onComplete, isVisible }: OnboardingTo
               <Button variant="outline" size="sm" onClick={handleSkip}>
                 Skip
               </Button>
-              <Button size="sm" onClick={handleNext} className="bg-blue-600 hover:bg-blue-700">
+              <Button size="sm" onClick={handleNext} className="bg-pulse hover:bg-pulse-dark">
                 {currentStep === steps.length - 1 ? 'Finish' : 'Next'}
                 <ArrowRight className="w-3 h-3 ml-1" />
               </Button>

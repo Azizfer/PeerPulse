@@ -1,277 +1,167 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import Header from "@/components/Header"
-import { PageTransition } from "@/components/page-transition"
-import { CheckIcon, XIcon, UsersIcon, VideoIcon, CalendarIcon, CrownIcon, ZapIcon } from "@/components/custom-icons"
+import Footer from "@/components/Footer"
+import { Reveal, RevealGroup, RevealItem } from "@/components/reveal"
+import { Section, SectionHeading } from "@/components/section"
+import { PricingPlans } from "@/components/marketing/pricing-plans"
 
 export const metadata: Metadata = {
   title: "Pricing",
-  description: "Choose the perfect plan for your study needs",
+  description: "Start free, upgrade when studying together becomes a habit.",
 }
 
+const PREMIUM_HIGHLIGHTS = [
+  {
+    title: "Study groups",
+    body: "Open a room for your whole course — up to 8 people, with the same timer and debrief.",
+  },
+  {
+    title: "Advanced scheduling",
+    body: "Book recurring sessions with the partners that work for you, and get reminded.",
+  },
+  {
+    title: "Analytics that mean something",
+    body: "See which subjects you actually put hours into, and which ones you've been avoiding.",
+  },
+]
+
+const FAQS = [
+  {
+    q: "Can I switch from Free to Premium anytime?",
+    a: "Yes. Upgrades apply immediately and you keep your streak, history and partners.",
+  },
+  {
+    q: "What happens if I cancel?",
+    a: "You keep Premium until the end of the billing period, then drop back to Free. Nothing is deleted.",
+  },
+  {
+    q: "Is there a student discount?",
+    a: "Yes — 50% off Premium with a valid student email or ID. It's applied automatically at checkout.",
+  },
+  {
+    q: "How does the trial work?",
+    a: "14 days of Premium, no credit card. If you do nothing, you simply fall back to the Free plan.",
+  },
+  {
+    q: "Can I use PeerPulse on my phone?",
+    a: "The web app works on mobile browsers today. Native apps are on the roadmap.",
+  },
+]
+
 export default function PricingPage() {
-  const plans = [
-    {
-      name: "Free",
-      price: "$0",
-      period: "forever",
-      description: "Perfect for getting started with collaborative studying",
-      features: [
-        { name: "Instant pairing with study partners", included: true },
-        { name: "25-minute Pomodoro sessions", included: true },
-        { name: "Video, voice, and text chat", included: true },
-        { name: "Basic subject matching", included: true },
-        { name: "Up to 3 study sessions per day", included: true },
-        { name: "Study session history (7 days)", included: true },
-        { name: "Create study groups", included: false },
-        { name: "Schedule sessions in advance", included: false },
-        { name: "Advanced matching algorithm", included: false },
-        { name: "Unlimited study sessions", included: false },
-        { name: "Study analytics and insights", included: false },
-        { name: "Priority support", included: false },
-      ],
-      cta: "Get Started Free",
-      popular: false,
-      icon: <ZapIcon className="w-6 h-6" />,
-    },
-    {
-      name: "Premium",
-      price: "$9.99",
-      period: "per month",
-      description: "Unlock the full potential of collaborative learning",
-      features: [
-        { name: "Everything in Free", included: true },
-        { name: "Create and join study groups", included: true },
-        { name: "Schedule sessions in advance", included: true },
-        { name: "Advanced matching algorithm", included: true },
-        { name: "Unlimited study sessions", included: true },
-        { name: "Extended session history (90 days)", included: true },
-        { name: "Study analytics and insights", included: true },
-        { name: "Custom study goals tracking", included: true },
-        { name: "Priority matching", included: true },
-        { name: "Screen sharing capabilities", included: true },
-        { name: "Priority support", included: true },
-        { name: "Early access to new features", included: true },
-      ],
-      cta: "Start Premium Trial",
-      popular: true,
-      icon: <CrownIcon className="w-6 h-6" />,
-    },
-  ]
-
-  const faqs = [
-    {
-      question: "Can I switch from Free to Premium anytime?",
-      answer:
-        "Yes! You can upgrade to Premium at any time. Your account will be upgraded immediately and you'll have access to all Premium features.",
-    },
-    {
-      question: "What happens if I cancel my Premium subscription?",
-      answer:
-        "You can cancel anytime. You'll continue to have Premium access until the end of your billing period, then your account will revert to the Free plan.",
-    },
-    {
-      question: "Is there a student discount?",
-      answer:
-        "Yes! We offer a 50% student discount on Premium plans. Contact our support team with your student ID to get your discount code.",
-    },
-    {
-      question: "How does the free trial work?",
-      answer:
-        "New users get a 14-day free trial of Premium. No credit card required. After the trial, you can choose to continue with Premium or use the Free plan.",
-    },
-    {
-      question: "Can I use PeerPulse on multiple devices?",
-      answer:
-        "Yes! Both Free and Premium plans work on all your devices. Your account syncs across web, mobile, and tablet.",
-    },
-  ]
-
   return (
-    <PageTransition>
-      <div className="min-h-screen bg-white">
-        <Header />
+    <div className="min-h-screen bg-paper">
+      <Header />
 
-        {/* Hero Section */}
-        <section className="py-16 px-6">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-[#0A0A0A] mb-6" style={{ fontWeight: 700, letterSpacing: '-0.01em' }}>Choose Your Study Plan</h1>
-            <p className="text-lg md:text-xl text-gray-700 mb-8 max-w-2xl mx-auto" style={{ fontWeight: 400, lineHeight: '1.6' }}>
-              Start free and upgrade when you're ready for more advanced features. No hidden fees, cancel anytime.
+      {/* ---------------- Hero ---------------- */}
+      <section className="relative overflow-hidden border-b border-line bg-paper">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="glow-soft -top-24 left-1/4 h-[380px] w-[380px] bg-pulse/15" />
+          <div className="glow-soft -right-16 top-10 h-[320px] w-[320px] bg-lilac-deep/12" />
+        </div>
+
+        <div className="container-page relative py-20 text-center sm:py-24">
+          <Reveal>
+            <p className="eyebrow">Pricing</p>
+            <h1 className="mx-auto mt-4 max-w-3xl text-h2 font-extrabold text-ink">
+              Free until it becomes a habit. Then{" "}
+              <span className="font-serif font-normal italic tracking-normal text-pulse-dark">
+                cheap
+              </span>
+              .
+            </h1>
+            <p className="mx-auto mt-5 max-w-xl text-lead text-ink-soft">
+              No seat licences, no campus contracts. One student, one plan, cancel in two clicks.
             </p>
-          </div>
-        </section>
+          </Reveal>
 
-        {/* Pricing Cards */}
-        <section className="py-16 px-6 bg-gray-50">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-              {plans.map((plan, index) => (
-                <Card
-                  key={index}
-                  className={`relative h-full flex flex-col rounded-[32px] transition-all duration-300 ${
-                    plan.popular
-                      ? "border-[#0A0A0A] border-2 shadow-2xl hover:-translate-y-1"
-                      : "border-gray-200 hover:border-gray-300 hover:shadow-xl hover:-translate-y-1"
-                  }`}
-                >
-                  {plan.popular && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <Badge className="bg-[#0A0A0A] text-white px-4 py-1 font-semibold" style={{ fontWeight: 600 }}>Most Popular</Badge>
-                    </div>
-                  )}
+        </div>
+      </section>
 
-                  <CardHeader className="text-center pb-4">
-                    <div className="flex items-center justify-center gap-2 mb-4">
-                      <div className={`p-2 rounded-full ${plan.popular ? "bg-gray-900" : "bg-gray-100"}`}>
-                        <div className={plan.popular ? "text-white" : "text-gray-700"}>{plan.icon}</div>
-                      </div>
-                      <CardTitle className="text-2xl font-bold text-[#0A0A0A]" style={{ fontWeight: 700 }}>{plan.name}</CardTitle>
-                    </div>
-                    <div className="mb-4">
-                      <span className="text-5xl font-bold text-[#0A0A0A]" style={{ fontWeight: 700 }}>{plan.price}</span>
-                      <span className="text-gray-700 ml-2">/{plan.period}</span>
-                    </div>
-                    <p className="text-[#3B3B3B]" style={{ fontSize: '16px', lineHeight: '1.6' }}>{plan.description}</p>
-                  </CardHeader>
+      {/* ---------------- Plans ---------------- */}
+      <Section>
+        <PricingPlans />
+      </Section>
 
-                  <CardContent className="flex-1 flex flex-col">
-                    <div className="space-y-3 mb-6">
-                      {plan.features.map((feature, featureIndex) => (
-                        <div key={featureIndex} className="flex items-center gap-3">
-                          {feature.included ? (
-                            <CheckIcon className="w-5 h-5 text-green-500 flex-shrink-0" />
-                          ) : (
-                            <XIcon className="w-5 h-5 text-gray-300 flex-shrink-0" />
-                          )}
-                          <span
-                            className={`text-sm ${feature.included ? "text-[#0A0A0A]" : "text-gray-400 line-through"}`}
-                            style={{ fontWeight: feature.included ? 500 : 400 }}
-                          >
-                            {feature.name}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
+      {/* ---------------- Highlights ---------------- */}
+      <Section className="border-y border-line bg-surface-sunken">
+        <div className="container-page">
+          <Reveal>
+            <SectionHeading
+              eyebrow="Why upgrade"
+              title="What Premium actually changes"
+              description="The free plan is enough to study with someone tonight. These are the things people come back for."
+            />
+          </Reveal>
 
-                    <div className="mt-auto">
-                      <Button
-                        className={`w-full relative overflow-hidden group transition-all duration-300 ${
-                          plan.popular
-                            ? "bg-[#0A0A0A] text-white rounded-xl"
-                            : "bg-gray-100 text-[#0A0A0A] rounded-xl hover:bg-gray-200"
-                        }`}
-                        style={{ fontWeight: 600 }}
-                        size="lg"
-                        asChild
-                      >
-                        <Link href={plan.name === "Free" ? "/signup" : "/signup?plan=premium"} className="inline-flex items-center justify-center">
-                          {plan.popular && (
-                            <>
-                              <span className="absolute inset-0 bg-white rounded-xl transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
-                              <span className="relative z-10 group-hover:text-[#0A0A0A] transition-colors duration-300">{plan.cta}</span>
-                            </>
-                          )}
-                          {!plan.popular && plan.cta}
-                        </Link>
-                      </Button>
-                      
-                      <div className="h-8 flex items-center justify-center">
-                        {plan.name === "Premium" && (
-                          <p className="text-xs text-gray-500 text-center">14-day free trial • No credit card required</p>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Feature Comparison */}
-        <section className="py-16 px-6 bg-white">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-center text-[#0A0A0A] mb-12" style={{ fontWeight: 700, letterSpacing: '-0.01em' }}>Premium Features</h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-8 rounded-[32px] border border-gray-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm">
-                  <UsersIcon className="w-6 h-6 text-blue-600" />
+          <RevealGroup className="mt-12 grid gap-5 md:grid-cols-3">
+            {PREMIUM_HIGHLIGHTS.map((item) => (
+              <RevealItem key={item.title}>
+                <div className="h-full rounded-3xl border border-line bg-surface p-7 shadow-soft">
+                  <h3 className="font-display text-lg font-bold tracking-[-0.02em] text-ink">
+                    {item.title}
+                  </h3>
+                  <p className="mt-2.5 text-[14.5px] leading-relaxed text-ink-soft">{item.body}</p>
                 </div>
-                <h3 className="text-xl font-bold text-[#0A0A0A] mb-2" style={{ fontWeight: 700 }}>Study Groups</h3>
-                <p className="text-[#3B3B3B]" style={{ fontSize: '16px', lineHeight: '1.6' }}>
-                  Create and join study groups for specific subjects or courses. Collaborate with multiple students for
-                  diverse perspectives and group learning.
-                </p>
-              </div>
+              </RevealItem>
+            ))}
+          </RevealGroup>
+        </div>
+      </Section>
 
-              <div className="bg-gradient-to-br from-green-50 to-blue-50 p-8 rounded-[32px] border border-gray-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm">
-                  <CalendarIcon className="w-6 h-6 text-green-600" />
-                </div>
-                <h3 className="text-xl font-bold text-[#0A0A0A] mb-2" style={{ fontWeight: 700 }}>Advanced Scheduling</h3>
-                <p className="text-[#3B3B3B]" style={{ fontSize: '16px', lineHeight: '1.6' }}>
-                  Schedule study sessions in advance with friends or recommended partners. Set recurring sessions and
-                  get reminders.
-                </p>
-              </div>
+      {/* ---------------- FAQ ---------------- */}
+      <Section>
+        <div className="container-page">
+          <Reveal>
+            <SectionHeading eyebrow="FAQ" title="Questions people actually ask" />
+          </Reveal>
 
-              <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-8 rounded-[32px] border border-gray-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm">
-                  <VideoIcon className="w-6 h-6 text-purple-600" />
-                </div>
-                <h3 className="text-xl font-bold text-[#0A0A0A] mb-2" style={{ fontWeight: 700 }}>Screen Sharing</h3>
-                <p className="text-[#3B3B3B]" style={{ fontSize: '16px', lineHeight: '1.6' }}>
-                  Share your screen during study sessions to show problems, presentations, or collaborate on documents
-                  in real-time.
-                </p>
-              </div>
-            </div>
+          <div className="mx-auto mt-12 max-w-2xl divide-y divide-line">
+            {FAQS.map((faq) => (
+              <details key={faq.q} className="group py-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4">
+                  <span className="font-display text-[16px] font-bold text-ink">{faq.q}</span>
+                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-surface-sunken text-ink-soft transition-transform duration-200 group-open:rotate-45">
+                    <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                      <path d="M12 5v14M5 12h14" />
+                    </svg>
+                  </span>
+                </summary>
+                <p className="mt-3 pr-10 text-[15px] leading-relaxed text-ink-soft">{faq.a}</p>
+              </details>
+            ))}
           </div>
-        </section>
+        </div>
+      </Section>
 
-        {/* FAQ Section */}
-        <section className="py-16 px-6 bg-gray-50">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-center text-[#0A0A0A] mb-12" style={{ fontWeight: 700, letterSpacing: '-0.01em' }}>Frequently Asked Questions</h2>
-
-            <div className="space-y-6">
-              {faqs.map((faq, index) => (
-                <div key={index} className="border-b border-gray-200 pb-6">
-                  <h3 className="text-lg font-bold text-[#0A0A0A] mb-2" style={{ fontWeight: 700 }}>{faq.question}</h3>
-                  <p className="text-[#3B3B3B]" style={{ fontSize: '16px', lineHeight: '1.6' }}>{faq.answer}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Footer */}
-        <footer className="border-t border-gray-200 bg-white py-8 px-6">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
-              <p className="text-sm text-gray-800 font-medium">
-                © {new Date().getFullYear()} PeerPulse. All rights reserved.
+      {/* ---------------- Closing CTA ---------------- */}
+      <Section className="pt-0">
+        <div className="container-page">
+          <Reveal>
+            <div className="rounded-[32px] border border-line bg-paper-warm px-8 py-12 text-center">
+              <h2 className="font-display text-2xl font-extrabold tracking-[-0.025em] text-ink">
+                Still deciding?
+              </h2>
+              <p className="mx-auto mt-3 max-w-md text-[15px] leading-relaxed text-ink-soft">
+                Start on Free. You can be in a focus room with someone in your subject in about
+                two minutes — no card, no commitment.
               </p>
-              <div className="flex flex-wrap items-center justify-center gap-6">
-                <Link href="/terms" className="text-sm text-gray-800 hover:text-[#0A0A0A] transition-colors font-medium">
-                  Terms
-                </Link>
-                <Link href="/privacy" className="text-sm text-gray-800 hover:text-[#0A0A0A] transition-colors font-medium">
-                  Privacy
-                </Link>
-                <Link href="/contact" className="text-sm text-gray-800 hover:text-[#0A0A0A] transition-colors font-medium">
-                  Contact
-                </Link>
+              <div className="mt-7 flex flex-wrap justify-center gap-3">
+                <Button asChild size="lg">
+                  <Link href="/signup">Create free account</Link>
+                </Button>
+                <Button asChild size="lg" variant="ghost">
+                  <Link href="/features">Compare features</Link>
+                </Button>
               </div>
             </div>
-          </div>
-        </footer>
-      </div>
-    </PageTransition>
+          </Reveal>
+        </div>
+      </Section>
+
+      <Footer />
+    </div>
   )
 }

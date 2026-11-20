@@ -81,7 +81,7 @@ export function PiPProvider({ children }: { children: ReactNode }) {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
-            className="fixed bottom-4 right-4 z-[9999] w-80 bg-white rounded-xl shadow-2xl border-2 border-gray-300"
+            className="fixed bottom-4 right-4 z-[9999] w-80 bg-surface rounded-xl shadow-2xl border border-line-strong"
             drag
             dragMomentum={false}
             dragElastic={0}
@@ -101,7 +101,7 @@ export function PiPProvider({ children }: { children: ReactNode }) {
                 </div>
                 <button
                   onClick={deactivatePiP}
-                  className="hover:bg-white hover:bg-opacity-20 rounded p-1 transition-colors text-white"
+                  className="hover:bg-surface hover:bg-opacity-20 rounded p-1 transition-colors text-white"
                 >
                   <X className="w-4 h-4 text-white" />
                 </button>
@@ -112,9 +112,9 @@ export function PiPProvider({ children }: { children: ReactNode }) {
                 <div className="relative group">
                   <div className="aspect-video bg-gray-800 rounded-lg flex items-center justify-center">
                     {pipData.partnerCameraOn ? (
-                      <div className="text-gray-400 text-xs">Partner's Camera</div>
+                      <div className="text-ink-faint text-xs">Partner's Camera</div>
                     ) : (
-                      <div className="flex flex-col items-center text-gray-400">
+                      <div className="flex flex-col items-center text-ink-faint">
                         <VideoOff className="w-6 h-6 mb-1" />
                         <span className="text-xs">{pipData.partnerName}'s camera is off</span>
                       </div>
@@ -134,7 +134,7 @@ export function PiPProvider({ children }: { children: ReactNode }) {
 
               {/* Mini Controls */}
               <div className="px-3 pb-3">
-                <div className="text-[10px] text-gray-500 text-center mb-2">Your Controls</div>
+                <div className="text-[10px] text-ink-mute text-center mb-2">Your Controls</div>
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <button
                     onClick={pipData.onUserCameraToggle}
@@ -156,7 +156,7 @@ export function PiPProvider({ children }: { children: ReactNode }) {
                   </button>
                   <button
                     onClick={goFullscreen}
-                    className="rounded-full w-8 h-8 flex items-center justify-center bg-blue-600 hover:bg-blue-700 transition-colors"
+                    className="rounded-full w-8 h-8 flex items-center justify-center bg-pulse hover:bg-pulse-dark transition-colors"
                     title="Go to fullscreen"
                   >
                     <Maximize2 className="w-4 h-4 text-white" />
@@ -172,13 +172,13 @@ export function PiPProvider({ children }: { children: ReactNode }) {
               </div>
 
               {/* Timer Display */}
-              <div className="px-3 pb-3 border-t border-gray-200 pt-2">
+              <div className="px-3 pb-3 border-t border-line pt-2">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-gray-600">Timer:</span>
-                  <span className="font-mono font-bold text-gray-900">{pipData.timerMinutes}:{pipData.timerSeconds}</span>
+                  <span className="text-ink-soft">Timer:</span>
+                  <span className="font-mono font-bold text-ink">{pipData.timerMinutes}:{pipData.timerSeconds}</span>
                 </div>
                 {pipData.activeGoal && (
-                  <div className="mt-1 text-xs text-gray-600 truncate">
+                  <div className="mt-1 text-xs text-ink-soft truncate">
                     📌 {pipData.activeGoal}
                   </div>
                 )}

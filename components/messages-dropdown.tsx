@@ -1,10 +1,11 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import { MessageCircle, MoreHorizontal } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { motion, AnimatePresence } from "framer-motion"
-import Image from 'next/image'
+import Link from "next/link"
+import { useState } from "react"
+import { ArrowRight, MessageCircle } from "lucide-react"
+import { Avatar } from "@/components/avatar"
+import { HeaderDropdown } from "@/components/header-dropdown"
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import ChatWindow from "./ChatWindow"
 
 interface Message {
@@ -17,7 +18,6 @@ interface Message {
 }
 
 export default function MessagesDropdown() {
-  const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
@@ -53,193 +53,36 @@ export default function MessagesDropdown() {
     },
   ])
 
-  const dropdownRef = useRef<HTMLDivElement>(null)
-  const unreadCount = messages.filter(m => m.unread).length
+
   const [activeChatIds, setActiveChatIds] = useState<number[]>([])
-
-  const activeChats = messages.filter(m => activeChatIds.includes(m.id))
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false)
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [])
-
-  const markAsRead = (id: number) => {
-    setMessages(prev => 
-      prev.map(message => 
-        message.id === id 
-          ? { ...message, unread: false }
-          : message
-      )
-    )
+  const unreadCount = messages.filter(message => message.unread).length
+  const openChat = (id: number) => {
+    setMessages(previous => previous.map(message => message.id === id ? { ...message, unread: false } : message))
+    setActiveChatIds([id])
   }
-
-  const handleViewAll = () => {
-    setIsOpen(false)
-    // Navigate to messages page
-    window.location.href = '/messages'
-  }
-
-  const handleMessageClick = (messageId: number) => {
-    markAsRead(messageId)
-    if (!activeChatIds.includes(messageId)) {
-      setActiveChatIds([...activeChatIds, messageId])
-    }
-    setIsOpen(false) // Close dropdown when opening chat
-  }
-
-  const handleCloseChat = (messageId: number) => {
-    setActiveChatIds(activeChatIds.filter(id => id !== messageId))
-  }
-
   return (
-    <div className="relative" ref={dropdownRef}>
-      {/* Messages Button */}
-      <Button 
-          variant="ghost" 
-          size="sm" 
-          className="relative h-8 w-8 p-0"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          <MessageCircle className="w-4 h-4 text-gray-700" strokeWidth={1.5} />
-          {unreadCount > 0 && (
-            <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
-              <span className="text-[10px] text-white font-bold leading-none">
-                {unreadCount > 9 ? '9+' : unreadCount}
-              </span>
-            </div>
-          )}
-        </Button>
-
-      {/* Dropdown Menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full mt-2 w-96 bg-[#fdfcfa] rounded-lg shadow-xl border-2 border-gray-300 z-50 max-h-80 overflow-y-auto font-[Lexend,_'Noto_Sans',_sans-serif]"
-          >
-            {/* Header */}
-            <div className="px-4 py-3 border-b border-gray-100">
-              <h3 className="text-left text-xl font-semibold tracking-[-0.015em] text-[#111518]">
-                Messages
-              </h3>
-              {unreadCount > 0 && (
-                <p className="text-sm text-[#637888] mt-1">
-                  {unreadCount} unread message{unreadCount !== 1 ? 's' : ''}
-                </p>
-              )}
-            </div>
-            
-            {/* Messages List */}
-            <div>
-              {messages.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-8 text-gray-500">
-                  <MessageCircle className="w-8 h-8 mb-2 opacity-50" />
-                  <p className="text-sm">No messages yet</p>
-                </div>
-              ) : (
-                <ul className="flex flex-col">
-                  {messages.map((message, index) => (
-                    <motion.li
-                      key={message.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      className={`flex min-h-[56px] items-center justify-between gap-3 px-4 py-1.5 hover:bg-gray-100 transition-colors cursor-pointer relative group ${
-                        message.unread ? 'bg-blue-50/30 border-l-4 border-l-blue-500' : 'bg-[#fdfcfa] border-l-4 border-l-transparent'
-                      }`}
-                      onClick={() => handleMessageClick(message.id)}
-                    >
-                      <div className="flex items-center gap-4 flex-1 min-w-0">
-                        {/* Avatar */}
-                        <Image
-                          src={message.avatar || "/placeholder.svg"}
-                          width={48}
-                          height={48}
-                          alt=""
-                          className="h-12 w-12 rounded-full object-cover flex-shrink-0"
-                        />
-                        
-                        {/* Content */}
-                        <div className="flex flex-col justify-center flex-1 min-w-0">
-                          <p className={`text-sm font-medium leading-tight ${
-                            message.unread ? 'text-[#111518]' : 'text-[#637888]'
-                          }`}>
-                            {message.name}
-                          </p>
-                          <p className="text-xs font-normal leading-snug text-[#637888]">
-                            {message.message}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Time and Actions */}
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        <span className="text-sm font-normal leading-normal text-[#637888]">
-                          {message.timeAgo}
-                        </span>
-                        
-                        {/* Unread indicator */}
-                        {message.unread && (
-                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                        )}
-
-                        {/* More options (hidden by default, shown on hover) */}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="p-1 h-6 w-6 text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            // Handle more options
-                          }}
-                        >
-                          <MoreHorizontal className="w-3 h-3" />
-                        </Button>
-                      </div>
-                    </motion.li>
-                  ))}
-                </ul>
-              )}
-            </div>
-            
-            {/* Footer Button */}
-            {messages.length > 0 && (
-              <div className="px-4 py-3 border-t border-gray-100">
-                <button 
-                  onClick={handleViewAll}
-                  className="flex h-8 w-full min-w-[72px] items-center justify-center overflow-hidden rounded-lg bg-[#f0f3f4] px-3 text-xs font-semibold tracking-[0.015em] text-[#111518] hover:bg-gray-200 transition-colors"
-                >
-                  View All Messages
-                </button>
-              </div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Chat Windows */}
-      {activeChats.map((chat, index) => (
-        <ChatWindow
-          key={chat.id}
-          isOpen={true}
-          onClose={() => handleCloseChat(chat.id)}
-          partnerId={chat.id}
-          partnerName={chat.name}
-          partnerAvatar={chat.avatar}
-          position={index}
-        />
+    <>
+      <HeaderDropdown title="Messages" icon={MessageCircle} unreadCount={unreadCount} footer={
+        <DropdownMenuItem asChild className="cursor-pointer justify-between rounded-xl px-3 py-2.5 text-xs font-semibold text-ink focus:bg-surface-sunken focus:text-ink">
+          <Link href="/messages">Open messages <ArrowRight className="size-3.5" /></Link>
+        </DropdownMenuItem>
+      }>
+        {messages.map(message => (
+          <DropdownMenuItem key={message.id} onSelect={() => openChat(message.id)}
+            className={`mb-1 cursor-pointer items-start gap-3 rounded-xl px-3 py-3 text-ink focus:bg-surface-sunken focus:text-ink ${message.unread ? "bg-pulse-soft/40" : ""}`}>
+            <Avatar name={message.name} size="sm" />
+            <span className="min-w-0 flex-1">
+              <span className="flex items-baseline justify-between gap-3"><span className="truncate text-xs font-semibold">{message.name}</span><span className="shrink-0 text-[10px] font-normal text-ink-mute">{message.timeAgo}</span></span>
+              <span className="mt-1 block text-xs leading-5 text-ink-soft">{message.message}</span>
+            </span>
+            {message.unread && <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-pulse"><span className="sr-only">Unread</span></span>}
+          </DropdownMenuItem>
+        ))}
+        {messages.length === 0 && <p className="px-4 py-8 text-center text-xs text-ink-mute">No messages yet.</p>}
+      </HeaderDropdown>
+      {messages.filter(chat => activeChatIds.includes(chat.id)).map((chat, index) => (
+        <ChatWindow key={chat.id} isOpen onClose={() => setActiveChatIds(previous => previous.filter(id => id !== chat.id))} partnerId={chat.id} partnerName={chat.name} partnerAvatar={chat.avatar} position={index} />
       ))}
-    </div>
+    </>
   )
 }

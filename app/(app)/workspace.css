@@ -1,0 +1,69 @@
+/* Studio Admin inset workspace, customized for PeerPulse.
+   Scoped to authenticated pages; marketing keeps its existing design. */
+.peerpulse-workspace {
+  --color-paper: #fafbf8;
+  --color-paper-warm: #eef1eb;
+  --color-surface: #ffffff;
+  --color-surface-sunken: #f3f5f0;
+  --color-line: #e3e8df;
+  --color-line-strong: #d3dbce;
+  --color-ink: #202a23;
+  --color-ink-soft: #59655c;
+  --color-ink-mute: #7a857c;
+  --color-brand: #137e65;
+  --color-brand-foreground: #ffffff;
+  --sidebar: #eef1eb;
+  --sidebar-foreground: #354139;
+  --sidebar-primary: #137e65;
+  --sidebar-accent: #e1e8dd;
+  --sidebar-accent-foreground: #203c2c;
+  --sidebar-border: #dce3d7;
+  --sidebar-ring: #137e65;
+  --workspace-focus: #193d32;
+}
+.dark .peerpulse-workspace {
+  --color-paper: #111a16;
+  --color-paper-warm: #0b120f;
+  --color-surface: #18231d;
+  --color-surface-sunken: #1d2b23;
+  --color-line: #293b30;
+  --color-line-strong: #3a4e40;
+  --color-ink: #edf4ec;
+  --color-ink-soft: #b3c3b7;
+  --color-ink-mute: #8ca291;
+  --color-ink-faint: #6c8372;
+  --color-brand: #72d6b2;
+  --color-brand-foreground: #0c241a;
+  --sidebar: #0b120f;
+  --sidebar-foreground: #b3c3b7;
+  --sidebar-primary: #72d6b2;
+  --sidebar-accent: #1b2d22;
+  --sidebar-accent-foreground: #edf4ec;
+  --sidebar-border: #293b30;
+  --sidebar-ring: #72d6b2;
+  --workspace-focus: #193d32;
+}
+.peerpulse-workspace .container-page {
+  padding-inline: clamp(1rem, 2.5vw, 2rem);
+  padding-top: 1.75rem;
+  padding-bottom: 2rem;
+}
+.peerpulse-workspace .min-h-screen {
+  min-height: calc(100svh - 5rem);
+}
+.peerpulse-workspace .rounded-3xl {
+  border-radius: 1rem;
+}
+.peerpulse-workspace [data-slot="sidebar-inner"] {
+  background: transparent;
+}
+.peerpulse-workspace [data-slot="sidebar-menu-button"][data-active="true"] {
+  background: var(--sidebar-accent);
+  color: var(--sidebar-accent-foreground);
+}
+.peerpulse-workspace [data-slot="sidebar-menu-button"] {
+  font-size: 0.8125rem;
+}
+.peerpulse-workspace [data-slot="sidebar-inset"] {
+  align-self: stretch;
+}

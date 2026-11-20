@@ -1,24 +1,31 @@
 import type { Metadata } from "next"
-import Header from "@/components/Header"
+import Link from "next/link"
+import AuthLayout from "@/components/AuthLayout"
 import { SignupForm } from "./signup-form"
 
 export const metadata: Metadata = {
-  title: "Sign Up",
-  description: "Create your PeerPulse account",
+  title: "Sign up",
+  description: "Create your PeerPulse account and get matched with study partners",
 }
 
 export default function SignupPage() {
   return (
-    <div className="min-h-screen bg-white">
-      <Header />
-
-      <main className="flex items-center justify-center px-6 py-12">
-        <div className="w-full max-w-md">
-          <div className="bg-white rounded-[32px] shadow-2xl border border-gray-200 p-8 md:p-10">
-            <SignupForm />
-          </div>
-        </div>
-      </main>
-    </div>
+    <AuthLayout
+      title="Create your account"
+      subtitle="Two minutes of setup, then you can be in a focus room tonight."
+      footer={
+        <>
+          Already have an account?{" "}
+          <Link
+            href="/login"
+            className="font-semibold text-ink underline-offset-4 hover:underline"
+          >
+            Log in
+          </Link>
+        </>
+      }
+    >
+      <SignupForm />
+    </AuthLayout>
   )
 }
