@@ -81,25 +81,13 @@ These features are represented in the source, but several use **sample data or l
 
 **Backend / realtime services:** Not implemented in this repository at this stage. The current auth provider uses local browser storage; real user accounts, live peer matching, persistent communities, and camera/microphone sessions require additional integration.
 
-## Run locally
+## Project status
 
-### Requirements
+**Portfolio showcase · Frontend prototype**
 
-- Node.js and npm (a current LTS release is recommended).
+PeerPulse is shared here to present the product concept, interface design, and frontend engineering work. It is **not offered as a hosted service, installable product, or supported application for third-party deployment**.
 
-### Setup
-
-```bash
-git clone https://github.com/Azizfer/PeerPulse.git
-cd PeerPulse
-git checkout feature/peerpulse-ui-update
-npm ci
-npm run dev
-```
-
-Open **http://localhost:3000** in your browser.
-
-The commands describe the intended local development workflow; they have not been independently tested in a clean environment during this documentation update.
+The current experience uses example data and local interactions in several areas. Real user authentication, persistent storage, live peer matching, and actual camera/microphone sessions are planned rather than production-ready.
 
 ## Project structure
 
