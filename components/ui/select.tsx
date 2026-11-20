@@ -25,7 +25,7 @@ const SelectTrigger = React.forwardRef<
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <ChevronDown className="h-4 w-4 text-ink-faint" />
+      <ChevronDown className="size-3.5 shrink-0 text-ink-mute" strokeWidth={1.8} />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ))
@@ -73,14 +73,15 @@ const SelectContent = React.forwardRef<
         className,
       )}
       position={position}
+      sideOffset={6}
       {...props}
     >
       <SelectScrollUpButton />
       <SelectPrimitive.Viewport
         className={cn(
-          "p-1",
+          "max-h-[min(320px,var(--radix-select-content-available-height))] p-1.5",
           position === "popper" &&
-            "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]",
+            "w-full min-w-[var(--radix-select-trigger-width)]",
         )}
       >
         {children}
@@ -106,7 +107,7 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-default select-none items-center rounded-lg py-2 pl-8 pr-3 text-sm text-ink-soft outline-none transition-colors focus:bg-surface-sunken focus:text-ink data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex min-h-10 w-full cursor-pointer select-none items-center rounded-lg py-2 pl-8 pr-3 text-sm text-ink-soft outline-none transition-colors focus:bg-surface-sunken focus:text-ink data-[state=checked]:bg-pulse-soft data-[state=checked]:font-medium data-[state=checked]:text-pulse-dark data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className,
     )}
     {...props}

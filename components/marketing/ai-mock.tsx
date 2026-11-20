@@ -8,7 +8,7 @@ export function AiMock() {
 
       <div className="relative overflow-hidden rounded-[28px] border border-line bg-surface shadow-lift">
         <div className="flex items-center gap-2.5 border-b border-line px-5 py-4">
-          <span className="grid h-8 w-8 place-items-center rounded-xl bg-ink text-white">
+          <span className="grid h-8 w-8 place-items-center rounded-xl bg-ink text-paper">
             <Sparkles className="h-4 w-4" />
           </span>
           <div>
@@ -21,7 +21,7 @@ export function AiMock() {
         </div>
 
         <div className="space-y-4 px-5 py-5">
-          <div className="ml-auto max-w-[85%] rounded-2xl rounded-br-md bg-ink px-4 py-3 text-[14px] leading-relaxed text-white">
+          <div className="ml-auto max-w-[85%] rounded-2xl rounded-br-md bg-ink px-4 py-3 text-[14px] leading-relaxed text-paper">
             I have a Linear Algebra midterm Thursday. Make me a 3-day plan with the 6 topics
             I keep failing.
           </div>

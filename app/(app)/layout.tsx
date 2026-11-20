@@ -1,20 +1,24 @@
-import { SidebarProvider } from "@/components/ui/sidebar"
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
+import { AppHeader } from "@/components/app-header"
+import "./workspace.css"
 
 /**
  * Logged-in app shell.
  *
- * No page header — the sidebar carries the trigger, the search box and the
- * primary action (Linear-style). The marketing Header/Footer belong to the
- * public site only, so they are not rendered here at all.
+ * The sidebar owns navigation; the compact app header owns utilities.
+ * Marketing navigation is deliberately excluded from authenticated routes.
  */
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <main className="bg-paper text-ink flex min-h-svh flex-1 flex-col">
+    <SidebarProvider className="peerpulse-workspace bg-paper-warm" style={{ "--sidebar-width": "15.5rem" } as React.CSSProperties}>
+      <AppSidebar variant="inset" />
+      <SidebarInset asChild className="min-w-0 border-line bg-paper md:rounded-2xl md:border md:shadow-soft">
+      <div>
+        <AppHeader />
         {children}
-      </main>
+      </div>
+      </SidebarInset>
     </SidebarProvider>
   )
 }

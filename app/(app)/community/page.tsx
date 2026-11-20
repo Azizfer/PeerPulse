@@ -1,9 +1,13 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import {
   Award,
+  UsersRound,
+  Atom,
+  Languages,
+  ChartNoAxesCombined,
   FileText,
   Heart,
   ImageIcon,
@@ -16,13 +20,13 @@ import {
   X,
 } from "lucide-react"
 import { AnimatePresence, motion } from "framer-motion"
-import Header from "@/components/Header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar } from "@/components/avatar"
 import { Reveal } from "@/components/reveal"
 import { CustomSelect } from "@/components/ui/custom-select"
-import { useToast } from "@/hooks/use-toast"
+import { Input } from "@/components/ui/input"
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerBody, DrawerFooter } from "@/components/ui/drawer"
 import { ImageCarousel } from "@/components/community/ImageCarousel"
 import { PDFPreview, PDFViewerModal } from "@/components/community/pdf-lazy"
 
@@ -121,7 +125,13 @@ const REACTIONS = [
 type ReactionId = (typeof REACTIONS)[number]["id"]
 
 export default function CommunityPage() {
-  const { toast } = useToast()
+  const [myCommunities, setMyCommunities] = useState<(typeof myCommunitiesData[number] & { photo?: string; description?: string; isPublic?: boolean })[]>(myCommunitiesData)
+  const [activeTopic, setActiveTopic] = useState("")
+  const [fileError, setFileError] = useState("")
+  const [creationNotice, setCreationNotice] = useState("")
+  const [coverError, setCoverError] = useState("")
+  const objectUrls = useRef<string[]>([])
+  useEffect(() => () => { objectUrls.current.forEach(url => URL.revokeObjectURL(url)) }, [])
 
   const [posts, setPosts] = useState(communityPostsData)
   const [newPost, setNewPost] = useState("")
@@ -151,9 +161,9 @@ export default function CommunityPage() {
   const [likedComments, setLikedComments] = useState<{ [key: string]: boolean }>({})
 
   const [suggestedCommunities, setSuggestedCommunities] = useState([
-    { id: 1, name: "Physics Study Hub", members: 156, subject: "Physics", icon: "⚛️", isPublic: false, membershipStatus: null as "member" | "pending" | null },
-    { id: 2, name: "Spanish Learners", members: 89, subject: "Languages", icon: "🗣️", isPublic: true, membershipStatus: null as "member" | "pending" | null },
-    { id: 3, name: "Data Science 101", members: 234, subject: "Computer Science", icon: "📊", isPublic: true, membershipStatus: null as "member" | "pending" | null },
+    { id: 101, name: "Physics Study Hub", members: 156, subject: "Physics", icon: "⚛️", isPublic: false, membershipStatus: null as "member" | "pending" | null },
+    { id: 102, name: "Spanish Learners", members: 89, subject: "Languages", icon: "🗣️", isPublic: true, membershipStatus: null as "member" | "pending" | null },
+    { id: 103, name: "Data Science 101", members: 234, subject: "Computer Science", icon: "📊", isPublic: true, membershipStatus: null as "member" | "pending" | null },
   ])
 
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
@@ -168,7 +178,6 @@ export default function CommunityPage() {
   const [newCommunityDescription, setNewCommunityDescription] = useState("")
   const [newCommunitySubject, setNewCommunitySubject] = useState("")
   const [isPublicCommunity, setIsPublicCommunity] = useState(true)
-  const [communityPhoto, setCommunityPhoto] = useState<File | null>(null)
   const [communityPhotoPreview, setCommunityPhotoPreview] = useState<string>("")
 
   const [trendingTopics, setTrendingTopics] = useState([
@@ -180,6 +189,10 @@ export default function CommunityPage() {
   ])
 
   const handleJoinSuggestedCommunity = (communityId: number) => {
+    const community = suggestedCommunities.find(item => item.id === communityId)
+    if (community?.isPublic) {
+      setMyCommunities(previous => previous.some(item => item.id === communityId) ? previous : [...previous, { id: community.id, name: community.name, subject: community.subject, members: community.members + 1, unreadPosts: 0 }])
+    }
     setSuggestedCommunities((prev) =>
       prev.map((c) =>
         c.id === communityId
@@ -191,8 +204,7 @@ export default function CommunityPage() {
 
   const handleSuggestedButtonClick = (community: (typeof suggestedCommunities)[0]) => {
     if (community.membershipStatus === "pending") {
-      setConfirmAction({ communityId: community.id, action: "cancel", name: community.name })
-      setShowConfirmDialog(true)
+      setSuggestedCommunities(previous => previous.map(item => item.id === community.id ? { ...item, membershipStatus: null } : item))
     } else if (community.membershipStatus === "member") {
       setConfirmAction({ communityId: community.id, action: "leave", name: community.name })
       setShowConfirmDialog(true)
@@ -203,6 +215,11 @@ export default function CommunityPage() {
 
   const handleConfirm = () => {
     if (!confirmAction) return
+    if (confirmAction.action === "leave") {
+      setMyCommunities(previous => previous.filter(item => item.id !== confirmAction.communityId))
+      if (feedFilter === confirmAction.communityId) setFeedFilter("all")
+      if (selectedCommunity === confirmAction.communityId) setSelectedCommunity(null)
+    }
     setSuggestedCommunities((prev) =>
       prev.map((c) => (c.id === confirmAction.communityId ? { ...c, membershipStatus: null } : c)),
     )
@@ -213,7 +230,11 @@ export default function CommunityPage() {
   const handleCommunityPhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      setCommunityPhoto(file)
+      if (!file.type.startsWith("image/") || file.size > 5 * 1024 * 1024) {
+        setCoverError("Choose an image smaller than 5 MB.")
+        return
+      }
+      setCoverError("")
       const reader = new FileReader()
       reader.onloadend = () => setCommunityPhotoPreview(reader.result as string)
       reader.readAsDataURL(file)
@@ -221,17 +242,16 @@ export default function CommunityPage() {
   }
 
   const handleCreateCommunity = () => {
-    if (newCommunityName && newCommunityDescription && newCommunitySubject) {
-      toast({
-        title: "Community created",
-        description: `${newCommunityName} is live.`,
-        variant: "success",
-      })
+    if (newCommunityName.trim() && newCommunityDescription.trim() && newCommunitySubject.trim()) {
+      const id = Date.now()
+      setMyCommunities(previous => [...previous, { id, name: newCommunityName.trim(), subject: newCommunitySubject.trim(), members: 1, unreadPosts: 0, photo: communityPhotoPreview, description: newCommunityDescription.trim(), isPublic: isPublicCommunity }])
+      setSelectedCommunity(id)
+      setFeedFilter(id)
+      setCreationNotice(`${newCommunityName.trim()} is ready. Share the first post below.`)
       setNewCommunityName("")
       setNewCommunityDescription("")
       setNewCommunitySubject("")
       setIsPublicCommunity(true)
-      setCommunityPhoto(null)
       setCommunityPhotoPreview("")
       setShowCreateModal(false)
     }
@@ -274,7 +294,14 @@ export default function CommunityPage() {
   }
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) setUploadedFiles([...uploadedFiles, ...Array.from(e.target.files)])
+    const files = Array.from(e.target.files || [])
+    e.target.value = ""
+    if (uploadedFiles.length + files.length > 5 || files.some(file => file.size > 10 * 1024 * 1024)) {
+      setFileError("Attach up to 5 files, each smaller than 10 MB.")
+      return
+    }
+    setFileError("")
+    setUploadedFiles(previous => [...previous, ...files])
   }
 
   const removeFile = (index: number) => {
@@ -327,17 +354,17 @@ export default function CommunityPage() {
 
   const handleCreatePost = () => {
     if (newPost.trim() && selectedCommunity) {
-      const community = myCommunitiesData.find((c) => c.id === selectedCommunity)
+      const community = myCommunities.find((c) => c.id === selectedCommunity)
       const hashtags = extractHashtags(newPost)
       const fileUrls = uploadedFiles.map((file) => ({
         name: file.name,
         type: file.type,
-        url: URL.createObjectURL(file),
+        url: (() => { const url = URL.createObjectURL(file); objectUrls.current.push(url); return url })(),
       }))
 
       setPosts([
         {
-          id: posts.length + 1,
+          id: Date.now(),
           communityId: selectedCommunity,
           communityName: community?.name || "",
           author: "You",
@@ -353,8 +380,10 @@ export default function CommunityPage() {
       ])
 
       updateTrendingTopics(hashtags)
+      setFeedFilter(selectedCommunity)
+      setActiveTopic("")
+      setFileError("")
       setNewPost("")
-      setSelectedCommunity(null)
       setUploadedFiles([])
     }
   }
@@ -435,13 +464,11 @@ export default function CommunityPage() {
     setLikedComments((prev) => ({ ...prev, [key]: !prev[key] }))
   }
 
-  const filteredPosts = feedFilter === "all" ? posts : posts.filter((p) => p.communityId === feedFilter)
+  const filteredPosts = posts.filter(post => (feedFilter === "all" || post.communityId === feedFilter) && (!activeTopic || extractHashtags(post.content).includes(activeTopic.toLowerCase())))
 
   return (
     <div className="min-h-screen bg-paper">
-      <Header />
-
-      <main className="mx-auto w-full max-w-[1440px] px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
+      <main className="container-page max-w-6xl py-10 sm:py-14">
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
@@ -453,23 +480,33 @@ export default function CommunityPage() {
                 Questions, wins and resources from the subjects you&apos;re actually taking.
               </p>
             </div>
-            <Button onClick={() => setShowCreateModal(true)}>
+            <Button variant="outline" className="hover:translate-y-0 active:translate-y-0" onClick={() => setShowCreateModal(true)}>
               <Plus className="h-4 w-4" />
               Create community
             </Button>
           </div>
         </Reveal>
 
-        <div className="mt-10 grid gap-8 lg:grid-cols-12">
+        <div className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
           {/* ===================== Feed ===================== */}
-          <div className="space-y-5 lg:col-span-8">
+          <div className="min-w-0 space-y-5">
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center gap-3">
+                <CustomSelect className="w-full sm:w-[260px]" value={String(feedFilter)} onChange={value => setFeedFilter(value === "all" ? "all" : Number(value))} options={[{ value: "all", label: "All communities" }, ...myCommunities.map(community => ({ value: String(community.id), label: community.name }))]} />
+                {activeTopic && <button type="button" onClick={() => setActiveTopic("")} className="inline-flex items-center gap-2 rounded-full bg-pulse-soft px-3 py-2 text-xs font-medium text-pulse-dark" aria-label={`Clear topic ${activeTopic}`}>{activeTopic}<X className="size-3" /></button>}
+              </div>
+              <p className="text-xs text-ink-mute">{filteredPosts.length} {filteredPosts.length === 1 ? "post" : "posts"} in your feed</p>
+              {creationNotice && <p role="status" className="rounded-xl bg-pulse-soft p-3 text-xs leading-5 text-pulse-dark">{creationNotice}</p>}
+            </div>
             {/* ---------- Composer ---------- */}
             <Reveal>
               <div className="rounded-2xl border border-line bg-surface p-4 shadow-soft sm:p-5">
                 <div className="flex gap-3">
-                  <Avatar name="Alex Johnson" size="sm" />
+                  <Avatar name="You" size="sm" />
                   <div className="min-w-0 flex-1">
                     <textarea
+                      aria-label="New community post"
+                      maxLength={5000}
                       value={newPost}
                       onChange={(e) => setNewPost(e.target.value)}
                       placeholder="Ask a question, or share something that finally clicked…"
@@ -504,7 +541,7 @@ export default function CommunityPage() {
                     )}
 
                     <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex min-w-0 flex-wrap items-center gap-1.5">
                         <label
                           className="grid h-9 w-9 cursor-pointer place-items-center rounded-full text-ink-mute transition-colors hover:bg-surface-sunken hover:text-ink"
                           title="Add images"
@@ -532,12 +569,12 @@ export default function CommunityPage() {
                           <FileText className="h-[18px] w-[18px]" />
                         </label>
 
-                        <div className="w-[200px]">
+                        <div className="w-full min-w-0 sm:w-[220px]">
                           <CustomSelect
                             value={selectedCommunity?.toString() || ""}
                             onChange={(value) => setSelectedCommunity(value ? Number(value) : null)}
                             placeholder="Post to…"
-                            options={myCommunitiesData.map((community) => ({
+                            options={myCommunities.map((community) => ({
                               value: community.id.toString(),
                               label: community.name,
                             }))}
@@ -559,44 +596,8 @@ export default function CommunityPage() {
               </div>
             </Reveal>
 
-            {/* ---------- Filters ---------- */}
-            <div className="flex gap-2 overflow-x-auto pb-1">
-              <button
-                type="button"
-                onClick={() => setFeedFilter("all")}
-                className={`whitespace-nowrap rounded-full px-4 py-2 font-display text-[13px] font-semibold transition-colors ${
-                  feedFilter === "all"
-                    ? "bg-ink text-white"
-                    : "border border-line bg-surface text-ink-soft hover:border-ink-faint hover:text-ink"
-                }`}
-              >
-                All
-              </button>
-              {myCommunitiesData.map((community) => (
-                <button
-                  key={community.id}
-                  type="button"
-                  onClick={() => setFeedFilter(community.id)}
-                  className={`flex items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 font-display text-[13px] font-semibold transition-colors ${
-                    feedFilter === community.id
-                      ? "bg-ink text-white"
-                      : "border border-line bg-surface text-ink-soft hover:border-ink-faint hover:text-ink"
-                  }`}
-                >
-                  {community.name}
-                  {community.unreadPosts > 0 && (
-                    <span
-                      className={`rounded-full px-1.5 py-0.5 text-[11px] font-bold ${
-                        feedFilter === community.id ? "bg-white/20 text-white" : "bg-rose text-rose-deep"
-                      }`}
-                    >
-                      {community.unreadPosts}
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
-
+            {fileError && <p role="alert" className="rounded-xl bg-rose p-3 text-xs text-rose-deep">{fileError}</p>}
+            {filteredPosts.length === 0 && <div className="rounded-3xl border border-dashed border-line-strong bg-surface px-6 py-10 text-center"><MessageCircle className="mx-auto size-5 text-pulse-dark" strokeWidth={1.8} /><h2 className="mt-3 text-sm font-semibold text-ink">{activeTopic ? "No posts for this topic yet" : "Start the conversation"}</h2><p className="mt-2 text-xs leading-6 text-ink-soft">{activeTopic ? "Choose another topic or show all posts." : "Ask a question or share the first useful resource."}</p><Button variant="ghost" size="sm" className="mt-3" onClick={() => { setActiveTopic(""); setFeedFilter("all") }}>Show all posts</Button></div>}
             {/* ---------- Posts ---------- */}
             {filteredPosts.map((post) => {
               const { total, top } = getReactionSummary(post)
@@ -605,7 +606,7 @@ export default function CommunityPage() {
               return (
                 <article
                   key={post.id}
-                  className="rounded-3xl border border-line bg-surface p-6 shadow-soft transition-all duration-300 hover:border-line-strong hover:shadow-card"
+                  className="rounded-3xl border border-line bg-surface p-4 shadow-soft sm:p-5 transition-all duration-300 hover:border-line-strong hover:shadow-card"
                 >
                   <div className="flex items-start gap-3.5">
                     <Avatar name={post.author} size="md" />
@@ -617,13 +618,13 @@ export default function CommunityPage() {
                         <span className="text-ink-faint">·</span>
                         <span className="text-[13px] text-ink-mute">{post.timestamp}</span>
                       </div>
-                      <Badge variant="lilac" className="mt-1.5">
+                      <Badge variant="secondary" className="mt-1.5 max-w-full whitespace-normal text-[10px]">
                         {post.communityName}
                       </Badge>
                     </div>
                   </div>
 
-                  <p className="mt-4 whitespace-pre-line text-[15px] leading-relaxed text-ink-soft">
+                  <p className="mt-4 whitespace-pre-line break-words text-sm leading-7 text-ink-soft [overflow-wrap:anywhere]">
                     {renderContentWithHashtags(post.content)}
                   </p>
 
@@ -632,9 +633,11 @@ export default function CommunityPage() {
                       {(() => {
                         const images = post.files.filter((f) => f.type.startsWith("image/"))
                         const pdfs = post.files.filter((f) => f.type === "application/pdf")
+                        const documents = post.files.filter(file => !file.type.startsWith("image/") && file.type !== "application/pdf")
                         return (
                           <>
                             {images.length > 0 && <ImageCarousel images={images} postId={post.id} />}
+                            {documents.map(document => <a key={document.url} href={document.url} download={document.name} className="flex items-center gap-3 rounded-xl border border-line bg-surface-sunken p-3 text-xs text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pulse"><FileText className="size-4 shrink-0 text-pulse-dark" strokeWidth={1.8} /><span className="min-w-0 break-all underline underline-offset-4">{document.name}</span></a>)}
                             {pdfs.map((pdf, pdfIndex) => (
                               <PDFPreview
                                 key={pdfIndex}
@@ -678,12 +681,15 @@ export default function CommunityPage() {
 
                   {/* ---------- Actions ---------- */}
                   <div className="mt-3 flex items-center gap-1 border-t border-line pt-4">
-                    <div className="relative">
+                    <div className="relative" onMouseEnter={() => setShowReactionPicker(post.id)} onMouseLeave={() => setShowReactionPicker(null)} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setShowReactionPicker(null) }}>
                       <button
                         type="button"
                         onClick={() =>
-                          setShowReactionPicker(showReactionPicker === post.id ? null : post.id)
+                          setShowReactionPicker(post.id)
                         }
+                        aria-label={userReaction ? `Change reaction: ${REACTIONS.find(reaction => reaction.id === userReaction)?.label}` : "Like post"}
+                        aria-expanded={showReactionPicker === post.id}
+                        onFocus={() => setShowReactionPicker(post.id)}
                         className={`flex items-center gap-2 rounded-full px-3 py-2 text-[13.5px] font-medium transition-colors hover:bg-surface-sunken ${
                           userReaction ? (REACTIONS.find((r) => r.id === userReaction)?.color ?? "text-ink-soft") : "text-ink-soft hover:text-ink"
                         }`}
@@ -693,14 +699,16 @@ export default function CommunityPage() {
                           const Icon = reaction?.icon || ThumbsUp
                           return <Icon className="h-4 w-4" />
                         })()}
-                        <span>{userReaction ? REACTIONS.find((r) => r.id === userReaction)?.label : "React"}</span>
+
                       </button>
 
                       {showReactionPicker === post.id && (
                         <motion.div
                           initial={{ opacity: 0, y: 8 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="absolute bottom-full left-0 z-10 mb-2 flex gap-1 rounded-2xl border border-line bg-surface p-2 shadow-card"
+                          className="absolute bottom-full left-0 z-10 pb-2"
+                        >
+                          <div role="toolbar" aria-label="Choose a reaction" className="flex gap-1 rounded-2xl border border-line bg-surface p-2 shadow-card"
                         >
                           {REACTIONS.map((reaction) => {
                             const Icon = reaction.icon
@@ -710,12 +718,15 @@ export default function CommunityPage() {
                                 type="button"
                                 onClick={() => handleReaction(post.id, reaction.id)}
                                 title={reaction.label}
+                                aria-label={reaction.label}
+                                aria-pressed={userReaction === reaction.id}
                                 className="grid h-9 w-9 place-items-center rounded-xl transition-colors hover:bg-surface-sunken"
                               >
                                 <Icon className={`h-5 w-5 ${reaction.color}`} />
                               </button>
                             )
                           })}
+                          </div>
                         </motion.div>
                       )}
                     </div>
@@ -827,6 +838,7 @@ export default function CommunityPage() {
                               <input
                                 type="text"
                                 placeholder="Write a comment…"
+                                aria-label={`Comment on ${post.author}'s post`}
                                 value={commentInputs[post.id] || ""}
                                 onChange={(e) =>
                                   setCommentInputs({ ...commentInputs, [post.id]: e.target.value })
@@ -854,36 +866,42 @@ export default function CommunityPage() {
           </div>
 
           {/* ===================== Sidebar ===================== */}
-          <aside className="space-y-5 lg:col-span-4">
+          <aside className="min-w-0 space-y-5">
             {/* ---------- My communities ---------- */}
             <Reveal delay={0.06}>
-              <section className="rounded-3xl border border-line bg-surface p-6 shadow-soft">
+              <section className="rounded-3xl border border-line bg-surface p-4 shadow-soft sm:p-5">
                 <div className="flex items-center justify-between">
                   <h2 className="font-display text-[16px] font-bold text-ink">Your communities</h2>
                   <Link
-                    href="/explore"
+                    href="/communities"
                     className="text-[13px] font-semibold text-ink-mute transition-colors hover:text-ink"
                   >
                     Explore
                   </Link>
                 </div>
                 <div className="mt-4 space-y-1">
-                  {myCommunitiesData.map((community) => (
-                    <div
+                  {myCommunities.map((community) => (
+                    <button
+                      type="button"
+                      onClick={() => { setFeedFilter(community.id); setSelectedCommunity(community.id); setActiveTopic("") }}
+                      aria-pressed={feedFilter === community.id}
                       key={community.id}
-                      className="flex items-center gap-3 rounded-2xl px-2 py-2.5 transition-colors hover:bg-surface-sunken"
+                      className="flex w-full items-center gap-3 rounded-xl px-2 py-3 text-left transition-colors hover:bg-surface-sunken focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pulse"
                     >
-                      <Avatar name={community.name} size="sm" />
+                      <span className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-xl border border-line bg-surface-sunken text-pulse-dark">{community.photo ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={community.photo} alt="" className="size-full object-cover" />
+                      ) : <UsersRound className="size-4" strokeWidth={1.8} />}</span>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-[14px] font-semibold text-ink">
+                        <p className="text-xs font-semibold leading-5 text-ink">
                           {community.name}
                         </p>
-                        <p className="text-[12.5px] text-ink-mute">{community.members} members</p>
+                        <p className="text-[11px] leading-5 text-ink-mute">{community.members} members</p>
                       </div>
                       {community.unreadPosts > 0 && (
                         <Badge variant="accent">{community.unreadPosts}</Badge>
                       )}
-                    </div>
+                    </button>
                   ))}
                 </div>
               </section>
@@ -891,7 +909,7 @@ export default function CommunityPage() {
 
             {/* ---------- Suggested ---------- */}
             <Reveal delay={0.1}>
-              <section className="rounded-3xl border border-line bg-surface p-6 shadow-soft">
+              <section className="rounded-3xl border border-line bg-surface p-4 shadow-soft sm:p-5">
                 <h2 className="font-display text-[16px] font-bold text-ink">Suggested for you</h2>
                 <div className="mt-4 space-y-2">
                   {suggestedCommunities.map((community) => (
@@ -899,8 +917,8 @@ export default function CommunityPage() {
                       key={community.id}
                       className="flex items-center gap-3 rounded-2xl p-2 transition-colors hover:bg-surface-sunken"
                     >
-                      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-surface-sunken text-lg">
-                        {community.icon}
+                      <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-line bg-surface-sunken text-pulse-dark">
+                        {community.subject === "Physics" ? <Atom className="size-4" strokeWidth={1.8} /> : community.subject === "Languages" ? <Languages className="size-4" strokeWidth={1.8} /> : <ChartNoAxesCombined className="size-4" strokeWidth={1.8} />}
                       </span>
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-[14px] font-semibold text-ink">
@@ -931,14 +949,14 @@ export default function CommunityPage() {
                   ))}
                 </div>
                 <Button asChild variant="ghost" size="sm" className="mt-3 w-full">
-                  <Link href="/explore">See all communities</Link>
+                  <Link href="/communities">See all communities</Link>
                 </Button>
               </section>
             </Reveal>
 
             {/* ---------- Trending ---------- */}
             <Reveal delay={0.14}>
-              <section className="rounded-3xl border border-line bg-surface p-6 shadow-soft">
+              <section className="rounded-3xl border border-line bg-surface p-4 shadow-soft sm:p-5">
                 <h2 className="flex items-center gap-2 font-display text-[16px] font-bold text-ink">
                   <TrendingUp className="h-4 w-4 text-pulse" />
                   Trending topics
@@ -948,6 +966,7 @@ export default function CommunityPage() {
                     <button
                       key={topic.tag}
                       type="button"
+                      onClick={() => { setActiveTopic(topic.tag); setFeedFilter("all") }}
                       className="flex w-full items-center justify-between rounded-2xl px-2 py-2.5 text-left transition-colors hover:bg-surface-sunken"
                     >
                       <span className="flex items-center gap-3">
@@ -962,214 +981,56 @@ export default function CommunityPage() {
             </Reveal>
           </aside>
         </div>
+        <p className="mt-6 text-[11px] leading-5 text-ink-mute">Preview community · posts, replies, and memberships are local to this page.</p>
       </main>
 
-      {/* ===================== Create community modal ===================== */}
-      <AnimatePresence>
-        {showCreateModal && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 bg-ink/40 backdrop-blur-sm"
-              onClick={() => setShowCreateModal(false)}
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 10 }}
-              transition={{ duration: 0.2 }}
-              className="fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-[28px] border border-line bg-surface p-7 shadow-lift"
-            >
-              <div className="flex items-start justify-between">
-                <div>
-                  <h2 className="font-display text-xl font-bold tracking-[-0.02em] text-ink">
-                    Create a community
-                  </h2>
-                  <p className="mt-1 text-[14px] text-ink-mute">
-                    One subject, one room. Keep the name obvious.
-                  </p>
+      <Drawer open={showCreateModal} onOpenChange={setShowCreateModal}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Create a community</DrawerTitle>
+            <DrawerDescription>A space to ask questions and study one subject together.</DrawerDescription>
+          </DrawerHeader>
+          <form className="flex min-h-0 flex-1 flex-col" onSubmit={event => { event.preventDefault(); handleCreateCommunity() }}>
+            <DrawerBody>
+              <div className="space-y-2"><label htmlFor="community-name" className="text-xs font-medium text-ink-soft">Community name</label><Input id="community-name" value={newCommunityName} onChange={event => setNewCommunityName(event.target.value)} placeholder="e.g. Chemistry study circle" maxLength={80} required /></div>
+              <div className="space-y-2"><label htmlFor="community-subject" className="text-xs font-medium text-ink-soft">Subject</label><Input id="community-subject" value={newCommunitySubject} onChange={event => setNewCommunitySubject(event.target.value)} placeholder="e.g. Chemistry" maxLength={60} required /></div>
+              <div className="space-y-2"><label htmlFor="community-desc" className="text-xs font-medium text-ink-soft">About this community</label><textarea id="community-desc" value={newCommunityDescription} onChange={event => setNewCommunityDescription(event.target.value)} placeholder="Who is this for, and what will you work on?" rows={4} maxLength={1000} required className="w-full resize-y rounded-xl border border-line-strong bg-surface p-3 text-sm leading-6 text-ink focus:border-pulse focus:outline-none focus:ring-4 focus:ring-pulse/10" /></div>
+              <div className="flex items-center gap-3 rounded-2xl border border-line bg-surface-sunken p-3">
+                <div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-xl bg-surface text-pulse-dark">
+                  {communityPhotoPreview ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={communityPhotoPreview} alt="Community cover preview" className="size-full object-cover" />
+                  ) : <UsersRound className="size-4" strokeWidth={1.8} />}
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setShowCreateModal(false)}
-                  aria-label="Close"
-                  className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-ink-mute transition-colors hover:bg-surface-sunken hover:text-ink"
-                >
-                  <X className="h-4 w-4" />
-                </button>
+                <div className="min-w-0 flex-1"><label htmlFor="community-photo" className="cursor-pointer text-xs font-semibold text-ink underline underline-offset-4">Choose a cover image</label><input type="file" id="community-photo" accept="image/*" onChange={handleCommunityPhotoUpload} className="mt-2 block w-full text-[10px] text-ink-mute" /><p className="mt-1 text-[10px] text-ink-mute">Optional · images up to 5 MB</p></div>
               </div>
+              <fieldset><legend className="mb-3 text-xs font-medium text-ink-soft">Who can join?</legend><div className="grid grid-cols-2 gap-2">
+                {[true, false].map(isPublic => <button key={String(isPublic)} type="button" aria-pressed={isPublicCommunity === isPublic} onClick={() => setIsPublicCommunity(isPublic)} className={`rounded-xl border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pulse ${isPublicCommunity === isPublic ? "border-pulse/40 bg-pulse-soft" : "border-line bg-surface hover:bg-surface-sunken"}`}><span className="block text-xs font-semibold text-ink">{isPublic ? "Open community" : "By request"}</span><span className="mt-1 block text-[11px] leading-5 text-ink-soft">{isPublic ? "Anyone can join" : "Members need approval"}</span></button>)}
+              </div></fieldset>
+              {coverError && <p role="alert" className="text-xs text-rose-deep">{coverError}</p>}
+              <p className="text-[11px] leading-5 text-ink-mute">Preview mode · your community and posts are local to this page.</p>
+            </DrawerBody>
+            <DrawerFooter>
+              <Button type="submit" variant="accent" className="h-10 hover:translate-y-0 active:translate-y-0" disabled={!newCommunityName.trim() || !newCommunityDescription.trim() || !newCommunitySubject.trim()}>Create community</Button>
+              <Button type="button" variant="outline" className="h-10" onClick={() => setShowCreateModal(false)}>Cancel</Button>
+            </DrawerFooter>
+          </form>
+        </DrawerContent>
+      </Drawer>
 
-              <div className="mt-6 space-y-4">
-                <div className="space-y-2">
-                  <label htmlFor="community-name" className="text-[14px] font-medium text-ink">
-                    Name
-                  </label>
-                  <input
-                    id="community-name"
-                    value={newCommunityName}
-                    onChange={(e) => setNewCommunityName(e.target.value)}
-                    placeholder="Advanced Calculus Study Group"
-                    className="h-12 w-full rounded-xl border border-line-strong bg-surface px-4 text-[15px] text-ink transition-all duration-200 placeholder:text-ink-faint hover:border-ink-faint focus:border-pulse focus:outline-none focus:ring-4 focus:ring-pulse/10"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label htmlFor="community-subject" className="text-[14px] font-medium text-ink">
-                    Subject
-                  </label>
-                  <input
-                    id="community-subject"
-                    value={newCommunitySubject}
-                    onChange={(e) => setNewCommunitySubject(e.target.value)}
-                    placeholder="Mathematics"
-                    className="h-12 w-full rounded-xl border border-line-strong bg-surface px-4 text-[15px] text-ink transition-all duration-200 placeholder:text-ink-faint hover:border-ink-faint focus:border-pulse focus:outline-none focus:ring-4 focus:ring-pulse/10"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label htmlFor="community-desc" className="text-[14px] font-medium text-ink">
-                    Description
-                  </label>
-                  <textarea
-                    id="community-desc"
-                    value={newCommunityDescription}
-                    onChange={(e) => setNewCommunityDescription(e.target.value)}
-                    placeholder="What happens here, and who is it for?"
-                    rows={3}
-                    className="w-full resize-none rounded-xl border border-line-strong bg-surface px-4 py-3 text-[15px] leading-relaxed text-ink transition-all duration-200 placeholder:text-ink-faint hover:border-ink-faint focus:border-pulse focus:outline-none focus:ring-4 focus:ring-pulse/10"
-                  />
-                </div>
-
-                <div className="flex items-center gap-4 rounded-2xl border border-line bg-surface p-3">
-                  <div className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-2xl bg-surface-sunken">
-                    {communityPhotoPreview ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={communityPhotoPreview} alt="" className="h-full w-full object-cover" />
-                    ) : (
-                      <ImageIcon className="h-5 w-5 text-ink-faint" />
-                    )}
-                  </div>
-                  <div>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleCommunityPhotoUpload}
-                      className="hidden"
-                      id="community-photo"
-                    />
-                    <label htmlFor="community-photo" className="cursor-pointer">
-                      <Button type="button" variant="secondary" size="sm" asChild>
-                        <span>Upload cover</span>
-                      </Button>
-                    </label>
-                    <p className="mt-1.5 text-[12.5px] text-ink-mute">Optional</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2.5">
-                  <button
-                    type="button"
-                    onClick={() => setIsPublicCommunity(true)}
-                    className={`flex-1 rounded-2xl border px-4 py-3 text-left transition-colors ${
-                      isPublicCommunity
-                        ? "border-ink bg-surface"
-                        : "border-line bg-surface hover:border-line-strong"
-                    }`}
-                  >
-                    <span className="block font-display text-[14px] font-bold text-ink">Open</span>
-                    <span className="block text-[12.5px] text-ink-mute">Anyone can join</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setIsPublicCommunity(false)}
-                    className={`flex-1 rounded-2xl border px-4 py-3 text-left transition-colors ${
-                      !isPublicCommunity
-                        ? "border-ink bg-surface"
-                        : "border-line bg-surface hover:border-line-strong"
-                    }`}
-                  >
-                    <span className="block font-display text-[14px] font-bold text-ink">
-                      By request
-                    </span>
-                    <span className="block text-[12.5px] text-ink-mute">You approve members</span>
-                  </button>
-                </div>
-              </div>
-
-              <div className="mt-7 flex gap-2">
-                <Button
-                  variant="secondary"
-                  className="flex-1"
-                  onClick={() => setShowCreateModal(false)}
-                >
-                  Cancel
-                </Button>
-                <Button className="flex-1" onClick={handleCreateCommunity}>
-                  Create community
-                </Button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-
-      {/* ===================== Leave / cancel dialog ===================== */}
-      <AnimatePresence>
-        {showConfirmDialog && confirmAction && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 bg-ink/40 backdrop-blur-sm"
-              onClick={() => setShowConfirmDialog(false)}
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: 8 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 8 }}
-              transition={{ duration: 0.18 }}
-              className="fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-[28px] border border-line bg-surface p-6 shadow-lift"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <h2 className="font-display text-lg font-bold tracking-[-0.02em] text-ink">
-                  {confirmAction.action === "cancel" ? "Cancel request?" : "Leave community?"}
-                </h2>
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmDialog(false)}
-                  aria-label="Close"
-                  className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-ink-mute transition-colors hover:bg-surface-sunken hover:text-ink"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-
-              <p className="mt-3 text-[14.5px] leading-relaxed text-ink-soft">
-                {confirmAction.action === "cancel"
-                  ? `Are you sure you want to cancel your request to join "${confirmAction.name}"?`
-                  : `Are you sure you want to leave "${confirmAction.name}"?`}
-              </p>
-
-              <div className="mt-6 flex gap-2">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="flex-1"
-                  onClick={() => setShowConfirmDialog(false)}
-                >
-                  Keep it
-                </Button>
-                <Button size="sm" className="flex-1" onClick={handleConfirm}>
-                  Yes, {confirmAction.action === "cancel" ? "cancel" : "leave"}
-                </Button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      <Drawer open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>{confirmAction?.action === "cancel" ? "Cancel your request?" : "Leave community?"}</DrawerTitle>
+            <DrawerDescription>{confirmAction?.name}</DrawerDescription>
+          </DrawerHeader>
+          <DrawerBody><p className="text-sm leading-7 text-ink-soft">{confirmAction?.action === "cancel" ? "You can request to join again whenever you're ready." : "This community will be removed from your list. You can join again later."}</p></DrawerBody>
+          <DrawerFooter>
+            <Button variant="destructive" onClick={handleConfirm}>{confirmAction?.action === "cancel" ? "Cancel request" : "Leave community"}</Button>
+            <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>Keep it</Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
 
       {pdfModal && (
         <PDFViewerModal

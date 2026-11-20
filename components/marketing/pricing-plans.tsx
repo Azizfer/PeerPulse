@@ -63,7 +63,7 @@ export function PricingPlans() {
             type="button"
             onClick={() => setYearly(false)}
             className={`rounded-full px-5 py-2 font-display text-sm font-semibold transition-colors ${
-              !yearly ? "bg-ink text-white" : "text-ink-soft hover:text-ink"
+              !yearly ? "bg-ink text-paper" : "text-ink-soft hover:text-ink"
             }`}
           >
             Monthly
@@ -72,7 +72,7 @@ export function PricingPlans() {
             type="button"
             onClick={() => setYearly(true)}
             className={`flex items-center gap-2 rounded-full px-5 py-2 font-display text-sm font-semibold transition-colors ${
-              yearly ? "bg-ink text-white" : "text-ink-soft hover:text-ink"
+              yearly ? "bg-ink text-paper" : "text-ink-soft hover:text-ink"
             }`}
           >
             Yearly
@@ -93,13 +93,13 @@ export function PricingPlans() {
             <div
               className={`relative flex h-full flex-col rounded-[32px] p-8 transition-all duration-300 sm:p-9 ${
                 plan.popular
-                  ? "bg-ink text-white shadow-lift"
+                  ? "bg-[#14161b] text-white shadow-lift"
                   : "border border-line bg-surface text-ink shadow-soft hover:border-line-strong hover:shadow-card"
               }`}
             >
               {plan.popular && (
                 <div className="absolute -top-3.5 left-8">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-pulse px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-pulse px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white dark:text-[#06231f]">
                     <Sparkles className="h-3 w-3" />
                     Most popular
                   </span>
@@ -172,7 +172,7 @@ export function PricingPlans() {
                 <Button
                   asChild
                   size="lg"
-                  className={`w-full ${plan.popular ? "bg-white text-ink hover:bg-white/90" : ""}`}
+                  className={`w-full ${plan.popular ? "bg-white text-[#14161b] hover:bg-white/90" : ""}`}
                   variant={plan.popular ? "default" : "secondary"}
                 >
                   <Link href={plan.href}>{plan.cta}</Link>

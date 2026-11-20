@@ -10,9 +10,9 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-ink text-white shadow-soft hover:bg-ink/90 hover:shadow-card hover:-translate-y-0.5 active:translate-y-0",
+          "bg-ink text-paper shadow-soft hover:bg-ink/90 hover:shadow-card hover:-translate-y-0.5 active:translate-y-0",
         accent:
-          "bg-pulse text-white shadow-soft hover:bg-pulse-dark hover:shadow-card hover:-translate-y-0.5 active:translate-y-0",
+          "bg-pulse text-white shadow-soft hover:bg-pulse-dark hover:shadow-card hover:-translate-y-0.5 active:translate-y-0 dark:text-[#06231f]",
         subtle:
           "bg-pulse-soft text-pulse-dark hover:bg-pulse-soft/70 hover:-translate-y-0.5 active:translate-y-0",
         secondary:

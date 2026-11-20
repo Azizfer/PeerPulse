@@ -45,7 +45,7 @@ const COLUMNS = [
 
 export default function Footer() {
   return (
-    <footer className="bg-ink text-white">
+    <footer className="bg-[#14161b] text-white">
       <div className="mx-auto w-full max-w-[1200px] px-5 py-10 sm:px-8 sm:py-12">
         {/* ---------------- Top ---------------- */}
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
@@ -60,7 +60,7 @@ export default function Footer() {
           <Button
             asChild
             size="default"
-            className="shrink-0 bg-white text-ink hover:bg-white/90"
+            className="shrink-0 bg-white text-[#14161b] hover:bg-white/90"
           >
             <Link href="/signup">Get started — it&apos;s free</Link>
           </Button>

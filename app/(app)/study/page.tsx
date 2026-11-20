@@ -6,13 +6,15 @@ import { Avatar } from "@/components/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Video, VideoOff, Mic, MicOff, Users, Clock, Search, CheckCircle, Loader2, Plus, X, Maximize2, Target, Sparkles } from 'lucide-react'
+import { Video, VideoOff, Mic, MicOff, Search, Loader2, Plus, X, Target } from 'lucide-react'
 import { showToast } from "@/lib/toast-helper"
-import { EmptyState } from "@/components/empty-states"
 import { SortableItem } from "@/components/drag-drop/sortable-item"
 import { FileUploadZone } from "@/components/drag-drop/file-upload-zone"
 import { usePiP } from "@/contexts/pip-context"
 import { CustomSelect } from "@/components/ui/custom-select"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { BookOpen, Paperclip, ChevronDown, ArrowLeft, ArrowRight, Check, Clock3, UsersRound } from "lucide-react"
 import { LiveActivityFeed } from "@/components/realtime/live-activity-feed"
 import { SharedWhiteboard } from "@/components/realtime/shared-whiteboard"
 import { motion, AnimatePresence } from "framer-motion"
@@ -44,6 +46,20 @@ interface StudyGoal {
   text: string
 }
 
+function LobbyHeading({ icon: Icon, title, description }: { icon: typeof BookOpen; title: string; description: string }) {
+  return (
+    <div className="flex items-start gap-3">
+      <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-line bg-surface-sunken text-pulse-dark">
+        <Icon className="size-4" strokeWidth={1.8} />
+      </span>
+      <div>
+        <h2 className="font-display text-base font-bold tracking-tight text-ink">{title}</h2>
+        <p className="mt-1 text-xs leading-5 text-ink-soft">{description}</p>
+      </div>
+    </div>
+  )
+}
+
 export default function StudyPage() {
   const router = useRouter()
   
@@ -55,12 +71,19 @@ export default function StudyPage() {
 
   // Setup form state
   const [subject, setSubject] = useState("")
-  const [duration, setDuration] = useState("")
-  const [studyGoals, setStudyGoals] = useState<StudyGoal[]>([
-    { id: '1', text: 'Review calculus derivatives' },
-    { id: '2', text: 'Practice integration problems' },
-    { id: '3', text: 'Complete homework exercises' }
-  ])
+  const [duration, setDuration] = useState("25")
+  const workMinutes = Number(duration) || WORK_MINUTES
+  const [topic, setTopic] = useState("")
+  useEffect(() => {
+    const parameters = new URLSearchParams(window.location.search)
+    const requestedSubject = parameters.get("subject")
+    if (requestedSubject && ["Mathematics", "Biology", "History", "Physics", "Chemistry", "English", "Computer Science"].includes(requestedSubject)) {
+      setSubject(requestedSubject)
+      setTopic((parameters.get("topic") || "").slice(0, 120))
+    }
+  }, [])
+  const [materialCount, setMaterialCount] = useState(0)
+  const [studyGoals, setStudyGoals] = useState<StudyGoal[]>([])
   const [newGoal, setNewGoal] = useState("")
   const [cameraOn, setCameraOn] = useState(true)
   const [micOn, setMicOn] = useState(true)
@@ -71,7 +94,6 @@ export default function StudyPage() {
   const [showChatInFullscreen, setShowChatInFullscreen] = useState(false)
   const [mainCameraIsPartner, setMainCameraIsPartner] = useState(true)
   const [timerMode, setTimerMode] = useState<TimerMode>('work')
-  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>('default')
   const [savedWorkProgress, setSavedWorkProgress] = useState<number | null>(null)
   const [activeGoalId, setActiveGoalId] = useState<string | null>(null)
   const [showMatchCard, setShowMatchCard] = useState(false)
@@ -89,12 +111,10 @@ export default function StudyPage() {
     avatar: "/partner-avatar.png",
     major: "Computer Science",
     year: "Junior",
-    rating: 4.8,
-    sessionGoals: ["Review calculus derivatives", "Practice integration problems"],
   })
 
   // Searching state
-  const [searchProgress, setSearchProgress] = useState(0)
+  const [, setSearchProgress] = useState(0)
 
   // Chat state
   const [messages, setMessages] = useState<Array<{ id: string; text: string; sender: 'you' | 'partner'; timestamp: Date }>>([])
@@ -108,17 +128,6 @@ export default function StudyPage() {
     })
   )
 
-  // Request notification permission on mount
-  useEffect(() => {
-    if ('Notification' in window) {
-      setNotificationPermission(Notification.permission)
-      if (Notification.permission === 'default') {
-        Notification.requestPermission().then(permission => {
-          setNotificationPermission(permission)
-        })
-      }
-    }
-  }, [])
 
   // Timer effect with break transitions
   useEffect(() => {
@@ -142,12 +151,12 @@ export default function StudyPage() {
             } else {
               // Break over - restore saved work progress or start fresh
               setTimerMode('work')
-              setSecondsLeft(savedWorkProgress || WORK_MINUTES * 60)
+              setSecondsLeft(savedWorkProgress ?? workMinutes * 60)
               setSavedWorkProgress(null)
               showToast.info('Break Over', 'Ready to continue studying?')
             }
             
-            return timerMode === 'work' ? BREAK_MINUTES * 60 : WORK_MINUTES * 60
+            return timerMode === 'work' ? BREAK_MINUTES * 60 : (savedWorkProgress ?? workMinutes * 60)
           }
           return prev - 1
         })
@@ -159,11 +168,11 @@ export default function StudyPage() {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current)
     }
-  }, [running, phase, timerMode])
+  }, [running, phase, timerMode, savedWorkProgress, workMinutes])
 
   // Search simulation effect
   useEffect(() => {
-    if (phase === 'searching') {
+    if (phase === 'searching' && !showMatchCard) {
       const searchInterval = setInterval(() => {
         setSearchProgress((prev) => {
           if (prev >= 100) {
@@ -177,32 +186,8 @@ export default function StudyPage() {
 
       return () => clearInterval(searchInterval)
     }
-  }, [phase])
+  }, [phase, showMatchCard])
 
-  // Partner found - play sound and browser notification when match card shows
-  useEffect(() => {
-    if (showMatchCard) {
-      // Play subtle notification sound
-      const context = new (window.AudioContext || (window as any).webkitAudioContext)()
-      const oscillator = context.createOscillator()
-      const gainNode = context.createGain()
-      oscillator.connect(gainNode)
-      gainNode.connect(context.destination)
-      oscillator.frequency.value = 600 // Softer frequency
-      gainNode.gain.value = 0.15 // Quieter
-      oscillator.start(context.currentTime)
-      oscillator.stop(context.currentTime + 0.1) // Shorter
-      
-      // Show browser notification
-      if (notificationPermission === 'granted') {
-        new Notification('Study Partner Found! 🎉', {
-          body: `You've been matched with ${partner.name} for ${subject}`,
-          icon: '/logo.png',
-          badge: '/logo.png',
-        })
-      }
-    }
-  }, [showMatchCard, partner.name, subject, notificationPermission])
 
   // Timer helpers
   const minutes = String(Math.floor(secondsLeft / 60)).padStart(2, "0")
@@ -238,13 +223,13 @@ export default function StudyPage() {
   const resetTimer = () => {
     setRunning(false)
     setTimerMode('work')
-    setSecondsLeft(WORK_MINUTES * 60)
+    setSecondsLeft(workMinutes * 60)
   }
 
   const skipBreak = () => {
     setTimerMode('work')
     // Restore saved work progress or start fresh
-    setSecondsLeft(savedWorkProgress || WORK_MINUTES * 60)
+    setSecondsLeft(savedWorkProgress ?? workMinutes * 60)
     setRunning(false)
     showToast.quick('Break Skipped')
     setSavedWorkProgress(null)
@@ -283,13 +268,13 @@ export default function StudyPage() {
   }
 
   // Form validation
-  const isFormValid = subject && duration && studyGoals.length > 0
+  const isFormValid = Boolean(subject && duration)
 
   // Drag and drop handlers
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
-    if (active.id !== over?.id) {
+    if (over && active.id !== over.id) {
       setStudyGoals((items) => {
         const oldIndex = items.findIndex((item) => item.id === active.id)
         const newIndex = items.findIndex((item) => item.id === over?.id)
@@ -310,7 +295,6 @@ export default function StudyPage() {
       setStudyGoals([...studyGoals, goal])
       setNewGoal("")
       
-      showToast.quick("Goal Added")
     }
   }
 
@@ -328,6 +312,11 @@ export default function StudyPage() {
       await new Promise(resolve => setTimeout(resolve, 1000))
       
       setSearchProgress(0)
+      setShowMatchCard(false)
+      setTimerMode('work')
+      setSecondsLeft(workMinutes * 60)
+      setSavedWorkProgress(null)
+      setActiveGoalId(null)
       setPhase('searching')
       setIsStartingSession(false)
       
@@ -337,13 +326,17 @@ export default function StudyPage() {
 
   // Back to setup handler
   const handleBackToSetup = () => {
+    const wasInSession = phase === 'session'
+    setShowMatchCard(false)
     setPhase('setup')
     setRunning(false)
-    setSecondsLeft(WORK_MINUTES * 60)
+    setSecondsLeft(workMinutes * 60)
+    setTimerMode('work')
+    setSavedWorkProgress(null)
     setSearchProgress(0)
     deactivatePiP()
     
-    showToast.info("Session Ended", "Great work! Your session has been saved.")
+    if (wasInSession) showToast.info("Session ended", "You're back in your session lobby.")
   }
 
   const handleActivatePiP = () => {
@@ -381,9 +374,9 @@ export default function StudyPage() {
         {/* Live Cursors for real-time collaboration */}
         
 
-        <main className="flex flex-1 gap-6 px-6 py-5">
+        <main className="container-page flex w-full max-w-6xl flex-1 flex-col gap-6 py-10 sm:py-14 lg:flex-row">
           {/* Left Column - Main Content */}
-          <section className="flex max-w-[600px] flex-1 flex-col">
+          <section className={`flex min-w-0 flex-1 flex-col ${phase === 'session' ? "lg:max-w-[600px]" : "w-full"}`}>
             
             {/* Setup Phase */}
             <AnimatePresence mode="wait">
@@ -395,230 +388,216 @@ export default function StudyPage() {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <div className="px-4 pb-2 pt-1">
+                  <header className="mb-8">
                     <p className="eyebrow">Focus room</p>
-                    <h2 className="mt-2 font-display text-[30px] font-extrabold leading-[1.08] tracking-[-0.035em] text-ink">
-                      Set up your session
-                    </h2>
-                    <p className="mt-2.5 text-[15px] leading-relaxed text-ink-soft">
-                      Pick what you&apos;re working on. We&apos;ll match you with someone in the same subject.
-                    </p>
-                  </div>
+                    <h1 className="mt-2 font-display text-[32px] font-extrabold leading-tight tracking-[-0.035em] text-ink sm:text-[40px]">Good work starts together.</h1>
+                    <p className="mt-3 max-w-xl text-[15px] leading-7 text-ink-soft">Choose a subject, set your pace, and find someone to study alongside.</p>
+                  </header>
 
-                  <div className="space-y-6">
-                    {/* Subject Selection */}
-                    <div className="px-4">
-                      <label className="mb-2 flex items-center gap-2 text-sm font-medium text-ink-soft">
-                        <span className="grid h-6 w-6 place-items-center rounded-lg bg-sky text-sky-deep">
-                          <Search className="h-3.5 w-3.5" />
-                        </span>
-                        Subject
-                      </label>
-                      <CustomSelect
-                        value={subject}
-                        onChange={setSubject}
-                        placeholder="Select subject"
-                        options={[
-                          { value: "Mathematics", label: "Mathematics" },
-                          { value: "Biology", label: "Biology" },
-                          { value: "History", label: "History" },
-                          { value: "Physics", label: "Physics" },
-                          { value: "Chemistry", label: "Chemistry" },
-                          { value: "English", label: "English" },
-                          { value: "Computer Science", label: "Computer Science" },
-                        ]}
-                      />
-                    </div>
-
-                    {/* Duration Selection */}
-                    <div className="px-4">
-                      <label className="mb-2 flex items-center gap-2 text-sm font-medium text-ink-soft">
-                        <span className="grid h-6 w-6 place-items-center rounded-lg bg-apricot text-apricot-deep">
-                          <Clock className="h-3.5 w-3.5" />
-                        </span>
-                        Duration
-                      </label>
-                      <CustomSelect
-                        value={duration}
-                        onChange={setDuration}
-                        placeholder="Select duration"
-                        options={[
-                          { value: "25", label: "25 min (Pomodoro)" },
-                          { value: "45", label: "45 min" },
-                          { value: "60", label: "60 min" },
-                          { value: "90", label: "90 min" },
-                          { value: "120", label: "2 hours" },
-                        ]}
-                      />
-                    </div>
-
-                    {/* Draggable Study Goals */}
-                    <div className="px-4">
-                      <label className="mb-3 flex items-center gap-2 text-sm font-medium text-ink-soft">
-                        <span className="grid h-6 w-6 place-items-center rounded-lg bg-lilac text-lilac-deep">
-                          <Target className="h-3.5 w-3.5" />
-                        </span>
-                        Study Goals (Drag to reorder, shared with partners)
-                      </label>
-                      
-                      <DndContext
-                        sensors={sensors}
-                        collisionDetection={closestCenter}
-                        onDragEnd={handleDragEnd}
-                      >
-                        <SortableContext items={studyGoals} strategy={verticalListSortingStrategy}>
-                          <div className="space-y-2 mb-4">
-                            <AnimatePresence>
-                              {studyGoals.map((goal) => (
-                                <motion.div
-                                  key={goal.id}
-                                  layout
-                                  initial={{ opacity: 0, scale: 0.8 }}
-                                  animate={{ opacity: 1, scale: 1 }}
-                                  exit={{ opacity: 0, scale: 0.8 }}
-                                  transition={{ duration: 0.2 }}
-                                >
-                                  <SortableItem
-                                    id={goal.id}
-                                    className="rounded-2xl border border-line bg-surface-sunken p-3.5"
-                                  >
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-sm text-ink-soft">{goal.text}</span>
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => removeGoal(goal.id)}
-                                        className="h-7 w-7 p-0 hover:bg-rose/50"
-                                      >
-                                        <X className="h-3.5 w-3.5 text-rose-deep" />
-                                      </Button>
-                                    </div>
-                                  </SortableItem>
-                                </motion.div>
-                              ))}
-                            </AnimatePresence>
+                  <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+                    <div className="min-w-0 space-y-5">
+                      <Card>
+                        <CardContent className="space-y-6 p-5 sm:p-6">
+                          <LobbyHeading icon={BookOpen} title="What are you working on?" description="Start with a subject. A topic helps make your intentions clearer." />
+                          <div className="grid gap-5 sm:grid-cols-2">
+                            <div className="space-y-2">
+                              <Label htmlFor="session-subject">Subject</Label>
+                              <CustomSelect id="session-subject" value={subject} onChange={setSubject} placeholder="Choose a subject" options={["Mathematics", "Biology", "History", "Physics", "Chemistry", "English", "Computer Science"].map(value => ({ value, label: value }))} />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="session-topic">Topic <span className="font-normal text-ink-mute">· optional</span></Label>
+                              <Input id="session-topic" value={topic} onChange={event => setTopic(event.target.value)} placeholder="e.g. Integration by parts" maxLength={120} />
+                            </div>
                           </div>
-                        </SortableContext>
-                      </DndContext>
+                          <fieldset>
+                            <legend className="mb-3 text-sm font-medium text-ink-soft">Focus duration</legend>
+                            <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
+                              {[25, 45, 60, 90, 120].map(value => (
+                                <button key={value} type="button" aria-pressed={duration === String(value)} onClick={() => setDuration(String(value))}
+                                  className={`rounded-xl border px-2 py-3 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pulse ${duration === String(value) ? "border-pulse bg-pulse-soft text-pulse-dark" : "border-line bg-surface hover:bg-surface-sunken text-ink-soft"}`}>
+                                  <span className="block text-base font-bold tabular-nums">{value === 120 ? "2" : value}<span className="ml-1 text-xs font-normal">{value === 120 ? "hr" : "min"}</span></span>
+                                  {value === 25 && <span className="mt-1 block text-[10px]">Pomodoro</span>}
+                                </button>
+                              ))}
+                            </div>
+                            <p className="mt-3 text-xs leading-5 text-ink-mute">A 5-minute break follows your focus interval.</p>
+                          </fieldset>
+                        </CardContent>
+                      </Card>
 
-                      {/* Add new goal */}
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          placeholder="Add a new study goal..."
-                          value={newGoal}
-                          onChange={(e) => setNewGoal(e.target.value)}
-                          onKeyPress={(e) => e.key === 'Enter' && addGoal()}
-                          className="h-11 flex-1 rounded-full border border-line-strong bg-surface px-4 text-[14px] text-ink transition-all duration-200 placeholder:text-ink-faint hover:border-ink-faint focus:border-pulse focus:outline-none focus:ring-4 focus:ring-pulse/10"
-                        />
-                        <Button onClick={addGoal} size="sm" disabled={!newGoal.trim()}>
-                          <Plus className="w-4 h-4" />
-                        </Button>
-                      </div>
+                      <Card>
+                        <CardContent className="space-y-5 p-5 sm:p-6">
+                          <LobbyHeading icon={Target} title="A little intention" description="Add a goal or two, or decide together once you're paired. Optional." />
+                          {studyGoals.length > 0 && (
+                            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                              <SortableContext items={studyGoals} strategy={verticalListSortingStrategy}>
+                                <ul className="space-y-2">
+                                  {studyGoals.map(goal => (
+                                    <li key={goal.id}>
+                                      <SortableItem id={goal.id} className="rounded-xl border border-line bg-surface-sunken px-3 py-2">
+                                        <div className="flex min-w-0 items-center justify-between gap-2">
+                                          <span className="break-words text-sm leading-6 text-ink-soft">{goal.text}</span>
+                                          <Button variant="ghost" size="icon-sm" onClick={() => removeGoal(goal.id)} aria-label={`Remove goal: ${goal.text}`}><X className="size-3.5" /></Button>
+                                        </div>
+                                      </SortableItem>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </SortableContext>
+                            </DndContext>
+                          )}
+                          <form onSubmit={event => { event.preventDefault(); addGoal() }} className="flex items-center gap-2">
+                            <Input aria-label="New study goal" value={newGoal} onChange={event => setNewGoal(event.target.value)} placeholder="What would you like to finish?" maxLength={200} className="min-w-0" />
+                            <Button type="submit" variant="secondary" size="icon" disabled={!newGoal.trim()} aria-label="Add study goal"><Plus className="size-4" /></Button>
+                          </form>
+                          <p className="text-xs leading-5 text-ink-mute">Try “Solve three practice problems” or “Review chapter 4”. Drag goals to reorder.</p>
+                        </CardContent>
+                      </Card>
+
+                      <details className="group rounded-3xl border border-line bg-surface shadow-soft">
+                        <summary className="flex cursor-pointer list-none items-center gap-3 rounded-3xl p-5 text-sm font-semibold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pulse sm:p-6 [&::-webkit-details-marker]:hidden">
+                          <Paperclip className="size-4 text-ink-mute" strokeWidth={1.8} />
+                          Study materials <span className="text-xs font-normal text-ink-mute">Optional</span>
+                          <ChevronDown className="ml-auto size-4 text-ink-mute transition-transform group-open:rotate-180" />
+                        </summary>
+                        <div className="border-t border-line p-5 sm:p-6">
+                          <p className="mb-4 text-xs leading-5 text-ink-soft">Prepare notes or exercises for your session. File sharing will be available when live sessions are connected.</p>
+                          <FileUploadZone onFilesUploaded={files => setMaterialCount(files.length)} />
+                        </div>
+                      </details>
                     </div>
 
-                    {/* File Upload Zone */}
-                    <div className="px-4">
-                      <label className="block text-sm font-medium text-ink-soft mb-3">
-                        Study Materials (Shared with partners)
-                      </label>
-                      <FileUploadZone onFilesUploaded={(files) => console.log('Files:', files)} />
-                    </div>
+                    <aside className="space-y-5 lg:sticky lg:top-24">
+                      <Card className="overflow-hidden">
+                        <CardContent className="space-y-5 p-5 sm:p-6">
+                          <LobbyHeading icon={Video} title="Join your way" description="Camera and microphone are always your choice." />
+                          <div className="relative flex aspect-video flex-col items-center justify-center rounded-2xl border border-line bg-surface-sunken">
+                            <Avatar name="You" size="lg" />
+                            <p className="mt-3 text-xs font-medium text-ink-soft">{cameraOn ? "Ready for video" : "Camera off"}</p>
+                            <span className="absolute bottom-3 left-3 text-[10px] text-ink-mute">Session preview · devices not connected</span>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            <Button variant={cameraOn ? "subtle" : "secondary"} onClick={handleCameraToggle} aria-pressed={cameraOn} className="px-3 text-xs">
+                              {cameraOn ? <Video className="size-3.5" /> : <VideoOff className="size-3.5" />} Camera {cameraOn ? "on" : "off"}
+                            </Button>
+                            <Button variant={micOn ? "subtle" : "secondary"} onClick={handleMicToggle} aria-pressed={micOn} className="px-3 text-xs">
+                              {micOn ? <Mic className="size-3.5" /> : <MicOff className="size-3.5" />} Mic {micOn ? "on" : "off"}
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
 
-                    {/* Camera and Mic Controls */}
-                    <div className="px-4">
-                      <label className="mb-3 flex items-center gap-2 text-sm font-medium text-ink-soft">
-                        <span className="grid h-6 w-6 place-items-center rounded-lg bg-pulse-soft text-pulse-dark">
-                          <Video className="h-3.5 w-3.5" />
-                        </span>
-                        Media Settings
-                      </label>
-                      <div className="flex gap-3">
-                        <Button
-                            onClick={handleCameraToggle}
-                            variant={cameraOn ? "default" : "outline"}
-                            className="w-full transition-all duration-200"
-                          >
-                            {cameraOn ? <Video className="w-4 h-4 mr-2" /> : <VideoOff className="w-4 h-4 mr-2" />}
-                            {cameraOn ? "Camera On" : "Camera Off"}
+                      <Card>
+                        <CardContent className="p-5 sm:p-6">
+                          <p className="eyebrow">Your session</p>
+                          <h2 className="mt-2 break-words font-display text-xl font-bold tracking-tight text-ink">{subject || "Choose your subject"}</h2>
+                          {topic.trim() && <p className="mt-1 break-words text-sm text-ink-soft">{topic}</p>}
+                          <dl className="my-5 space-y-3 border-y border-line py-4 text-xs">
+                            <div className="flex justify-between gap-3"><dt className="text-ink-mute">Focus interval</dt><dd className="font-medium text-ink">{duration} minutes</dd></div>
+                            <div className="flex justify-between gap-3"><dt className="text-ink-mute">Study goals</dt><dd className="font-medium text-ink">{studyGoals.length || "Decide together"}</dd></div>
+                            <div className="flex justify-between gap-3"><dt className="text-ink-mute">Materials prepared</dt><dd className="font-medium text-ink">{materialCount || "None yet"}</dd></div>
+                          </dl>
+                          <Button onClick={handleStartPairing} variant="accent" loading={isStartingSession} disabled={!isFormValid} className="w-full">
+                            {!isStartingSession && <Search className="size-4" strokeWidth={1.8} />}
+                            {isStartingSession ? "Preparing…" : "Find a study partner"}
                           </Button>
-                        <Button 
-                            onClick={handleMicToggle}
-                            variant={micOn ? "default" : "outline"} 
-                            className="w-full transition-all duration-200"
-                          >
-                            {micOn ? <Mic className="w-4 h-4 mr-2" /> : <MicOff className="w-4 h-4 mr-2" />}
-                            {micOn ? "Mic On" : "Mic Off"}
-                          </Button>
-                      </div>
-                    </div>
-
-                    {/* Start Pairing Button */}
-                    <div className="flex justify-center px-4 py-3">
-                      <Button
-                          onClick={handleStartPairing}
-                          disabled={!isFormValid}
-                          loading={isStartingSession}
-                          className="h-12 min-w-[240px]" style={{ fontWeight: 600 }}
-                        >
-                          {!isStartingSession && <Search className="w-4 h-4 mr-2" />}
-                          {isStartingSession ? "Preparing..." : "Start Collaborative Session"}
-                        </Button>
-                    </div>
-
-                    {/* Form validation feedback */}
-                    {!isFormValid && (
-                      <div className="px-4">
-                        <p className="text-sm text-ink-mute text-center">
-                          Please fill in all fields and add at least one study goal to start pairing
-                        </p>
-                      </div>
-                    )}
+                          <p className="mt-3 text-center text-xs leading-5 text-ink-mute">{subject ? "Review your match before joining." : "Choose a subject to get started."}</p>
+                          <p className="mt-3 text-center text-[11px] text-ink-mute">Preview mode · pairing is currently simulated</p>
+                        </CardContent>
+                      </Card>
+                    </aside>
                   </div>
                 </motion.div>
               )}
 
-              {/* Searching Phase - Perfectly Centered Full Screen */}
+              {/* Search and match share one page, without a modal or notification. */}
               {phase === 'searching' && (
-                <motion.div
-                  key="searching"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="fixed inset-0 flex items-center justify-center bg-paper z-10"
-                  style={{ marginTop: '64px' }}
-                >
-                  <div className="flex flex-col items-center justify-center max-w-md w-full px-6">
-                    {/* Animated Pulse Circle */}
-                    <motion.div
-                      className="w-24 h-24 mb-8 relative"
-                      animate={{
-                        scale: [1, 1.2, 1],
-                      }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
-                      <div className="absolute inset-0 bg-pulse rounded-full opacity-20 animate-ping" />
-                      <div className="absolute inset-0 flex items-center justify-center rounded-full bg-ink">
-                        <Loader2 className="w-12 h-12 text-white animate-spin" />
-                      </div>
-                    </motion.div>
-
-                    <motion.h3 
-                      className="font-display text-[28px] font-extrabold tracking-[-0.035em] text-ink mb-3 text-center"
-                      animate={{ opacity: [0.7, 1, 0.7] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
-                      Finding your study partner
-                    </motion.h3>
-                    <p className="text-ink-soft text-center mb-8">
-                      Matching you with someone studying {subject}...
+                <motion.div key="searching" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mx-auto w-full max-w-xl py-4 sm:py-10">
+                  <Button variant="ghost" size="sm" onClick={handleBackToSetup} className="mb-6 gap-2">
+                    <ArrowLeft className="size-3.5" /> Back to setup
+                  </Button>
+                  <div className="mb-6">
+                    <p className="eyebrow">Find your focus</p>
+                    <h1 className="mt-2 font-display text-[30px] font-extrabold leading-tight tracking-[-0.035em] text-ink sm:text-[36px]">
+                      {showMatchCard ? "A study partner for you." : "Finding your study partner."}
+                    </h1>
+                    <p className="mt-3 text-sm leading-6 text-ink-soft">
+                      {showMatchCard ? "Take a look, then decide if you'd like to study together." : "We're looking for someone working on the same subject. You can head back and change your preferences anytime."}
                     </p>
-
-                    <Button variant="outline" onClick={handleBackToSetup} className="mt-4">
-                      Cancel Search
-                    </Button>
                   </div>
+                  <AnimatePresence mode="wait">
+                    {!showMatchCard ? (
+                      <motion.div key="looking" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} role="status" aria-live="polite">
+                        <Card>
+                          <CardContent className="p-6 text-center sm:p-8">
+                            <div className="mx-auto mb-6 flex items-center justify-center gap-4" aria-hidden="true">
+                              <Avatar name="You" size="lg" />
+                              <span className="grid size-10 place-items-center rounded-full bg-pulse-soft text-pulse-dark">
+                                <Loader2 className="size-4 animate-spin motion-reduce:animate-none" strokeWidth={1.8} />
+                              </span>
+                              <span className="grid size-14 place-items-center rounded-full border border-dashed border-line-strong bg-surface-sunken text-ink-mute">
+                                <UsersRound className="size-5" strokeWidth={1.6} />
+                              </span>
+                            </div>
+                            <h2 className="font-display text-lg font-bold text-ink">Looking for a good study fit</h2>
+                            <p className="mt-2 text-sm leading-6 text-ink-soft">Your match will appear here when they&apos;re ready.</p>
+                            <div className="mt-6 rounded-2xl border border-line bg-surface-sunken p-4 text-left">
+                              <p className="break-words text-sm font-semibold text-ink">{subject}</p>
+                              {topic.trim() && <p className="mt-1 break-words text-xs text-ink-soft">{topic.trim()}</p>}
+                              <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-xs text-ink-soft">
+                                <span className="inline-flex items-center gap-1.5"><Clock3 className="size-3.5" /> {duration} min focus</span>
+                                <span className="inline-flex items-center gap-1.5">{cameraOn ? <Video className="size-3.5" /> : <VideoOff className="size-3.5" />} Camera {cameraOn ? "on" : "off"}</span>
+                                <span className="inline-flex items-center gap-1.5">{micOn ? <Mic className="size-3.5" /> : <MicOff className="size-3.5" />} Mic {micOn ? "on" : "off"}</span>
+                              </div>
+                            </div>
+                            <Button variant="outline" onClick={handleBackToSetup} className="mt-6">Cancel search</Button>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    ) : (
+                      <motion.div key="match" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} aria-live="polite">
+                        <Card className="overflow-hidden">
+                          <div className="flex items-center gap-2 border-b border-line bg-pulse-soft px-6 py-3 text-xs font-semibold text-pulse-dark">
+                            <Check className="size-3.5" strokeWidth={2} /> Match found
+                          </div>
+                          <CardContent className="space-y-6 p-6 sm:p-8">
+                            <div className="flex items-center gap-4">
+                              <Avatar name={partner.name} size="lg" />
+                              <div>
+                                <h2 className="font-display text-2xl font-extrabold tracking-tight text-ink">{partner.name}</h2>
+                                <p className="mt-1 text-xs leading-5 text-ink-soft">{partner.major} · {partner.year}</p>
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-4 rounded-2xl border border-line bg-surface-sunken p-4">
+                              <div>
+                                <p className="text-[11px] font-medium text-ink-mute">Shared subject</p>
+                                <p className="mt-1 break-words text-sm font-semibold text-ink">{subject}</p>
+                              </div>
+                              <div className="border-l border-line pl-4">
+                                <p className="text-[11px] font-medium text-ink-mute">Focus interval</p>
+                                <p className="mt-1 text-sm font-semibold text-ink">{duration} min</p>
+                              </div>
+                            </div>
+                            <div>
+                              <p className="mb-3 flex items-center gap-2 text-xs font-semibold text-ink"><Target className="size-3.5 text-pulse-dark" strokeWidth={1.8} /> Your session plan</p>
+                              {topic.trim() && <p className="mb-3 break-words text-sm text-ink-soft">{topic.trim()}</p>}
+                              {studyGoals.length > 0 ? (
+                                <ul className="space-y-2">
+                                  {studyGoals.map(goal => <li key={goal.id} className="flex items-start gap-2 text-sm leading-6 text-ink-soft"><span className="mt-2 size-1.5 shrink-0 rounded-full bg-pulse" /><span className="min-w-0 break-words">{goal.text}</span></li>)}
+                                </ul>
+                              ) : <p className="text-sm leading-6 text-ink-soft">Start with a quick introduction and choose a goal together.</p>}
+                            </div>
+                            <p className="rounded-xl bg-surface-sunken p-3 text-xs leading-5 text-ink-soft">You&apos;ll join with your camera {cameraOn ? "on" : "off"} and microphone {micOn ? "on" : "off"}. You can change either during the session.</p>
+                            <div className="flex flex-col-reverse gap-3 sm:flex-row">
+                              <Button variant="outline" onClick={() => { setSearchProgress(0); setShowMatchCard(false) }} className="flex-1">Find someone else</Button>
+                              <Button variant="accent" onClick={() => { setShowMatchCard(false); setPhase('session') }} className="flex-1">Join session <ArrowRight className="size-3.5" /></Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                  <p className="mt-5 text-center text-[11px] text-ink-mute">Preview mode · pairing is currently simulated</p>
                 </motion.div>
               )}
 
@@ -766,18 +745,18 @@ export default function StudyPage() {
                         }`}
                         initial={{ width: 0 }}
                         animate={{ width: `${Math.max(0, Math.min(100, ((
-                          (timerMode === 'work' ? WORK_MINUTES : BREAK_MINUTES) * 60 - secondsLeft
+                          (timerMode === 'work' ? workMinutes : BREAK_MINUTES) * 60 - secondsLeft
                         ) / (
-                          (timerMode === 'work' ? WORK_MINUTES : BREAK_MINUTES) * 60
+                          (timerMode === 'work' ? workMinutes : BREAK_MINUTES) * 60
                         )) * 100))}%` }}
                         transition={{ duration: 0.3 }}
                       />
                     </div>
                     <p className="text-sm text-ink-soft">
                       {Math.max(0, Math.min(100, Math.round(((
-                        (timerMode === 'work' ? WORK_MINUTES : BREAK_MINUTES) * 60 - secondsLeft
+                        (timerMode === 'work' ? workMinutes : BREAK_MINUTES) * 60 - secondsLeft
                       ) / (
-                        (timerMode === 'work' ? WORK_MINUTES : BREAK_MINUTES) * 60
+                        (timerMode === 'work' ? workMinutes : BREAK_MINUTES) * 60
                       )) * 100)))}% completed
                     </p>
                   </motion.div>
@@ -940,11 +919,11 @@ export default function StudyPage() {
                       <div className="aspect-video flex items-center justify-center rounded-3xl bg-ink/80 ring-1 ring-white/10">
                         {mainCameraIsPartner ? (
                           cameraOn ? (
-                            <div className="text-[17px] text-white/45">Partner's Camera</div>
+                            <div className="text-[17px] text-white/45">Partner&apos;s Camera</div>
                           ) : (
                             <div className="flex flex-col items-center text-white/45">
                               <VideoOff className="w-16 h-16 mb-3" />
-                              <span>{partner.name}'s camera is off</span>
+                              <span>{partner.name}&apos;s camera is off</span>
                             </div>
                           )
                         ) : (
@@ -982,11 +961,11 @@ export default function StudyPage() {
                           )
                         ) : (
                           cameraOn ? (
-                            <div className="text-[14px] text-white/45">Partner's Camera</div>
+                            <div className="text-[14px] text-white/45">Partner&apos;s Camera</div>
                           ) : (
                             <div className="flex flex-col items-center text-white/45">
                               <VideoOff className="w-8 h-8 mb-1" />
-                              <span className="text-xs">{partner.name}'s camera is off</span>
+                              <span className="text-xs">{partner.name}&apos;s camera is off</span>
                             </div>
                           )
                         )}
@@ -1149,11 +1128,11 @@ export default function StudyPage() {
                         <div className="relative group">
                           <div className="aspect-video flex items-center justify-center rounded-2xl bg-ink ring-1 ring-white/10 transition-colors duration-200">
                             {cameraOn ? (
-                              <div className="text-[14px] text-white/45">Partner's camera</div>
+                              <div className="text-[14px] text-white/45">Partner&apos;s camera</div>
                             ) : (
                               <div className="flex flex-col items-center text-white/45">
                                 <VideoOff className="w-8 h-8 mb-2" />
-                                <span className="text-sm">{partner.name}'s camera is off</span>
+                                <span className="text-sm">{partner.name}&apos;s camera is off</span>
                               </div>
                             )}
                           </div>
@@ -1240,108 +1219,6 @@ export default function StudyPage() {
           </AnimatePresence>
         </main>
 
-        {/* Match Approval Card */}
-        <AnimatePresence>
-          {showMatchCard && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-4 backdrop-blur-sm"
-            >
-              <motion.div
-                initial={{ scale: 0.9, y: 20 }}
-                animate={{ scale: 1, y: 0 }}
-                exit={{ scale: 0.9, y: 20 }}
-                className="w-full max-w-[380px] overflow-hidden rounded-[28px] bg-surface shadow-lift"
-              >
-                {/* Simple header bar */}
-                <div className="bg-ink px-5 py-3 text-center text-white">
-                  <h2 className="font-display text-[15px] font-bold uppercase tracking-[0.1em]">Match found</h2>
-                </div>
-
-                {/* Content */}
-                <div className="p-4">
-                  {/* Partner Profile */}
-                  <div className="text-center mb-3">
-                    <div className="mb-2 flex justify-center">
-                      <Avatar name={partner.name} size="xl" />
-                    </div>
-                    <h3 className="text-lg font-bold text-ink">{partner.name}</h3>
-                    <p className="text-xs text-ink-soft">{partner.major} • {partner.year}</p>
-                    <div className="flex items-center justify-center gap-1 mt-1.5">
-                      {[...Array(5)].map((_, i) => (
-                        <svg
-                          key={i}
-                          className={`w-4 h-4 ${i < Math.floor(partner.rating) ? 'text-lemon-deep' : 'text-line-strong'}`}
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                      ))}
-                      <span className="text-sm text-ink-soft ml-1">({partner.rating})</span>
-                    </div>
-                  </div>
-
-                  {/* Session Details */}
-                  <div className="bg-surface-sunken rounded-lg p-3 mb-3">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-semibold text-ink-soft">Subject</span>
-                      <span className="text-sm font-bold text-ink">{subject}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-semibold text-ink-soft">Duration</span>
-                      <span className="text-sm font-bold text-ink">{duration} minutes</span>
-                    </div>
-                  </div>
-
-                  {/* Their Goals */}
-                  <div className="mb-3">
-                    <h4 className="text-sm font-semibold text-ink-soft mb-2 flex items-center gap-1">
-                      <Target className="w-4 h-4" />
-                      Their Goals
-                    </h4>
-                    <div className="space-y-2">
-                      {partner.sessionGoals.map((goal, idx) => (
-                        <div key={idx} className="flex items-start gap-2 text-sm text-ink-soft">
-                          <div className="w-1.5 h-1.5 bg-pulse rounded-full mt-1.5 flex-shrink-0" />
-                          <span>{goal}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => {
-                        setShowMatchCard(false)
-                        setSearchProgress(0)
-                        // Restart search immediately
-                        setTimeout(() => {
-                          setPhase('searching')
-                        }, 100)
-                      }}
-                      className="flex-1 rounded-xl bg-surface-sunken px-5 py-2.5 font-semibold text-ink-soft transition-all hover:bg-line/50"
-                    >
-                      Decline
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowMatchCard(false)
-                        setPhase('session')
-                      }}
-                      className="flex-1 rounded-xl bg-ink px-5 py-2.5 font-semibold text-white shadow-soft transition-all hover:shadow-card"
-                    >
-                      Accept
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
   )
 }

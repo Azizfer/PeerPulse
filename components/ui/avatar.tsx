@@ -21,7 +21,7 @@ function Avatar({
     <AvatarPrimitive.Root
       data-slot="avatar"
       className={cn(
-        "relative flex size-8 shrink-0 overflow-hidden rounded-full",
+        "relative flex size-8 shrink-0 overflow-visible rounded-full",
         className,
       )}
       {...props}
@@ -63,7 +63,7 @@ function AvatarBadge({ className, ...props }: React.ComponentProps<"span">) {
     <span
       data-slot="avatar-badge"
       className={cn(
-        "bg-primary absolute right-0 bottom-0 z-10 size-2 rounded-full ring-2 ring-background",
+        "absolute -right-0.5 -bottom-0.5 z-10 size-2.5 rounded-full bg-primary ring-2 ring-background",
         className,
       )}
       {...props}

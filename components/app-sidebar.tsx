@@ -1,28 +1,38 @@
 "use client"
-import * as React from "react"
+
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
-  CalendarClock,
+  Calendar,
   ChevronsUpDown,
-  CircleDot,
-  LayoutDashboard,
+  House,
+  FolderClosed,
   LogOut,
-  MessagesSquare,
+  Inbox,
+  Video,
   Plus,
-  Radio,
-  Search,
+  UserRound,
+  ChevronDown,
+  type LucideIcon,
   Settings2,
-  Sparkles,
   Users,
-  BookMarked,
-  ListChecks,
 } from "lucide-react"
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarRail,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
+  useSidebar,
+} from "@/components/ui/sidebar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,56 +41,48 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarInput,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-  SidebarRail,
-} from "@/components/ui/sidebar"
 import { Avatar, AvatarBadge, AvatarFallback } from "@/components/ui/avatar"
-import { ModeToggle } from "@/components/mode-toggle"
 import { useAuth } from "@/components/auth-provider"
-/** Collapsed-by-default groups, with nested children — Linear-style. */
-const NAV: {
-  title: string
-  icon: React.ElementType
-  items: { title: string; url: string; icon?: React.ElementType }[]
-}[] = [
-  {
-    title: "Community",
-    icon: Users,
-    items: [
-      { title: "Feed", url: "/community", icon: MessagesSquare },
-      { title: "My communities", url: "/community", icon: Users },
-      { title: "Saved", url: "/community", icon: BookMarked },
-      { title: "Resources", url: "/explore", icon: BookMarked },
-    ],
-  },
-  {
-    title: "Study session",
-    icon: Radio,
-    items: [
-      { title: "Live session", url: "/study", icon: Radio },
-      { title: "Schedule session", url: "/schedule", icon: CalendarClock },
-      { title: "Tasks", url: "/dashboard", icon: ListChecks },
-    ],
-  },
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible"
+import { PeerPulseMark } from "@/components/peerpulse-mark"
+
+type NavigationItem = { title: string; url: string; icon: LucideIcon; children?: { title: string; url: string }[] }
+const NAV_ITEMS: NavigationItem[] = [
+  { title: "Dashboard", url: "/dashboard", icon: House },
+  { title: "Study room", url: "/study", icon: Video, children: [
+    { title: "Peer-to-peer session", url: "/study" },
+    { title: "Solo Pomodoro", url: "/study/solo" },
+    { title: "Group sessions", url: "/study/groups" },
+  ] },
+  { title: "Schedule", url: "/schedule", icon: Calendar },
+  { title: "Community", url: "/community", icon: Users, children: [
+    { title: "Feed", url: "/community" },
+    { title: "Communities", url: "/communities" },
+  ] },
+  { title: "Resources", url: "/explore", icon: FolderClosed },
+  { title: "Messages", url: "/messages", icon: Inbox },
 ]
-const TOP_LINKS = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Messages", url: "/messages", icon: MessagesSquare },
-]
+
+function NavigationGroup({ item }: { item: NavigationItem }) {
+  const pathname = usePathname()
+  const { state, isMobile, setOpenMobile } = useSidebar()
+  const active = item.children?.some(child => pathname === child.url) ?? false
+  const Icon = item.icon
+  if (state === "collapsed" && !isMobile) {
+    return <DropdownMenu><DropdownMenuTrigger asChild><SidebarMenuButton tooltip={item.title} isActive={active} className="mx-auto size-10! justify-center rounded-xl p-0!"><Icon className="size-4!" strokeWidth={1.8} /><span className="sr-only">{item.title}</span></SidebarMenuButton></DropdownMenuTrigger><DropdownMenuContent side="right" sideOffset={12} className="w-52 rounded-2xl border-line bg-surface p-1.5">{item.children?.map(child => <DropdownMenuItem key={child.url} asChild><Link href={child.url} aria-current={pathname === child.url ? "page" : undefined}>{child.title}</Link></DropdownMenuItem>)}</DropdownMenuContent></DropdownMenu>
+  }
+  return (
+    <Collapsible defaultOpen={active} className="group/navigation">
+      <CollapsibleTrigger asChild><SidebarMenuButton isActive={active} className="h-10 rounded-xl px-3 text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/70"><Icon className="size-4!" strokeWidth={1.8} /><span>{item.title}</span><ChevronDown className="ml-auto size-3.5! transition-transform group-data-[state=open]/navigation:rotate-180" /></SidebarMenuButton></CollapsibleTrigger>
+      <CollapsibleContent className="overflow-hidden">
+        <SidebarMenuSub className="ml-5 mr-0 my-1 border-line pl-3">
+          {item.children?.map(child => <SidebarMenuSubItem key={child.url}><SidebarMenuSubButton asChild isActive={pathname === child.url} className="h-9 rounded-lg text-xs text-ink-soft data-[active=true]:bg-pulse-soft data-[active=true]:text-pulse-dark"><Link href={child.url} onClick={() => setOpenMobile(false)} aria-current={pathname === child.url ? "page" : undefined}><span>{child.title}</span></Link></SidebarMenuSubButton></SidebarMenuSubItem>)}
+        </SidebarMenuSub>
+      </CollapsibleContent>
+    </Collapsible>
+  )
+}
+
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
   const { user, logout } = useAuth()
@@ -89,171 +91,106 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
     .split(" ")
     .filter(Boolean)
     .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase())
+    .map((part) => part[0]?.toUpperCase())
     .join("")
+  const isActive = (url: string) => pathname === url || pathname.startsWith(`${url}/`)
+
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        {/* Workspace switcher */}
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent">
-                  <div className="bg-brand text-brand-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                    <Sparkles className="size-4" />
-                  </div>
-                  <div className="grid flex-1 text-left leading-tight">
-                    <span className="truncate font-medium">PeerPulse</span>
-                    <span className="text-sidebar-foreground/70 truncate text-xs">
-                      Study workspace
-                    </span>
-                  </div>
-                  <ChevronsUpDown className="ml-auto size-4" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-(--radix-dropdown-menu-trigger-width)">
-                <DropdownMenuLabel>Workspaces</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Sparkles className="size-4" /> PeerPulse
-                </DropdownMenuItem>
-                <DropdownMenuItem disabled>
-                  <CircleDot className="size-4" /> Add workspace
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
-        {/* Search */}
-        <SidebarMenu>
-          <SidebarMenuItem className="relative">
-            <Search className="text-sidebar-foreground/60 pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2" />
-            <SidebarInput placeholder="Search…" className="pl-8" />
-          </SidebarMenuItem>
-        </SidebarMenu>
-        {/* Primary action */}
+      <SidebarHeader className="gap-4 px-3 pb-4 pt-4 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-3">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
+              size="lg"
+              tooltip="PeerPulse"
+              className="h-11 rounded-xl px-1.5 hover:bg-transparent group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:p-0!"
+            >
+              <Link href="/dashboard">
+                <PeerPulseMark className="size-9 group-data-[collapsible=icon]:size-10" />
+                <span className="min-w-0 flex-1 truncate font-brand text-[17px] font-bold tracking-[-0.04em] text-sidebar-foreground group-data-[collapsible=icon]:hidden">
+                  PeerPulse
+                </span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              size="lg"
               tooltip="Start a session"
-              className="bg-brand text-brand-foreground hover:bg-brand/90 hover:text-brand-foreground"
+              className="h-10 rounded-xl border border-brand/20 bg-brand/10 px-3 text-brand shadow-none hover:border-brand/30 hover:bg-brand/15 hover:text-brand group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:border-0 group-data-[collapsible=icon]:bg-brand group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:text-brand-foreground group-data-[collapsible=icon]:shadow-sm"
             >
               <Link href="/study">
-                <Plus className="size-4" />
-                <span>New session</span>
+                <Plus className="size-4!" strokeWidth={1.8} />
+                <span className="font-semibold group-data-[collapsible=icon]:hidden">Start session</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
-        {/* Top-level links */}
-        <SidebarGroup>
-          <SidebarMenu>
-            {TOP_LINKS.map((item) => (
+
+      <SidebarContent className="px-2 py-2 group-data-[collapsible=icon]:px-3">
+        <SidebarGroup className="p-0">
+          <SidebarGroupLabel className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-wider text-ink-mute">Workspace</SidebarGroupLabel>
+          <SidebarMenu className="gap-1">
+            {NAV_ITEMS.map((item) => (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild isActive={pathname === item.url} tooltip={item.title}>
+                {item.children ? <NavigationGroup item={item} /> : <SidebarMenuButton
+                  asChild
+                  size="lg"
+                  isActive={isActive(item.url)}
+                  tooltip={item.title}
+                  className="h-10 rounded-xl px-3 text-[14px] font-medium text-sidebar-foreground/70 data-[active=true]:bg-brand/10 data-[active=true]:font-semibold data-[active=true]:text-brand hover:bg-sidebar-accent/70 hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0!"
+                >
                   <Link href={item.url}>
-                    <item.icon className="size-4" />
-                    <span>{item.title}</span>
+                    <item.icon className="size-4! shrink-0" strokeWidth={1.8} />
+                    <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
                   </Link>
-                </SidebarMenuButton>
+                </SidebarMenuButton>}
               </SidebarMenuItem>
             ))}
           </SidebarMenu>
         </SidebarGroup>
-        {/* Collapsible groups with sub-items */}
-        {NAV.map((group) => (
-          <Collapsible
-            key={group.title}
-            defaultOpen
-            className="group/collapsible"
-            asChild
-          >
-            <SidebarGroup>
-              <SidebarGroupLabel asChild>
-                <CollapsibleTrigger className="w-full">
-                  <group.icon className="size-4" />
-                  <span>{group.title}</span>
-                  <ChevronIcon className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
-                </CollapsibleTrigger>
-              </SidebarGroupLabel>
-              <CollapsibleContent>
-                <SidebarGroupContent>
-                  <SidebarMenu>
-                    {group.items.map((sub) => (
-                      <SidebarMenuItem key={sub.title}>
-                        <SidebarMenuButton asChild isActive={pathname === sub.url}>
-                          <Link href={sub.url}>
-                            {sub.icon ? <sub.icon className="size-4" /> : null}
-                            <span>{sub.title}</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    ))}
-                  </SidebarMenu>
-                </SidebarGroupContent>
-              </CollapsibleContent>
-            </SidebarGroup>
-          </Collapsible>
-        ))}
-        {/* Example of a nested sub-level (kept for structure) */}
-        <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-          <SidebarGroupLabel>Sessions</SidebarGroupLabel>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname === "/schedule"}>
-                <Link href="/schedule">
-                  <CalendarClock className="size-4" />
-                  <span>Upcoming</span>
-                </Link>
-              </SidebarMenuButton>
-              <SidebarMenuSub>
-                <SidebarMenuSubItem>
-                  <SidebarMenuSubButton asChild>
-                    <Link href="/schedule">Today</Link>
-                  </SidebarMenuSubButton>
-                </SidebarMenuSubItem>
-                <SidebarMenuSubItem>
-                  <SidebarMenuSubButton asChild>
-                    <Link href="/schedule">This week</Link>
-                  </SidebarMenuSubButton>
-                </SidebarMenuSubItem>
-              </SidebarMenuSub>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
+
+      <SidebarFooter className="border-t border-sidebar-border p-2 group-data-[collapsible=icon]:p-3">
         <SidebarMenu>
-          <SidebarMenuItem className="flex items-center gap-2 px-1">
-            <ModeToggle />
-          </SidebarMenuItem>
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent">
+                <SidebarMenuButton
+                  size="lg"
+                  tooltip="Account"
+                  className="h-12 rounded-xl px-2 data-[state=open]:bg-sidebar-accent group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-1!"
+                >
                   <Avatar className="size-8">
                     <AvatarFallback>{initials}</AvatarFallback>
-                    <AvatarBadge className="bg-emerald-500" />
+                    <AvatarBadge className="bg-emerald-500 dark:bg-emerald-500" />
                   </Avatar>
-                  <div className="grid flex-1 text-left leading-tight">
-                    <span className="truncate font-medium">{name}</span>
-                    <span className="text-sidebar-foreground/70 truncate text-xs">
+                  <span className="grid min-w-0 flex-1 text-left leading-tight group-data-[collapsible=icon]:hidden">
+                    <span className="truncate text-[13px] font-semibold text-sidebar-foreground">{name}</span>
+                    <span className="truncate text-[11px] text-sidebar-foreground/60">
                       {user?.email || "sarah@example.com"}
                     </span>
-                  </div>
-                  <ChevronsUpDown className="ml-auto size-4" />
+                  </span>
+                  <ChevronsUpDown className="ml-auto size-4 text-sidebar-foreground/55 group-data-[collapsible=icon]:hidden" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
-              <DropdownMenuContent side="top" align="start" className="w-56">
-                <DropdownMenuLabel>My account</DropdownMenuLabel>
+              <DropdownMenuContent side="right" align="end" sideOffset={8} className="w-56">
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col gap-1">
+                    <p className="text-sm font-semibold text-ink">{name}</p>
+                    <p className="truncate text-xs text-ink-mute">{user?.email || "sarah@example.com"}</p>
+                  </div>
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link href="/profile">
-                    <Settings2 className="size-4" /> Profile
+                    <UserRound className="size-4" strokeWidth={1.8} /> Profile
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
@@ -270,23 +207,8 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
+
       <SidebarRail />
     </Sidebar>
-  )
-}
-function ChevronIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={`size-4 ${className ?? ""}`}
-      aria-hidden="true"
-    >
-      <path d="m9 18 6-6-6-6" />
-    </svg>
   )
 }

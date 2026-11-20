@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
-import { ArrowRight, CalendarCheck, Mic, Play, ShieldCheck, Sparkles, Users, Video, Timer } from "lucide-react"
+import { ArrowRight, CalendarCheck, Mic, Play, ShieldCheck, Video, Timer } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
@@ -61,30 +61,74 @@ const STEPS = [
 
 const FEATURES = [
   {
-    icon: Users,
-    tint: "bg-lilac text-lilac-deep",
+    icon: "match" as const,
+    tint: "border-lilac-deep/15 bg-lilac text-lilac-deep",
     title: "Matching that actually matches",
     body: "We pair on subject, topic and availability — not vibes. Filter by course, level or language before you join.",
   },
   {
-    icon: Video,
-    tint: "bg-sky text-sky-deep",
+    icon: "media" as const,
+    tint: "border-sky-deep/15 bg-sky text-sky-deep",
     title: "Camera and mic, your call",
     body: "Join with video, audio or neither. Toggle either one mid-session without dropping the call.",
   },
   {
-    icon: Timer,
-    tint: "bg-apricot text-apricot-deep",
+    icon: "focus" as const,
+    tint: "border-apricot-deep/15 bg-apricot text-apricot-deep",
     title: "Pomodoro built in",
     body: "25-minute deep work blocks with short breaks, and a debrief at the end so the session feels finished.",
   },
   {
-    icon: Sparkles,
-    tint: "bg-pulse-soft text-pulse-dark",
+    icon: "pulse" as const,
+    tint: "border-pulse/15 bg-pulse-soft text-pulse-dark",
     title: "Pulse, your study assistant",
     body: "Turns your syllabus into a plan, quizzes you on weak topics, and finds the resource someone already shared.",
   },
 ]
+
+function FeatureGlyph({ kind }: { kind: (typeof FEATURES)[number]["icon"] }) {
+  const common = "h-[21px] w-[21px]"
+
+  if (kind === "match") {
+    return (
+      <svg viewBox="0 0 24 24" className={common} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <circle cx="7" cy="8" r="2.6" />
+        <circle cx="17" cy="8" r="2.6" />
+        <path d="M2.8 18.2c.5-3 2-4.6 4.2-4.6s3.8 1.6 4.2 4.6M12.8 18.2c.5-3 2-4.6 4.2-4.6s3.8 1.6 4.2 4.6" />
+        <path d="M10.2 7.8h3.6" strokeDasharray="1.5 2" />
+      </svg>
+    )
+  }
+
+  if (kind === "media") {
+    return (
+      <svg viewBox="0 0 24 24" className={common} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <rect x="2.5" y="5.5" width="12.5" height="11" rx="3" />
+        <path d="m15 9 5-2.4v8.8L15 13" />
+        <path d="M6.5 19.5h5" />
+      </svg>
+    )
+  }
+
+  if (kind === "focus") {
+    return (
+      <svg viewBox="0 0 24 24" className={common} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M9 3h6M12 3v3" />
+        <path d="M18.6 8.1A7.5 7.5 0 1 1 8.1 6.4" />
+        <path d="M12 9v4l2.8 1.7" />
+        <path d="m17.5 5.5 1 1" />
+      </svg>
+    )
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" className={common} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M3 13h3l2-5 3.2 10 2.5-7 1.7 3H21" />
+      <circle cx="5" cy="5" r="1.5" fill="currentColor" stroke="none" />
+      <path d="M18 4v4M16 6h4" />
+    </svg>
+  )
+}
 
 const TESTIMONIALS = [
   {
@@ -248,12 +292,10 @@ function LandingPage() {
             {FEATURES.map((feature) => (
               <RevealItem key={feature.title}>
                 <div className="group h-full rounded-3xl border border-line bg-surface p-7 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-line-strong hover:shadow-card">
-                  <span
-                    className={`grid h-12 w-12 place-items-center rounded-2xl ${feature.tint}`}
-                  >
-                    <feature.icon className="h-5.5 w-5.5" />
+                  <span className={`grid h-10 w-10 place-items-center rounded-xl border ${feature.tint}`}>
+                    <FeatureGlyph kind={feature.icon} />
                   </span>
-                  <h3 className="mt-5 font-display text-xl font-bold tracking-[-0.02em] text-ink">
+                  <h3 className="mt-4 font-display text-xl font-bold tracking-[-0.02em] text-ink">
                     {feature.title}
                   </h3>
                   <p className="mt-2.5 text-[15px] leading-relaxed text-ink-soft">
@@ -502,7 +544,7 @@ function LandingPage() {
       <Section className="pb-24">
         <div className="container-page">
           <Reveal>
-            <div className="relative overflow-hidden rounded-[36px] bg-ink px-8 py-16 text-center sm:px-16">
+            <div className="relative overflow-hidden rounded-[36px] bg-[#14161b] px-8 py-16 text-center sm:px-16">
               <div className="pointer-events-none absolute -left-10 -top-16 h-72 w-72 rounded-full bg-pulse/25 blur-3xl" />
               <div className="pointer-events-none absolute -bottom-24 -right-10 h-72 w-72 rounded-full bg-lilac-deep/30 blur-3xl" />
 
@@ -518,7 +560,7 @@ function LandingPage() {
                   Set up your subjects once. Get matched with someone in the same class tonight.
                 </p>
                 <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-                  <Button asChild size="lg" variant="subtle" className="bg-white text-ink hover:bg-white/90">
+                  <Button asChild size="lg" variant="subtle" className="bg-white text-[#14161b] hover:bg-white/90">
                     <Link href="/signup">
                       Create your free account
                       <ArrowRight className="h-4 w-4" />

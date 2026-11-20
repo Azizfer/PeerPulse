@@ -1,6 +1,7 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { AuthProvider } from "@/components/auth-provider"
+import { ThemeProvider } from "@/components/theme-provider"
 import { PiPProvider } from "@/contexts/pip-context"
 import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
@@ -43,10 +44,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen bg-paper text-ink antialiased" suppressHydrationWarning>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
         <AuthProvider>
           <PiPProvider>{children}</PiPProvider>
         </AuthProvider>
         <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   )

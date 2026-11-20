@@ -2,7 +2,7 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
-import { PanelLeftIcon } from "lucide-react"
+import { PanelLeftCloseIcon, PanelLeftOpenIcon } from "lucide-react"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -26,7 +26,7 @@ const SIDEBAR_COOKIE_NAME = "sidebar:state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 const SIDEBAR_WIDTH = "16rem"
 const SIDEBAR_WIDTH_MOBILE = "18rem"
-const SIDEBAR_WIDTH_ICON = "3rem"
+const SIDEBAR_WIDTH_ICON = "4rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 type SidebarContextProps = {
   state: "expanded" | "collapsed"
@@ -221,7 +221,7 @@ function SidebarTrigger({
   onClick,
   ...props
 }: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar } = useSidebar()
+  const { toggleSidebar, state } = useSidebar()
   return (
     <Button
       data-sidebar="trigger"
@@ -235,7 +235,11 @@ function SidebarTrigger({
       }}
       {...props}
     >
-      <PanelLeftIcon />
+      {state === "expanded" ? (
+        <PanelLeftCloseIcon className="transition-transform duration-200" />
+      ) : (
+        <PanelLeftOpenIcon className="transition-transform duration-200" />
+      )}
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   )
@@ -263,9 +267,10 @@ function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
     />
   )
 }
-function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
+function SidebarInset({ className, asChild = false, ...props }: React.ComponentProps<"main"> & { asChild?: boolean }) {
+  const Component = asChild ? Slot : "main"
   return (
-    <main
+    <Component
       data-slot="sidebar-inset"
       className={cn(
         "bg-background relative flex w-full flex-1 flex-col",
@@ -541,7 +546,7 @@ function SidebarMenuSkeleton({
   showIcon = false,
   ...props
 }: React.ComponentProps<"div"> & { showIcon?: boolean }) {
-  const width = React.useMemo(() => `${Math.floor(Math.random() * 40) + 50}%`, [])
+  const width = "70%"
   return (
     <div
       data-slot="sidebar-menu-skeleton"

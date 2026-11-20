@@ -217,7 +217,7 @@ export default function FeaturesPage() {
       <Section className="pt-0">
         <div className="container-page">
           <Reveal>
-            <div className="relative overflow-hidden rounded-[36px] bg-ink px-8 py-16 text-center sm:px-16">
+            <div className="relative overflow-hidden rounded-[36px] bg-[#14161b] px-8 py-16 text-center sm:px-16">
               <div className="pointer-events-none absolute -left-10 -top-16 h-72 w-72 rounded-full bg-pulse/25 blur-3xl" />
               <div className="pointer-events-none absolute -bottom-24 -right-10 h-72 w-72 rounded-full bg-lilac-deep/30 blur-3xl" />
               <div className="relative mx-auto max-w-xl">
@@ -228,7 +228,7 @@ export default function FeaturesPage() {
                   Two minutes of setup and you&apos;ll be working next to someone in your subject.
                 </p>
                 <div className="mt-9 flex flex-wrap justify-center gap-3">
-                  <Button asChild size="lg" variant="subtle" className="bg-white text-ink hover:bg-white/90">
+                  <Button asChild size="lg" variant="subtle" className="bg-white text-[#14161b] hover:bg-white/90">
                     <Link href="/signup">Create your free account</Link>
                   </Button>
                 </div>

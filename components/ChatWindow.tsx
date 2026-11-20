@@ -1,18 +1,16 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import { X, Send, Minus } from "lucide-react"
+import Link from "next/link"
+import { createPortal } from "react-dom"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
+import { ArrowUp, Expand, Minus, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { motion, AnimatePresence } from "framer-motion"
-import Image from "next/image"
-
-interface Message {
-  id: number
-  senderId: number
-  text: string
-  timestamp: string
-  isOwn: boolean
-}
+import { Avatar } from "@/components/avatar"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { MessageAnimated, type ChatMessage } from "@/components/message-animated"
+import { MessageScroller, MessageScrollerButton, MessageScrollerContent, MessageScrollerProvider, MessageScrollerViewport, useMessageScroller } from "@/components/ui/message-scroller"
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupTextarea } from "@/components/ui/input-group"
+import { needsChatTimeSeparator } from "@/lib/chat-time"
 
 interface ChatWindowProps {
   isOpen: boolean
@@ -20,212 +18,82 @@ interface ChatWindowProps {
   partnerId: number
   partnerName: string
   partnerAvatar: string
-  position: number // For stacking multiple chats
+  position: number
 }
 
-export default function ChatWindow({
-  isOpen,
-  onClose,
-  partnerId,
-  partnerName,
-  partnerAvatar,
-  position,
-}: ChatWindowProps) {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      senderId: partnerId,
-      text: "Hey! Are you free to study tonight?",
-      timestamp: "2:30 PM",
-      isOwn: false,
-    },
-    {
-      id: 2,
-      senderId: 1, // Current user
-      text: "Yes! What subject?",
-      timestamp: "2:32 PM",
-      isOwn: true,
-    },
-    {
-      id: 3,
-      senderId: partnerId,
-      text: "I was thinking we could work on the math assignment together",
-      timestamp: "2:33 PM",
-      isOwn: false,
-    },
-  ])
-  const [newMessage, setNewMessage] = useState("")
-  const [isMinimized, setIsMinimized] = useState(false)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-
-  // Scroll to bottom when messages change
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages])
-
-  const handleSendMessage = () => {
-    if (!newMessage.trim()) return
-
-    const message: Message = {
-      id: messages.length + 1,
-      senderId: 1, // Current user
-      text: newMessage,
-      timestamp: new Date().toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-      }),
-      isOwn: true,
-    }
-
-    setMessages([...messages, message])
-    setNewMessage("")
+function ChatComposer({ onSend }: { onSend: (text: string) => void }) {
+  const [draft, setDraft] = useState("")
+  const textarea = useRef<HTMLTextAreaElement>(null)
+  const { scrollToEnd } = useMessageScroller()
+  useLayoutEffect(() => {
+    const control = textarea.current
+    if (!control) return
+    control.style.height = "0px"
+    control.style.height = `${Math.min(52, Math.max(32, control.scrollHeight))}px`
+  }, [draft])
+  const send = () => {
+    if (!draft.trim()) return
+    onSend(draft.trim())
+    setDraft("")
+    requestAnimationFrame(() => scrollToEnd({ behavior: "auto" }))
+    textarea.current?.focus()
   }
+  return <form className="w-full" onSubmit={event => { event.preventDefault(); send() }}>
+    <InputGroup>
+      <InputGroupTextarea ref={textarea} aria-label="Quick chat message" placeholder="Write a message…" value={draft} onChange={event => setDraft(event.target.value)} rows={1} maxLength={5000} className="max-h-[52px]" onKeyDown={event => {
+        if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) { event.preventDefault(); send() }
+      }} />
+      <InputGroupAddon><InputGroupButton type="submit" variant="accent" aria-label="Send message" disabled={!draft.trim()}><ArrowUp /></InputGroupButton></InputGroupAddon>
+    </InputGroup>
+  </form>
+}
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      handleSendMessage()
-    }
-  }
-
-  if (!isOpen) return null
-
-  // Calculate position based on index for stacking
-  const bubbleOffset = position * 60 // 60px spacing between bubbles
-  const chatOffset = position * 30 // 30px spacing between open chats
-
-  return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, y: 20, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 20, scale: 0.95 }}
-        transition={{ duration: 0.2 }}
-        className={`fixed bg-surface shadow-2xl border border-line-strong z-50 flex flex-col ${
-          isMinimized ? "rounded-full overflow-visible" : "rounded-xl overflow-hidden"
-        }`}
-        style={{ 
-          width: isMinimized ? "50px" : "320px",
-          height: isMinimized ? "50px" : "450px",
-          bottom: "16px",
-          right: isMinimized ? `${16 + bubbleOffset}px` : `${16 + chatOffset}px`,
-        }}
-      >
-        {/* Header / Bubble */}
-        {isMinimized ? (
-          <div 
-            className="w-full h-full flex items-center justify-center cursor-pointer relative group overflow-visible"
-            onClick={() => setIsMinimized(false)}
-          >
-            <Image
-              src={partnerAvatar || "/placeholder.svg"}
-              width={50}
-              height={50}
-              alt=""
-              className="w-full h-full rounded-full object-cover"
-            />
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation()
-                onClose()
-              }}
-              className="absolute -top-1 -right-1 h-5 w-5 p-0 bg-red-500 hover:bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
-            >
-              <X className="w-3 h-3" />
-            </Button>
-          </div>
-        ) : (
-          <div className="flex items-center justify-between p-3 border-b-2 border-line-strong">
-            <div className="flex items-center gap-2">
-              <Image
-                src={partnerAvatar || "/placeholder.svg"}
-                width={36}
-                height={36}
-                alt=""
-                className="w-9 h-9 rounded-full object-cover"
-              />
-              <div>
-                <h3 className="font-semibold text-ink text-sm">{partnerName}</h3>
-                <p className="text-xs text-ink-mute">Active now</p>
-              </div>
+export default function ChatWindow({ isOpen, onClose, partnerName }: ChatWindowProps) {
+  const [mounted, setMounted] = useState(false)
+  const [minimized, setMinimized] = useState(false)
+  // The transcript is rendered in a client-only portal after mounting.
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    const now = Date.now()
+    return [
+      { id: "preview-1", text: "Hey! Are you free to study tonight?", own: false, sentAt: now - 5 * 60 * 1000 },
+      { id: "preview-2", text: "Yes! What subject?", own: true, sentAt: now - 3 * 60 * 1000 },
+    ]
+  })
+  useEffect(() => { setMounted(true) }, [])
+  if (!mounted || !isOpen) return null
+  return createPortal(
+    <MessageScrollerProvider autoScroll defaultScrollPosition="end">
+      {minimized ? (
+        <div className="fixed bottom-24 right-4 z-50 flex max-w-[calc(100vw-32px)] items-center gap-1 rounded-full border border-line bg-surface p-1.5 shadow-card">
+          <button type="button" aria-label={`Restore chat with ${partnerName}`} onClick={() => setMinimized(false)} className="flex min-w-0 items-center gap-2 rounded-full pr-2 text-xs font-semibold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pulse"><Avatar name={partnerName} size="xs" /><span className="truncate">{partnerName}</span></button>
+          <Button variant="ghost" size="icon-sm" aria-label="Close chat" onClick={onClose} className="size-6 p-0"><X className="size-3" /></Button>
+        </div>
+      ) : (
+        <Card role="region" aria-label={`Quick chat with ${partnerName}`} className="fixed bottom-24 right-4 z-50 flex h-[min(400px,calc(100dvh-128px))] w-[min(330px,calc(100vw-32px))] flex-col overflow-hidden rounded-2xl shadow-lift">
+          <CardHeader className="flex-row items-center gap-2 space-y-0 border-b border-line px-3 py-2.5">
+            <Avatar name={partnerName} size="xs" />
+            <div className="min-w-0 flex-1"><CardTitle className="truncate text-[13px] font-semibold">{partnerName}</CardTitle><p className="mt-0.5 text-[10px] text-ink-mute">Study chat · preview</p></div>
+            <div className="flex items-center gap-0.5">
+              <Button asChild variant="ghost" size="icon-sm" className="size-7 rounded-lg p-0"><Link href="/messages" aria-label="Open full messages" title="Open messages"><Expand className="size-3" /></Link></Button>
+              <Button variant="ghost" size="icon-sm" className="size-7 rounded-lg p-0" aria-label="Minimize chat" title="Minimize" onClick={() => setMinimized(true)}><Minus className="size-3" /></Button>
+              <Button variant="ghost" size="icon-sm" className="size-7 rounded-lg p-0" aria-label="Close chat" title="Close" onClick={onClose}><X className="size-3" /></Button>
             </div>
-            <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsMinimized(true)}
-                className="h-7 w-7 p-0 text-ink-soft hover:bg-surface-sunken"
-              >
-                <Minus className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onClose}
-                className="h-7 w-7 p-0 text-ink-soft hover:bg-surface-sunken"
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Messages Area */}
-        {!isMinimized && (
-          <>
-            <div className="flex-1 overflow-y-auto p-3 space-y-3">
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${message.isOwn ? "justify-end" : "justify-start"}`}
-                >
-                  <div
-                    className={`max-w-[80%] rounded-2xl px-3 py-2 ${
-                      message.isOwn
-                        ? "bg-pulse text-white"
-                        : "bg-line text-ink"
-                    }`}
-                  >
-                    <p className="text-xs">{message.text}</p>
-                    <p
-                      className={`text-[10px] mt-0.5 ${
-                        message.isOwn ? "text-pulse-soft" : "text-ink-mute"
-                      }`}
-                    >
-                      {message.timestamp}
-                    </p>
-                  </div>
-                </div>
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
-
-            {/* Input Area */}
-            <div className="p-3 border-t-2 border-line-strong">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Type a message..."
-                  className="flex-1 px-3 py-2 border border-line-strong rounded-lg text-xs focus:outline-none focus:border-pulse bg-surface text-ink transition-all duration-200 hover:border-ink-faint"
-                />
-                <Button
-                  onClick={handleSendMessage}
-                  disabled={!newMessage.trim()}
-                  size="sm"
-                  className="bg-pulse hover:bg-pulse-dark text-white px-3"
-                >
-                  <Send className="w-3 h-3" />
-                </Button>
-              </div>
-            </div>
-          </>
-        )}
-      </motion.div>
-    </AnimatePresence>
+          </CardHeader>
+          <CardContent className="flex min-h-0 flex-1 flex-col p-0">
+            <MessageScroller>
+              <MessageScrollerViewport aria-label="Chat messages">
+                <MessageScrollerContent>
+                  {messages.map((message, index) => <MessageAnimated key={message.id} message={message} timeSeparator={needsChatTimeSeparator(message.sentAt, messages[index - 1]?.sentAt) ? new Intl.DateTimeFormat("en-GB", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }).format(message.sentAt) : undefined} />)}
+                </MessageScrollerContent>
+              </MessageScrollerViewport>
+              <MessageScrollerButton />
+            </MessageScroller>
+          </CardContent>
+          <CardFooter className="shrink-0 border-t border-line px-3 py-2.5">
+            <ChatComposer onSend={text => setMessages(previous => [...previous, { id: crypto.randomUUID(), text, own: true, sentAt: Date.now() }])} />
+          </CardFooter>
+        </Card>
+      )}
+    </MessageScrollerProvider>, document.body,
   )
 }
